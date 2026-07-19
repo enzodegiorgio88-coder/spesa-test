@@ -1,0 +1,294 @@
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root { --casa:#FF6B6B; --persona:#4ECDC4; --alim:#45B7D1; --bg:#F7F9FC; --text:#2d3436; --muted:#b2bec3; }
+body { font-family: -apple-system,'Segoe UI',sans-serif; background: var(--bg); color: var(--text); min-height:100vh; }
+
+/* ── NUOVO: Offline banner ─────────────────────── */
+#offlineBanner { display:none; position:sticky; top:0; left:0; right:0; z-index:99999; background:#fdcb6e; color:#2d3436; padding:10px 16px; font-size:13px; font-weight:800; text-align:center; border-bottom:2px solid #e17055; }
+#offlineBanner.show { display:block; }
+
+/* ── NUOVO: Banner modalità limitata (fallback HTTPS quando il canale realtime è bloccato dalla rete) ─── */
+#limitedBanner { display:none; position:sticky; top:0; left:0; right:0; z-index:99998; background:#74b9ff; color:white; padding:10px 16px; font-size:13px; font-weight:800; text-align:center; border-bottom:2px solid #0984e3; }
+#limitedBanner.show { display:block; }
+
+/* ── NUOVO: Privacy notice ─────────────────────── */
+#privacyNotice { display:none; position:fixed; bottom:0; left:0; right:0; z-index:1001; background:#2d3436; color:white; padding:14px 16px; border-top:2px solid rgba(255,255,255,0.1); }
+#privacyNotice.show { display:flex; align-items:center; gap:12px; }
+#privacyNotice p { flex:1; margin:0; font-size:12px; line-height:1.6; }
+#privacyNotice button { background:#00b894; border:none; border-radius:8px; color:white; font-size:12px; font-weight:800; padding:8px 14px; cursor:pointer; flex-shrink:0; white-space:nowrap; }
+
+/* ── NUOVO: Errore connessione ─────────────────── */
+#connError { display:none; text-align:center; padding:32px 16px; }
+#connError.show { display:block; }
+#connError p { font-size:15px; font-weight:700; color:#d63031; margin-bottom:16px; line-height:1.7; }
+#connError button { background:#2d3436; color:white; border:none; border-radius:12px; padding:12px 24px; font-family:inherit; font-weight:800; font-size:14px; cursor:pointer; }
+#connErrorDebug { font-size:11px; color:#888; margin-top:14px; font-weight:600; line-height:1.5; }
+
+.countdown-wrap { margin-top: 20px; background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 18px; padding: 16px 12px 14px; border: 1.5px solid rgba(255,255,255,0.08); width: 100%; box-sizing: border-box; }
+.countdown-label { font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; text-align: center; }
+.countdown-boxes { display: flex; gap: 6px; justify-content: center; align-items: center; width: 100%; }
+.cd-box { background: rgba(255,255,255,0.07); border-radius: 12px; padding: 8px 4px 6px; text-align: center; border: 1px solid rgba(255,255,255,0.1); flex: 1; min-width: 0; }
+.cd-num { font-size: 22px; font-weight: 900; color: #ffeaa7; line-height: 1; display: block; font-variant-numeric: tabular-nums; }
+.cd-unit { font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; display: block; }
+.cd-sep { font-size: 18px; font-weight: 900; color: #ffeaa7; opacity: 0.5; margin-bottom: 10px; flex-shrink: 0; }
+.countdown-sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 10px; font-weight: 600; text-align: center; }
+#loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 32px 24px; text-align: center; background: linear-gradient(135deg, #2d3436 0%, #636e72 100%); }
+#loginScreen h1 { font-size: 32px; font-weight: 800; color: white; margin-bottom: 8px; }
+#loginScreen > p { font-size: 14px; color: rgba(255,255,255,0.65); margin-bottom: 40px; }
+.login-card { background: white; border-radius: 24px; padding: 36px 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.login-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+.login-card > p { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+.btn-google { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 14px; background: white; font-family: inherit; font-weight: 800; font-size: 15px; cursor: pointer; color: var(--text); transition: all 0.2s; margin-bottom: 16px; }
+.btn-google:active { background: #f5f5f5; }
+.btn-google img { width: 22px; height: 22px; }
+.login-note { font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 16px; }
+.login-form { display: none; margin-top: 24px; }
+.login-form.show { display: block; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.form-group input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-family: inherit; font-size: 15px; transition: all 0.2s; }
+.form-group input:focus { outline: none; border-color: #2d3436; background: #f7f9fc; }
+.btn-submit { width: 100%; padding: 12px; background: #2d3436; color: white; border: none; border-radius: 10px; font-family: inherit; font-weight: 800; font-size: 15px; cursor: pointer; margin-bottom: 12px; }
+.btn-back { width: 100%; padding: 10px; background: white; color: #2d3436; border: 2px solid #eee; border-radius: 10px; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; }
+.form-error { color: #d63031; font-size: 12px; font-weight: 700; margin-top: 8px; text-align: center; display: none; }
+.form-error.show { display: block; }
+#appScreen { display: none; padding-bottom: 120px; }
+/* CORREZIONE LUGLIO 2026 (punto 3): l'intestazione NON è più fissa (tolto
+   position:sticky). Prima header e #totaleBar erano entrambi sticky a top:0
+   e, scorrendo, il totale finiva NASCOSTO sotto l'header (z-index più alto).
+   Ora l'intestazione scorre via con la pagina e in alto resta fissa e sempre
+   visibile SOLO la barra del totale (#totaleBar, già sticky qui sotto). */
+header { background: linear-gradient(135deg,#2d3436,#636e72); color:white; padding:14px 16px 12px; box-shadow:0 4px 20px rgba(0,0,0,0.15); }
+.header-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+.header-top h1 { font-size:18px; font-weight:800; }
+.user-info { display:flex; align-items:center; gap:8px; }
+.user-avatar { width:32px; height:32px; border-radius:50%; border:2px solid rgba(255,255,255,0.4); object-fit:cover; }
+.user-name { font-size:12px; opacity:0.8; font-weight:700; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.btn-logout { background:rgba(255,255,255,0.15); border:none; border-radius:8px; color:white; font-size:11px; font-weight:800; padding:4px 10px; cursor:pointer; }
+header p { font-size:11px; opacity:0.65; }
+.online-badge { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; opacity:0.8; }
+.online-dot { width:7px; height:7px; border-radius:50%; background:#00b894; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.4;} }
+.prog-bar { height:4px; background:#eee; }
+.prog-fill { height:100%; background:linear-gradient(90deg,var(--casa),var(--alim)); transition:width 0.4s; width:0%; }
+.count-row { display:flex; justify-content:space-between; padding:6px 16px; font-size:12px; font-weight:700; color:var(--muted); align-items:center; }
+.tabs { display:flex; gap:8px; padding:10px 16px 0; }
+.tab { flex:1; padding:9px 4px; border:none; border-radius:12px 12px 0 0; border-top:3px solid transparent; background:white; font-family:inherit; font-weight:800; font-size:12px; cursor:pointer; opacity:0.4; display:flex; align-items:center; justify-content:center; gap:4px; transition:all 0.2s; }
+.tab.active { opacity:1; box-shadow:0 -2px 8px rgba(0,0,0,0.08); }
+.tab[data-i="0"].active { color:var(--casa); border-top-color:var(--casa); }
+.tab[data-i="1"].active { color:var(--persona); border-top-color:var(--persona); }
+.tab[data-i="2"].active { color:var(--alim); border-top-color:var(--alim); }
+.badge { color:white; border-radius:20px; padding:1px 7px; font-size:11px; }
+.tab[data-i="0"] .badge { background:var(--casa); }
+.tab[data-i="1"] .badge { background:var(--persona); }
+.tab[data-i="2"] .badge { background:var(--alim); }
+.panel { display:none; background:white; border-radius:0 0 14px 14px; margin-bottom:8px; padding:0 16px 16px; box-shadow:0 2px 16px rgba(0,0,0,0.08); }
+.panel.active { display:block; }
+.all-view { display:none; padding:8px 16px 0; }
+.all-section { background:white; border-radius:14px; padding:0 16px; margin-bottom:12px; box-shadow:0 2px 16px rgba(0,0,0,0.08); }
+.sec-title { display:flex; align-items:center; gap:8px; padding:12px 0 8px; font-weight:800; font-size:14px; border-bottom:2px solid var(--bg); margin-bottom:4px; }
+.dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.item-row { border-bottom:1px solid var(--bg); padding:8px 0; display:flex; flex-direction:column; list-style:none; position:relative; padding-left:12px; }
+.item-row::before { content:'•'; position:absolute; left:0; top:50%; transform:translateY(-50%); font-size:10px; color:#2d3436; line-height:1; }
+#list-0,#list-1,#list-2,#all-0,#all-1,#all-2 { padding-left:4px; }
+.item-row.urgent { background:linear-gradient(90deg,rgba(255,107,107,0.06),transparent); border-left:3px solid var(--casa); padding-left:14px; margin-left:-4px; }
+.item-inner { display:flex; align-items:center; gap:8px; }
+.item-extra { display:flex; align-items:center; gap:8px; padding:4px 0 2px 36px; flex-wrap:wrap; row-gap:6px; }
+.chk { width:28px; height:28px; border-radius:8px; flex-shrink:0; border:2.5px solid var(--muted); background:transparent; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; cursor:pointer; transition:all 0.2s; }
+.chk.done-0 { background:var(--casa); border-color:var(--casa); }
+.chk.done-1 { background:var(--persona); border-color:var(--persona); }
+.chk.done-2 { background:var(--alim); border-color:var(--alim); }
+.photo-box { flex-shrink:0; width:46px; height:46px; border-radius:10px; overflow:hidden; position:relative; }
+.photo-box img { width:100%; height:100%; object-fit:cover; cursor:pointer; display:block; }
+.photo-placeholder { width:46px; height:46px; border-radius:10px; border:2px dashed var(--muted); background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; gap:1px; }
+.photo-placeholder span:first-child { font-size:16px; line-height:1; }
+.photo-placeholder span:last-child { font-size:8px; font-weight:700; color:var(--muted); }
+.photo-del { position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.55); border:none; border-radius:50%; width:16px; height:16px; color:white; font-size:9px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.item-input { flex:1; border:none; background:transparent; font-family:inherit; font-size:16px; font-weight:600; color:var(--text); padding:4px 0; outline:none; min-width:0; }
+.item-input::placeholder { color:var(--muted); font-weight:400; font-size:14px; }
+.item-input.done { text-decoration:line-through; color:var(--muted); }
+.qty-wrap { display:flex; align-items:center; gap:4px; background:var(--bg); border-radius:20px; padding:3px 8px; }
+.qty-btn { background:none; border:none; font-size:16px; font-weight:800; cursor:pointer; color:var(--muted); width:22px; height:22px; display:flex; align-items:center; justify-content:center; border-radius:50%; line-height:1; touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+.qty-val { font-size:14px; font-weight:800; color:var(--text); min-width:20px; text-align:center; }
+.priority-btn { background:none; border:2px solid var(--muted); border-radius:20px; padding:3px 10px; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer; color:var(--muted); transition:all 0.2s; }
+.priority-btn.urgent { background:var(--casa); border-color:var(--casa); color:white; }
+.del-btn { background:none; border:none; color:var(--muted); font-size:15px; cursor:pointer; padding:4px 6px; border-radius:8px; flex-shrink:0; }
+.add-btn { display:flex; align-items:center; gap:6px; margin-top:10px; padding:11px 14px; background:var(--bg); border:2px dashed var(--muted); border-radius:10px; color:var(--muted); font-family:inherit; font-weight:700; font-size:14px; cursor:pointer; width:100%; }
+.item-author { font-size:10px; color:var(--muted); font-weight:600; padding:1px 0 0 36px; letter-spacing:0.3px; }
+.bottom-bar { position:fixed; bottom:0; left:0; right:0; background:white; border-top:1px solid #eee; padding:8px 16px 14px; display:flex; gap:8px; z-index:200; flex-wrap:wrap; }
+.btn-view { flex:1; padding:10px; border:2px solid var(--muted); border-radius:10px; background:white; font-family:inherit; font-weight:800; font-size:12px; cursor:pointer; color:var(--text); transition:all 0.2s; }
+.btn-view.active { background:var(--text); color:white; border-color:var(--text); }
+.btn-clear { padding:10px 12px; border:2px solid #ff7675; border-radius:10px; background:white; font-family:inherit; font-weight:800; font-size:12px; cursor:pointer; color:#ff7675; }
+.btn-row2 { display:flex; gap:8px; width:100%; }
+.btn-copy { flex:1; padding:11px; border:none; border-radius:10px; background:linear-gradient(135deg,#25D366,#128C7E); color:white; font-family:inherit; font-weight:800; font-size:12px; cursor:pointer; }
+#toast { position:fixed; bottom:130px; left:50%; transform:translateX(-50%); background:#2d3436; color:white; padding:10px 20px; border-radius:20px; font-size:13px; font-weight:700; opacity:0; transition:opacity 0.3s; pointer-events:none; white-space:nowrap; z-index:9999; }
+#toast.show { opacity:1; }
+#zoom { display:flex; position:fixed; inset:0; background:rgba(0,0,0,0); z-index:9999; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity 0.25s ease, background 0.25s ease; }
+#zoom.show { opacity:1; pointer-events:all; background:rgba(0,0,0,0.88); }
+#zoom img { max-width:100%; max-height:90vh; border-radius:16px; object-fit:contain; transform:scale(0.88); transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+#zoom.show img { transform:scale(1); }
+#copyModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:8888; align-items:flex-end; justify-content:center; }
+#copyModal.show { display:flex; }
+.copy-sheet { background:white; border-radius:20px 20px 0 0; padding:20px 20px 36px; width:100%; max-width:500px; }
+.copy-sheet h3 { font-size:16px; font-weight:800; margin-bottom:12px; text-align:center; }
+.copy-preview { background:var(--bg); border-radius:12px; padding:14px; font-size:13px; line-height:2; white-space:pre-wrap; max-height:45vh; overflow-y:auto; margin-bottom:14px; color:var(--text); font-family:monospace; overscroll-behavior:contain; }
+body.copy-modal-open { overflow:hidden; }
+.copy-actions { display:flex; gap:10px; }
+.copy-actions button { flex:1; padding:13px; border:none; border-radius:12px; font-family:inherit; font-weight:800; font-size:14px; cursor:pointer; }
+.btn-do-copy { background:linear-gradient(135deg,#25D366,#128C7E); color:white; }
+.btn-cancel { background:var(--text); color:white; }
+#loadingOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:99999; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+#loadingOverlay.show { display:flex; }
+#loadingOverlay p { color:white; font-weight:800; font-size:16px; }
+.spinner { width:48px; height:48px; border:5px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.sync-dot { width:8px; height:8px; border-radius:50%; background:#fdcb6e; display:inline-block; margin-left:6px; transition:background 0.3s; }
+.sync-dot.synced { background:#00b894; }
+.btn-urgenti { background:linear-gradient(135deg,#FF6B6B,#d63031); border:none; border-radius:10px; color:white; font-size:12px; font-weight:800; padding:5px 10px; cursor:pointer; display:flex; align-items:center; gap:5px; box-shadow:0 2px 8px rgba(255,107,107,0.4); animation:urgPulse 2s infinite; }
+.btn-urgenti .urg-count { background:white; color:#d63031; border-radius:50%; width:18px; height:18px; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center; }
+@keyframes urgPulse { 0%,100%{box-shadow:0 2px 8px rgba(255,107,107,0.4);}50%{box-shadow:0 2px 16px rgba(255,107,107,0.8);} }
+#urgentiModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:8889; align-items:flex-end; justify-content:center; }
+#urgentiModal.show { display:flex; }
+.urgenti-sheet { background:white; border-radius:24px 24px 0 0; padding:0 0 36px; width:100%; max-width:500px; max-height:85vh; overflow-y:auto; animation:slideUp 0.3s ease; }
+@keyframes slideUp { from{transform:translateY(100%);} to{transform:translateY(0);} }
+.urgenti-header { background:linear-gradient(135deg,#FF6B6B,#d63031); border-radius:24px 24px 0 0; padding:18px 20px 14px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; }
+.urgenti-header h3 { color:white; font-size:18px; font-weight:900; }
+.urgenti-header span { color:rgba(255,255,255,0.75); font-size:12px; font-weight:700; }
+.btn-close-urg { background:rgba(255,255,255,0.2); border:none; border-radius:50%; width:32px; height:32px; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.urgenti-body { padding:16px 20px; }
+.urg-category { margin-bottom:18px; }
+.urg-cat-title { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid var(--bg); }
+.urg-item { display:flex; align-items:center; gap:10px; padding:10px 12px; background:linear-gradient(90deg,rgba(255,107,107,0.07),transparent); border-radius:12px; border-left:4px solid var(--casa); margin-bottom:8px; }
+.urg-item-text { font-size:15px; font-weight:700; color:#c0392b; flex:1; }
+.urg-item-price { background:#fff8e1; color:#e65100; border:1.5px solid #ffd54f; border-radius:20px; padding:2px 8px; font-size:12px; font-weight:800; margin-left:auto; }
+.urg-item-qty { background:var(--casa); color:white; border-radius:20px; padding:2px 8px; font-size:12px; font-weight:800; }
+.urg-empty { text-align:center; padding:32px 20px; color:var(--muted); font-size:15px; font-weight:700; }
+.price-wrap { display:flex; align-items:center; gap:4px; background:#fff8e1; border-radius:20px; padding:3px 10px; border:1.5px solid #ffd54f; }
+.price-icon { font-size:12px; color:#f9a825; font-weight:800; }
+.price-input { width:64px; border:none; background:transparent; font-family:inherit; font-size:14px; font-weight:800; color:#e65100; outline:none; text-align:right; }
+.price-input::placeholder { color:#ffca28; font-weight:600; }
+.price-line { font-size:11px; color:#f9a825; font-weight:700; background:#fff8e1; border-radius:20px; padding:2px 8px; }
+#totaleBar { background:linear-gradient(135deg,#2d3436,#636e72); color:white; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:99; box-shadow:0 2px 12px rgba(0,0,0,0.2); }
+#totaleBar .tot-label { font-size:13px; font-weight:700; opacity:0.8; }
+#totaleBar .tot-amount { font-size:22px; font-weight:900; color:#ffeaa7; letter-spacing:-0.5px; }
+#totaleBar .tot-detail { font-size:11px; opacity:0.65; font-weight:600; }
+#novitaScreen { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:99990; align-items:center; justify-content:center; padding:24px; }
+#novitaScreen.show { display:flex; }
+.novita-card { background:white; border-radius:28px; padding:0; width:100%; max-width:380px; box-shadow:0 30px 80px rgba(0,0,0,0.4); overflow:hidden; animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popIn { from{transform:scale(0.7);opacity:0;} to{transform:scale(1);opacity:1;} }
+.novita-top { background:linear-gradient(135deg,#FF6B6B,#d63031); padding:28px 24px 24px; text-align:center; position:relative; overflow:hidden; }
+.novita-top h2 { color:white; font-size:22px; font-weight:900; margin-bottom:4px; }
+.novita-top p { color:rgba(255,255,255,0.8); font-size:13px; font-weight:700; }
+.confetti { position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; overflow:hidden; }
+.confetto { position:absolute; width:8px; height:8px; border-radius:2px; animation:confettiFall linear infinite; }
+@keyframes bounce { from{transform:scale(1);} to{transform:scale(1.15);} }
+@keyframes confettiFall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1;} 100%{transform:translateY(200px) rotate(720deg);opacity:0;} }
+.novita-body { padding:22px 24px 28px; }
+.novita-body p { font-size:14px; line-height:1.7; color:var(--text); margin-bottom:20px; }
+.btn-novita-ok { width:100%; padding:15px; border:none; border-radius:14px; background:linear-gradient(135deg,#FF6B6B,#d63031); color:white; font-family:inherit; font-size:15px; font-weight:800; cursor:pointer; box-shadow:0 4px 16px rgba(255,107,107,0.4); }
+#bloccoScreen { display:none; position:fixed; inset:0; background:linear-gradient(135deg,#c0392b,#e74c3c); z-index:999999; align-items:center; justify-content:center; flex-direction:column; padding:32px; }
+#bloccoScreen.show { display:flex; }
+.blocco-box { text-align:center; animation:popBlocco 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popBlocco { from{transform:scale(0.5);opacity:0;} to{transform:scale(1);opacity:1;} }
+.blocco-ico { font-size:80px; display:block; margin-bottom:16px; }
+.blocco-tit { font-size:26px; font-weight:900; color:white; margin-bottom:12px; }
+.blocco-msg { font-size:15px; color:rgba(255,255,255,0.9); line-height:1.7; margin-bottom:28px; max-width:300px; margin-left:auto; margin-right:auto; }
+.blocco-ok { background:white; color:#c0392b; border:none; border-radius:24px; padding:14px 40px; font-family:inherit; font-weight:900; font-size:16px; cursor:pointer; }
+
+/* ── NUOVO: Conferma personalizzata (sostituisce il confirm() di sistema) ── */
+#confirmModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:999998; align-items:center; justify-content:center; padding:24px; }
+#confirmModal.show { display:flex; }
+.confirm-card { background:white; border-radius:26px; width:100%; max-width:340px; overflow:hidden; box-shadow:0 24px 70px rgba(0,0,0,0.35); animation:popConfirm 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popConfirm { from{transform:scale(0.75);opacity:0;} to{transform:scale(1);opacity:1;} }
+.confirm-top { padding:28px 20px 22px; text-align:center; transition:background 0.2s; }
+.confirm-top.tema-rosso  { background:linear-gradient(135deg,var(--casa),#d63031); }
+.confirm-top.tema-neutro { background:linear-gradient(135deg,#2d3436,#636e72); }
+.confirm-ico { font-size:42px; display:block; margin-bottom:10px; animation:bounce 0.8s infinite alternate; }
+.confirm-top h3 { color:white; font-size:18px; font-weight:900; }
+.confirm-body { padding:22px 22px 20px; }
+.confirm-body p { font-size:14px; color:var(--text); line-height:1.6; text-align:center; margin-bottom:22px; }
+.confirm-actions { display:flex; gap:10px; }
+.confirm-actions button { flex:1; padding:13px; border:none; border-radius:12px; font-family:inherit; font-weight:800; font-size:14px; cursor:pointer; transition:transform 0.15s; }
+.confirm-actions button:active { transform:scale(0.96); }
+.btn-confirm-annulla { background:var(--text); color:white; }
+.btn-confirm-ok { color:white; }
+.btn-confirm-ok.rosso  { background:linear-gradient(135deg,var(--casa),#d63031); box-shadow:0 4px 14px rgba(255,107,107,0.4); }
+.btn-confirm-ok.neutro { background:linear-gradient(135deg,#2d3436,#636e72); box-shadow:0 4px 14px rgba(45,52,54,0.35); }
+
+/* ── NUOVO: Aggiornamenti luglio 2026 ──────────────────────────── */
+/* 6. Mentre si scrive un ARTICOLO o un PREZZO, la barra dei pulsanti in
+      basso si nasconde per lasciare spazio alla tastiera dello smartphone.
+      SOLO su dispositivi touch (telefoni/tablet, "pointer: coarse"): da
+      computer la tastiera è fisica e non copre lo schermo, quindi la
+      barra resta sempre visibile. */
+@media (pointer: coarse) {
+  body.editing-field .bottom-bar { display:none; }
+}
+
+/* 5. Niente "flash" della schermata di login per chi era già collegato:
+      lo script inline in <head> aggiunge auth-pending e mostriamo subito
+      l'app con lo spinner di caricamento, finché Firebase non risponde */
+html.auth-pending #loginScreen { display:none !important; }
+html.auth-pending #appScreen { display:block; }
+html.auth-pending #loadingOverlay { display:flex; }
+
+/* 12. Icona link cliccabile accanto agli articoli che contengono un URL */
+.link-btn { flex-shrink:0; font-size:16px; text-decoration:none; padding:2px 4px; line-height:1; }
+
+/* 13-bis. Pulsante Scarica Backup (stesso posto e stile che aveva Salva immagine) */
+.btn-backup { flex:1; padding:11px; border:none; border-radius:10px; background:linear-gradient(135deg,#6c5ce7,#a29bfe); color:white; font-family:inherit; font-weight:800; font-size:12px; cursor:pointer; }
+
+/* 13-ter. Schermata "I tuoi Backup" (stesso stile del popup urgenti, tema viola backup) */
+#backupModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:8889; align-items:flex-end; justify-content:center; }
+#backupModal.show { display:flex; }
+.backup-sheet { background:white; border-radius:24px 24px 0 0; padding:0 0 24px; width:100%; max-width:500px; max-height:85vh; overflow-y:auto; animation:slideUp 0.3s ease; }
+.backup-header { background:linear-gradient(135deg,#6c5ce7,#a29bfe); border-radius:24px 24px 0 0; padding:18px 20px 14px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; }
+.backup-header h3 { color:white; font-size:18px; font-weight:900; }
+.backup-header span { color:rgba(255,255,255,0.75); font-size:12px; font-weight:700; }
+.btn-close-backup { background:rgba(255,255,255,0.2); border:none; border-radius:50%; width:32px; height:32px; color:white; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.backup-body { padding:16px 20px 4px; }
+.backup-item { display:flex; align-items:center; gap:10px; padding:12px; background:var(--bg); border-radius:12px; margin-bottom:10px; }
+.backup-item-info { flex:1; min-width:0; }
+.backup-item-data { font-size:14px; font-weight:800; color:var(--text); }
+.backup-item-sub { font-size:11px; color:var(--muted); font-weight:600; margin-top:2px; }
+.btn-ripristina-item { background:linear-gradient(135deg,#6c5ce7,#a29bfe); border:none; border-radius:10px; color:white; font-size:12px; font-weight:800; padding:8px 12px; cursor:pointer; flex-shrink:0; }
+.backup-empty { text-align:center; padding:24px 16px; color:var(--muted); font-size:14px; font-weight:700; line-height:1.6; }
+.backup-footer { padding:4px 20px 0; }
+.btn-backup-file { width:100%; padding:12px; border:2px dashed var(--muted); border-radius:12px; background:white; color:#636e72; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer; }
+
+/* CORREZIONE LUGLIO 2026 (punto 2): scorrimento stabile della lista.
+   Quando si scorre col dito partendo da un articolo (campo di testo, prezzo,
+   foto, pulsanti, icona 🔗), il browser deve SOLO far scorrere la pagina in
+   verticale (touch-action: pan-y): niente selezioni di testo "fantasma" e
+   niente foto o icone che si trascinano insieme al dito. Toccare, scrivere,
+   e la pressione lunga sui pulsanti quantità funzionano come prima. */
+.item-row, .item-row input, .item-row button, .item-row a, .item-row img, .item-row label { touch-action: pan-y; }
+.item-row img, .link-btn, .photo-placeholder { -webkit-user-drag: none; }
+.chk, .del-btn, .qty-wrap, .priority-btn, .photo-placeholder, .item-author, .link-btn { -webkit-user-select: none; user-select: none; }
+/* ── NUOVO LUGLIO 2026: anteprima del contenuto di un file di backup ──
+   Il file scelto con "Apri un file di backup scaricato" NON si apre in
+   programmi esterni: tutto il contenuto viene mostrato qui, dentro l'app,
+   con lo stesso stile viola delle altre schermate di backup. */
+#backupPreviewModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:8890; align-items:flex-end; justify-content:center; }
+#backupPreviewModal.show { display:flex; }
+.bkpv-cat { margin-bottom:18px; }
+.bkpv-cat-title { font-size:13px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid var(--bg); }
+.bkpv-item { display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--bg); border-radius:12px; margin-bottom:8px; }
+.bkpv-stato { flex-shrink:0; font-size:14px; }
+.bkpv-foto { width:34px; height:34px; border-radius:8px; object-fit:cover; flex-shrink:0; cursor:pointer; }
+.bkpv-testo { flex:1; min-width:0; font-size:14px; font-weight:700; color:var(--text); overflow-wrap:anywhere; }
+.bkpv-testo.fatto { text-decoration:line-through; color:var(--muted); }
+.bkpv-qty { background:#6c5ce7; color:white; border-radius:20px; padding:2px 8px; font-size:11px; font-weight:800; flex-shrink:0; }
+.bkpv-prezzo { background:#fff8e1; color:#e65100; border:1.5px solid #ffd54f; border-radius:20px; padding:2px 8px; font-size:11px; font-weight:800; flex-shrink:0; }
+.bkpv-urgente { flex-shrink:0; font-size:12px; }
+.bkpv-totale { text-align:right; font-size:14px; font-weight:900; color:#e65100; background:#fff8e1; border:1.5px solid #ffd54f; border-radius:12px; padding:10px 14px; margin-top:4px; margin-bottom:8px; }
+.btn-ripristina-preview { width:100%; padding:13px; border:none; border-radius:12px; background:linear-gradient(135deg,#6c5ce7,#a29bfe); color:white; font-family:inherit; font-weight:800; font-size:14px; cursor:pointer; }
+
+/* ── NUOVO LUGLIO 2026: cestino backup + niente scorrimento di sfondo ──
+   1) Cestino 🗑️ accanto a ogni copia in "I tuoi Backup": prima di
+      cancellare compare il popup con "Annulla" ed "Elimina definitivamente".
+   2) Mentre una schermata di backup è aperta (elenco o anteprima file),
+      la lista della spesa dietro resta FERMA: niente più scorrimento con
+      la rotellina del mouse o col dito (stessa tecnica del popup copia). */
+.btn-elimina-backup { background:white; border:2px solid #ff7675; border-radius:10px; color:#d63031; font-size:14px; font-weight:800; padding:7px 9px; cursor:pointer; flex-shrink:0; line-height:1; }
+body.backup-modal-open { overflow:hidden; }
+.backup-sheet { overscroll-behavior:contain; }

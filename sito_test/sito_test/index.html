@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Spesa Famiglia">
+<title>Spesa Famiglia</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "6181803b-9cf7-494c-8a8a-d22c6584c065",
+      notifyButton: { enable: false },
+      allowLocalhostAsSecureOrigin: true,
+    });
+  });
+</script>
+<script>
+  // Evita il "flash" della schermata di login per chi era già collegato:
+  // finché Firebase verifica l'accesso mostriamo direttamente l'app in
+  // caricamento (vedi regole html.auth-pending in style.css e main.js).
+  try { if (localStorage.getItem('wasLoggedIn')) document.documentElement.classList.add('auth-pending'); } catch (e) {}
+</script>
+</head>
+<body>
+
+<!-- OFFLINE BANNER -->
+<div id="offlineBanner">📡 Sei offline — Le modifiche si sincronizzeranno al ritorno della rete</div>
+<div id="limitedBanner">🐢 Connessione limitata — aggiornamento ogni 20s invece che in tempo reale</div>
+
+<!-- LOGIN SCREEN — visibile di default mentre Firebase inizializza -->
+<div id="loginScreen" style="display:flex">
+  <h1>🛒 Spesa Famiglia</h1>
+  <p>Lista della spesa condivisa in tempo reale</p>
+  <div class="login-card">
+    <h2>Benvenuto!</h2>
+    <p>Accedi con il tuo account per vedere e modificare la lista della spesa con tutta la famiglia.</p>
+    <div id="loginButtons">
+      <button class="btn-google" onclick="loginGoogle()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Accedi con Google
+      </button>
+      <button class="btn-google" style="background:#4B5EFC;border-color:#4B5EFC;color:white;margin-bottom:12px;" onclick="showEmailForm('virgilio')">✉️ Accedi con Virgilio</button>
+      <button class="btn-google" style="background:#6001D2;border-color:#6001D2;color:white;margin-bottom:12px;" onclick="showEmailForm('yahoo')">🔶 Accedi con Yahoo</button>
+      <button class="btn-google" style="background:#E40046;border-color:#E40046;color:white;" onclick="showEmailForm('libero')">📧 Accedi con Libero</button>
+    </div>
+    <div class="login-form" id="emailForm">
+      <h3 id="emailFormTitle" style="font-size:16px;font-weight:800;margin-bottom:16px;color:var(--text);">Accedi con Email</h3>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="tuaemail@virgilio.it">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="La tua password">
+      </div>
+      <div class="form-error" id="formError"></div>
+      <button class="btn-submit" onclick="loginEmail()">Accedi</button>
+      <button class="btn-back" onclick="hideEmailForm()">← Indietro</button>
+    </div>
+    <div class="login-note">Solo chi ha il link può accedere.<br>I tuoi dati sono al sicuro.</div>
+    <div class="countdown-wrap">
+      <div class="countdown-label">🚀 Prossimo aggiornamento</div>
+      <div class="countdown-boxes">
+        <div class="cd-box"><span class="cd-num" id="cd-giorni">00</span><span class="cd-unit">Giorni</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><span class="cd-num" id="cd-ore">00</span><span class="cd-unit">Ore</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><span class="cd-num" id="cd-min">00</span><span class="cd-unit">Min</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><span class="cd-num" id="cd-sec">00</span><span class="cd-unit">Sec</span></div>
+      </div>
+      <div class="countdown-sub" id="cd-sub">🧮 Tenere il conto non sarà mai stato così facile...</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="appScreen">
+  <div id="loadingOverlay"><div class="spinner"></div><p id="loadingMsg">Caricamento lista...</p></div>
+  <div id="zoom" onclick="closeZoom()"><img id="zoomImg" src="" alt=""></div>
+
+  <div id="copyModal" onclick="closeCopyModal(event)">
+    <div class="copy-sheet">
+      <h3>📋 Copia Lista della Spesa</h3>
+      <div class="copy-preview" id="copyPreview"></div>
+      <div class="copy-actions">
+        <button class="btn-cancel" onclick="closeCopyModal()">Annulla</button>
+        <button class="btn-do-copy" onclick="doCopy()">Copia testo</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <div id="bloccoScreen" onclick="chiudiBlocco()">
+    <div class="blocco-box">
+      <span class="blocco-ico" id="bloccoIco">🚫</span>
+      <div class="blocco-tit" id="bloccoTit">Non permesso!</div>
+      <div class="blocco-msg" id="bloccoMsg">Testo non consentito.</div>
+      <button class="blocco-ok" onclick="chiudiBlocco()">Ho capito ✓</button>
+    </div>
+  </div>
+
+  <div id="confirmModal" onclick="closeCustomConfirm(event)">
+    <div class="confirm-card" onclick="event.stopPropagation()">
+      <div class="confirm-top tema-rosso" id="confirmTop">
+        <span class="confirm-ico" id="confirmIco">🗑️</span>
+        <h3 id="confirmTitle">Conferma</h3>
+      </div>
+      <div class="confirm-body">
+        <p id="confirmMsg"></p>
+        <div class="confirm-actions">
+          <button class="btn-confirm-annulla" onclick="respondConfirm(false)">Annulla</button>
+          <button class="btn-confirm-ok rosso" id="confirmOkBtn" onclick="respondConfirm(true)">Conferma</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="novitaScreen">
+    <div class="novita-card">
+      <div class="novita-top">
+        <div class="confetti" id="confettiContainer"></div>
+        <div style="font-size:44px;margin-bottom:8px;animation:bounce 0.8s infinite alternate;">💰🎉✨</div>
+        <h2>🆕 Novità!</h2>
+        <p>🗓️ Aggiornamento del 1° luglio 2026 🎊</p>
+      </div>
+      <div class="novita-body">
+        <p>💰✨ <strong>Aggiunta Prezzi e Calcolo Automatico del Totale</strong> 🎉🛒<br><br>
+        Questa funzione è stata richiesta da un utente della famiglia 👨‍👩‍👧‍👦🌟 ed è ora disponibile per tutti!<br><br>
+        Ora puoi inserire il prezzo 💶 di ogni prodotto nella lista. Il sistema <strong>somma automaticamente</strong> tutti i costi e mostra il totale aggiornato in tempo reale ⚡. Se aggiungi 2️⃣ o 3️⃣ unità, il prezzo si moltiplica da solo! 🔢✅</p>
+        <button class="btn-novita-ok" onclick="chiudiNovita()">Fantastico, ho capito! 🚀🎉</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="urgentiModal" onclick="closeUrgentiModal(event)">
+    <div class="urgenti-sheet" onclick="event.stopPropagation()">
+      <div class="urgenti-header">
+        <div><h3>🔴 Articoli Urgenti</h3><span id="urgModalSub">Da acquistare subito</span></div>
+        <button class="btn-close-urg" onclick="closeUrgentiModal()">✕</button>
+      </div>
+      <div class="urgenti-body" id="urgentiBody"></div>
+    </div>
+  </div>
+
+  <div id="backupModal" onclick="closeBackupModal(event)">
+    <div class="backup-sheet" onclick="event.stopPropagation()">
+      <div class="backup-header">
+        <div><h3>📂 I tuoi Backup</h3><span>Copie salvate nell'app — teniamo le ultime 5</span></div>
+        <button class="btn-close-backup" onclick="closeBackupModal()">✕</button>
+      </div>
+      <div class="backup-body" id="backupBody"></div>
+      <div class="backup-footer">
+        <button class="btn-backup-file" onclick="ripristinaDaFile()">📄 Apri un file di backup scaricato</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NUOVO LUGLIO 2026: anteprima del contenuto di un file di backup, dentro l'app -->
+  <div id="backupPreviewModal" onclick="closeBackupPreview(event)">
+    <div class="backup-sheet" onclick="event.stopPropagation()">
+      <div class="backup-header">
+        <div><h3>👁️ Contenuto del Backup</h3><span id="backupPreviewSub"></span></div>
+        <button class="btn-close-backup" onclick="closeBackupPreview()">✕</button>
+      </div>
+      <div class="backup-body" id="backupPreviewBody"></div>
+      <div class="backup-footer">
+        <button class="btn-ripristina-preview" onclick="ripristinaDalPreview()">📂 Ripristina questa lista nell'app</button>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-top">
+      <h1>🛒 Spesa Famiglia</h1>
+      <div class="user-info">
+        <img class="user-avatar" id="userAvatar" src="" alt="">
+        <span class="user-name" id="userName"></span>
+        <button class="btn-logout" onclick="logout()">Esci</button>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <span class="online-badge"><span class="online-dot"></span>In tempo reale</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="syncDot" style="font-size:11px;font-weight:700;opacity:0.85;background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:20px;color:white;">☁️ Sync</span>
+        <span id="familyLabel" style="font-size:11px;font-weight:800;color:#ffeaa7;background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:20px;"></span>
+        <button id="btnSwitchFamily" onclick="switchFamily()" style="display:none;background:linear-gradient(135deg,#6c5ce7,#a29bfe);border:none;border-radius:10px;color:white;font-size:11px;font-weight:800;padding:4px 10px;cursor:pointer;">⇄</button>
+        <button class="btn-urgenti" id="btnUrgenti" onclick="openUrgentiModal()" style="display:none;">🔴 Urgenti <span class="urg-count" id="urgBtnCount">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ERRORE CONNESSIONE -->
+  <div id="connError">
+    <p>⚠️ Connessione lenta o assente.<br>Controlla la tua rete e riprova.</p>
+    <button onclick="reloadApp()">🔄 Ricarica</button>
+    <p id="connErrorDebug"></p>
+  </div>
+
+  <div id="totaleBar" style="display:none">
+    <div>
+      <div class="tot-label">💶 Totale spesa stimato</div>
+      <div class="tot-detail" id="totaleDetail">0 articoli con prezzo</div>
+    </div>
+    <div class="tot-amount">€ <span id="totaleAmount">0,00</span></div>
+  </div>
+
+  <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  <div class="count-row">
+    <span>✅ <span id="doneCount">0</span> completati</span>
+    <span>🔴 <span id="urgCount">0</span> urgenti &nbsp;|&nbsp; Tot: <span id="totCount">0</span></span>
+    <button id="btnCountdown" onclick="toggleCountdownPopup()" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);border:none;border-radius:20px;color:white;font-size:10px;font-weight:800;padding:3px 10px;cursor:pointer;">🚀 Novità</button>
+  </div>
+
+  <div id="countdownPopup" style="display:none;position:fixed;inset:0;z-index:7777;background:rgba(0,0,0,0.5);" onclick="toggleCountdownPopup()">
+    <div onclick="event.stopPropagation()" style="position:absolute;bottom:140px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:380px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:22px;padding:22px 18px 18px;border:1.5px solid rgba(255,255,255,0.1);box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <span style="font-size:12px;font-weight:800;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;">🚀 Prossimo aggiornamento</span>
+        <button onclick="toggleCountdownPopup()" style="background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:26px;height:26px;color:white;font-size:14px;cursor:pointer;">✕</button>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;align-items:center;">
+        <div style="background:rgba(255,255,255,0.07);border-radius:14px;padding:10px 6px 8px;text-align:center;flex:1;border:1px solid rgba(255,255,255,0.1);"><span id="cd-giorni2" style="font-size:28px;font-weight:900;color:#ffeaa7;display:block;">00</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;display:block;margin-top:4px;">Giorni</span></div>
+        <span style="font-size:20px;font-weight:900;color:#ffeaa7;opacity:0.5;margin-bottom:10px;">:</span>
+        <div style="background:rgba(255,255,255,0.07);border-radius:14px;padding:10px 6px 8px;text-align:center;flex:1;border:1px solid rgba(255,255,255,0.1);"><span id="cd-ore2" style="font-size:28px;font-weight:900;color:#ffeaa7;display:block;">00</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;display:block;margin-top:4px;">Ore</span></div>
+        <span style="font-size:20px;font-weight:900;color:#ffeaa7;opacity:0.5;margin-bottom:10px;">:</span>
+        <div style="background:rgba(255,255,255,0.07);border-radius:14px;padding:10px 6px 8px;text-align:center;flex:1;border:1px solid rgba(255,255,255,0.1);"><span id="cd-min2" style="font-size:28px;font-weight:900;color:#ffeaa7;display:block;">00</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;display:block;margin-top:4px;">Min</span></div>
+        <span style="font-size:20px;font-weight:900;color:#ffeaa7;opacity:0.5;margin-bottom:10px;">:</span>
+        <div style="background:rgba(255,255,255,0.07);border-radius:14px;padding:10px 6px 8px;text-align:center;flex:1;border:1px solid rgba(255,255,255,0.1);"><span id="cd-sec2" style="font-size:28px;font-weight:900;color:#ffeaa7;display:block;">00</span><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;display:block;margin-top:4px;">Sec</span></div>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:12px;text-align:center;font-weight:600;">🧮 Tenere il conto non sarà mai stato così facile...</div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabsBar">
+    <button class="tab active" data-i="0" onclick="showTab(0)">🏠 Casa <span class="badge" id="b0">0</span></button>
+    <button class="tab" data-i="1" onclick="showTab(1)">👤 Persona <span class="badge" id="b1">0</span></button>
+    <button class="tab" data-i="2" onclick="showTab(2)">🛒 Alim. <span class="badge" id="b2">0</span></button>
+  </div>
+
+  <div class="panel active" id="panel-0"><ul id="list-0"></ul><button class="add-btn" onclick="addRow(0)">＋ Aggiungi voce</button></div>
+  <div class="panel" id="panel-1"><ul id="list-1"></ul><button class="add-btn" onclick="addRow(1)">＋ Aggiungi voce</button></div>
+  <div class="panel" id="panel-2"><ul id="list-2"></ul><button class="add-btn" onclick="addRow(2)">＋ Aggiungi voce</button></div>
+
+  <div class="all-view" id="allView">
+    <div class="all-section"><div class="sec-title"><div class="dot" style="background:var(--casa)"></div>🏠 Casa</div><ul id="all-0"></ul></div>
+    <div class="all-section"><div class="sec-title"><div class="dot" style="background:var(--persona)"></div>👤 Persona</div><ul id="all-1"></ul></div>
+    <div class="all-section"><div class="sec-title"><div class="dot" style="background:var(--alim)"></div>🛒 Alimentari</div><ul id="all-2"></ul></div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn-view active" id="btnTab" onclick="setView('tab')">Per categoria</button>
+    <button class="btn-view" id="btnAll" onclick="setView('all')">Tutto</button>
+    <button class="btn-clear" onclick="clearDone()">🗑 Fatti</button>
+    <div class="btn-row2">
+      <button class="btn-copy" onclick="openCopyModal()">📋 Copia WhatsApp</button>
+      <button class="btn-copy" style="background:linear-gradient(135deg,#00b894,#00cec9);" onclick="openInvitoModal()">🔗 Genera Link Invito</button>
+    </div>
+    <div class="btn-row2">
+      <button class="btn-backup" onclick="scaricaBackup()">💾 Fai Backup</button>
+      <button class="btn-backup" onclick="ripristinaBackup()">📂 Ripristina Backup</button>
+    </div>
+  </div>
+
+  <!-- MODAL INVITO -->
+  <div id="invitoModal" onclick="closeInvitoModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:8888;align-items:flex-end;justify-content:center;">
+    <div onclick="event.stopPropagation()" style="background:white;border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:500px;">
+      <h3 style="font-size:17px;font-weight:900;margin-bottom:6px;text-align:center;">🔗 Genera Link Invito</h3>
+      <p style="font-size:12px;color:#b2bec3;text-align:center;margin-bottom:20px;font-weight:600;">Chi apre il link dovrà fare login con la sua email. Il link scade dopo 7 giorni.</p>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:13px;font-weight:800;color:#2d3436;display:block;margin-bottom:8px;">Tipo di lista:</label>
+        <div style="display:flex;gap:8px;">
+          <button id="btnTipoFamiglia" onclick="setTipoInvito('famiglia')" style="flex:1;padding:12px 8px;border-radius:12px;border:2.5px solid #00b894;background:#00b894;color:white;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;">👥 Famiglia</button>
+          <button id="btnTipoPrivato" onclick="setTipoInvito('privato')" style="flex:1;padding:12px 8px;border-radius:12px;border:2.5px solid #eee;background:white;color:#636e72;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;">👤 Solo noi due</button>
+        </div>
+        <p id="invitoDesc" style="font-size:12px;color:#636e72;margin-top:10px;font-weight:600;line-height:1.5;">La persona entrerà nella lista della tua famiglia e vedrà tutto.</p>
+      </div>
+      <div id="invitoNomeWrap" style="display:none;margin-bottom:16px;">
+        <label style="font-size:13px;font-weight:800;color:#2d3436;display:block;margin-bottom:6px;">Nome lista privata (es. "Lista con Mario"):</label>
+        <input id="invitoNome" type="text" placeholder="Lista con..." style="width:100%;padding:12px;border:2px solid #eee;border-radius:10px;font-family:inherit;font-size:15px;outline:none;">
+      </div>
+      <div id="invitoRisultato" style="display:none;margin-bottom:16px;">
+        <div style="background:#f0fdf4;border:2px solid #00b894;border-radius:12px;padding:14px;">
+          <p style="font-size:11px;font-weight:800;color:#00b894;margin-bottom:6px;">LINK GENERATO</p>
+          <p id="invitoLinkTesto" style="font-size:13px;font-weight:700;color:#2d3436;word-break:break-all;line-height:1.5;"></p>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="closeInvitoModal()" style="flex:1;padding:13px;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;background:#2d3436;color:white;">Annulla</button>
+        <button id="btnGeneraLink" onclick="generaLink()" style="flex:1;padding:13px;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;background:linear-gradient(135deg,#00b894,#00cec9);color:white;">Genera Link</button>
+        <button id="btnCopiaLink" onclick="copiaLink()" style="display:none;flex:1;padding:13px;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer;background:linear-gradient(135deg,#25D366,#128C7E);color:white;">Copia</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY NOTICE -->
+<div id="privacyNotice">
+  <p>Questa app salva i tuoi dati su Firebase di Google per uso familiare. Nessun dato viene venduto.</p>
+  <button onclick="acceptPrivacy()">Ho capito</button>
+</div>
+
+<div style="text-align:center;padding:12px 16px 140px;font-size:11px;color:#b2bec3;font-weight:600;letter-spacing:0.3px;">
+  © Vincenzo De Giorgio — Creata il 17 maggio 2026 — Tutti i diritti riservati
+</div>
+
+<script src="countdown.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
