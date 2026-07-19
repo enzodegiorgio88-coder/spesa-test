@@ -382,10 +382,20 @@ function updateStats() {
 
   updateTotale();
 
-  const urgBtn   = document.getElementById('btnUrgenti');
-  const urgCount = document.getElementById('urgBtnCount');
-  if (urg.length > 0) { urgBtn.style.display = 'flex'; urgCount.textContent = urg.length; }
-  else                  urgBtn.style.display = 'none';
+  // NUOVO: il pulsante in alto compare anche quando ci sono SOLO articoli
+  // importanti (e diventa arancione); se c'è almeno un urgente resta
+  // rosso e conta gli urgenti, come prima.
+  const imp    = all.filter(r => r.important && !r.done);
+  const urgBtn = document.getElementById('btnUrgenti');
+  if (urg.length || imp.length) {
+    const rosso = urg.length > 0;
+    urgBtn.style.display = 'flex';
+    urgBtn.classList.toggle('importanti', !rosso);
+    urgBtn.innerHTML = (rosso ? '🔴 Urgenti ' : '🟠 Importanti ')
+      + `<span class="urg-count" id="urgBtnCount">${rosso ? urg.length : imp.length}</span>`;
+  } else {
+    urgBtn.style.display = 'none';
+  }
 }
 
 // ── UI ─────────────────────────────────────────────

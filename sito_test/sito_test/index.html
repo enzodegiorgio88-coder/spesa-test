@@ -130,15 +130,17 @@
     <div class="novita-card">
       <div class="novita-top">
         <div class="confetti" id="confettiContainer"></div>
-        <div style="font-size:44px;margin-bottom:8px;animation:bounce 0.8s infinite alternate;">💰🎉✨</div>
-        <h2>🆕 Novità!</h2>
-        <p>🗓️ Aggiornamento del 1° luglio 2026 🎊</p>
+        <div style="font-size:44px;margin-bottom:8px;animation:bounce 0.8s infinite alternate;">🟠🔴🎉✨</div>
+        <h2>🆕 Grandi Novità!</h2>
+        <p>🗓️ Aggiornamento del 19 luglio 2026 🎊</p>
       </div>
       <div class="novita-body">
-        <p>💰✨ <strong>Aggiunta Prezzi e Calcolo Automatico del Totale</strong> 🎉🛒<br><br>
-        Questa funzione è stata richiesta da un utente della famiglia 👨‍👩‍👧‍👦🌟 ed è ora disponibile per tutti!<br><br>
-        Ora puoi inserire il prezzo 💶 di ogni prodotto nella lista. Il sistema <strong>somma automaticamente</strong> tutti i costi e mostra il totale aggiornato in tempo reale ⚡. Se aggiungi 2️⃣ o 3️⃣ unità, il prezzo si moltiplica da solo! 🔢✅</p>
-        <button class="btn-novita-ok" onclick="chiudiNovita()">Fantastico, ho capito! 🚀🎉</button>
+        <div class="novita-item">🟠 <strong>Nuova priorità "Importante"</strong> — per le cose da non dimenticare! Ora ogni articolo può essere ⚪ Normale, 🟠 Importante o 🔴 Urgente 🎯</div>
+        <div class="novita-item">🎛️ <strong>Tendina con le spiegazioni</strong> — tocca il pallino sull'articolo: si apre un menu elegante che ti dice a cosa serve ogni scelta 💡✨</div>
+        <div class="novita-item">🔝 <strong>Pulsante in alto rinnovato</strong> — mostra sia gli Urgenti 🔴 sia gli Importanti 🟠, e con la tendina passi dall'uno all'altro in un tocco ⚡</div>
+        <div class="novita-item">💬 <strong>Copia WhatsApp più chiara</strong> — gli Importanti hanno il loro 🟠 e la sezione "DA NON DIMENTICARE" in fondo alla lista 📝</div>
+        <div class="novita-item">📂 <strong>Backup superpotenti</strong> — anteprima del contenuto direttamente nell'app 👀 e cestino 🗑️ per eliminare le copie che non servono più!</div>
+        <button class="btn-novita-ok" onclick="chiudiNovita()">Wow, tutto chiaro! 🚀🎉✨</button>
       </div>
     </div>
   </div>
@@ -146,8 +148,19 @@
   <div id="urgentiModal" onclick="closeUrgentiModal(event)">
     <div class="urgenti-sheet" onclick="event.stopPropagation()">
       <div class="urgenti-header">
-        <div><h3>🔴 Articoli Urgenti</h3><span id="urgModalSub">Da acquistare subito</span></div>
-        <button class="btn-close-urg" onclick="closeUrgentiModal()">✕</button>
+        <div><h3 id="urgModalTitle">🔴 Articoli Urgenti</h3><span id="urgModalSub">Da acquistare subito</span></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <!-- NUOVO: tendina per passare dagli Urgenti agli Importanti,
+               stessa grafica e stesse didascalie del menu priorità -->
+          <div class="prio-wrap">
+            <button type="button" class="urg-filtro" id="btnUrgFiltro" onclick="toggleUrgFiltro(event)">🔴 Urgenti ▾</button>
+            <div class="prio-menu" id="urgFiltroMenu">
+              <button type="button" class="prio-option" onclick="setUrgFiltro('urgente')"><span class="prio-name">🔴 Urgenti</span><span class="prio-desc">Serve subito: avvisa tutta la famiglia con una notifica.</span></button>
+              <button type="button" class="prio-option" onclick="setUrgFiltro('importante')"><span class="prio-name">🟠 Importanti</span><span class="prio-desc">Da non dimenticare: mettilo nel carrello alla prossima spesa.</span></button>
+            </div>
+          </div>
+          <button class="btn-close-urg" onclick="closeUrgentiModal()">✕</button>
+        </div>
       </div>
       <div class="urgenti-body" id="urgentiBody"></div>
     </div>

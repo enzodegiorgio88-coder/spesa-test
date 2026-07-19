@@ -10,6 +10,7 @@ function buildListText() {
   const oggi  = new Date().toLocaleDateString('it-IT');
   const lines = [`🛒 *LISTA DELLA SPESA* — ${oggi}\n`];
   const urgenti = [];
+  const importanti = [];   // NUOVO: come gli urgenti, sezione dedicata in fondo
   let has = false;
   let totale = 0;
   // Formato importi: "2,50 €"
@@ -21,7 +22,7 @@ function buildListText() {
     has = true;
     lines.push('\n' + ['🏠','👤','🛒'][c] + ` *${LABELS[c]}*`, '─────────────────');
     items.forEach(r => {
-      const flag = r.urgent && !r.done ? ' 🔴' : '';
+      const flag = r.urgent && !r.done ? ' 🔴' : (r.important && !r.done ? ' 🟠' : '');
       const p    = parseFloat(r.price);
       // Sempre chiari prezzo unitario, quantità e totale:
       //  - prezzo e quantità > 1  → "2,00 € × 2 = 4,00 €"
@@ -34,10 +35,14 @@ function buildListText() {
       if (p > 0) totale += p * (r.qty || 1);
       lines.push((r.done ? '✅' : '⬜') + ' ' + r.text + dettagli + flag);
       if (r.urgent && !r.done) urgenti.push(r.text + dettagli);
+      if (r.important && !r.done) importanti.push(r.text + dettagli);
     });
   }
   if (!has) return null;
   if (urgenti.length) { lines.push('\n⚠️ *DA PRENDERE PER FORZA:*'); urgenti.forEach(u => lines.push('🔴 ' + u)); }
+  // NUOVO: gli importanti hanno la loro sezione, come gli urgenti. Il
+  // formato dei prezzi (unitario × quantità = totale) resta IDENTICO.
+  if (importanti.length) { lines.push('\n🟠 *DA NON DIMENTICARE:*'); importanti.forEach(u => lines.push('🟠 ' + u)); }
   if (totale > 0) lines.push('\n💶 *Totale stimato: ' + fmtE(totale) + '*');
   return lines.join('\n');
 }

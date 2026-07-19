@@ -35,7 +35,7 @@ export const provider    = new GoogleAuthProvider();
 // Stesso progetto Firebase, dati completamente separati. Tutti i
 // percorsi qui sotto si costruiscono DA SOLI in base a questa scelta:
 // non va toccato nient'altro in nessun altro file.
-export const IS_TEST = true;   // ← QUESTA COPIA: SITO DI TEST (nodi *_test)
+export const IS_TEST = false;  // ← QUESTA COPIA: SITO UFFICIALE (nodi puliti: spesa, membri, inviti...)
 
 // Suffisso dei percorsi: '_test' nella versione di test, niente in quella ufficiale.
 const T = IS_TEST ? '_test' : '';
@@ -52,7 +52,7 @@ export const STORAGE_PREFIX  = 'famiglie' + T;                // cartella foto s
 export const LABELS           = ['Casa', 'Persona', 'Alimentari'];
 export const COLORS           = ['#FF6B6B', '#4ECDC4', '#45B7D1'];
 export const NOVITA_RELEASE   = new Date('2026-07-01T00:00:00');
-export const NOVITA_KEY       = 'novita_v4_prezzi_visto';
+export const NOVITA_KEY       = 'novita_v5_priorita_visto';
 export const INVITE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
 export const MIN_ROWS         = 15;
 
