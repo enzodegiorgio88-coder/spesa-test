@@ -181,7 +181,7 @@ function buildQtyWrap(col, i, item) {
 const PRIORITA = [
   { val: 'normale',    txt: '⚪ Normale',    desc: 'Senza fretta: si prende al solito giro di spesa.' },
   { val: 'importante', txt: '🟠 Importante', desc: 'Da non dimenticare: mettilo nel carrello alla prossima spesa.' },
-  { val: 'urgente',    txt: '🔴 Urgente',    desc: 'Serve subito: avvisa tutta la famiglia.' }
+  { val: 'urgente',    txt: '🔴 Urgente',    desc: 'Serve subito: avvisa tutta la famiglia con una notifica.' }
 ];
 
 // Un solo menu aperto alla volta: un tocco fuori li chiude tutti.
@@ -189,6 +189,11 @@ document.addEventListener('click', (e) => {
   if (!e.target.closest('.prio-wrap'))
     document.querySelectorAll('.prio-menu.show').forEach(m => m.classList.remove('show'));
 });
+// Scorrendo la pagina il menu si chiude: essendo ancorato allo schermo
+// (position:fixed) non può "seguire" la propria riga durante lo scroll.
+window.addEventListener('scroll', () => {
+  document.querySelectorAll('.prio-menu.show').forEach(m => m.classList.remove('show'));
+}, { passive: true });
 
 function buildPriorityMenu(col, i, item) {
   const wrap = document.createElement('div'); wrap.className = 'prio-wrap';
@@ -225,7 +230,16 @@ function buildPriorityMenu(col, i, item) {
     ev.stopPropagation();
     const eraAperto = menu.classList.contains('show');
     document.querySelectorAll('.prio-menu.show').forEach(m => m.classList.remove('show'));
-    if (!eraAperto) menu.classList.add('show');
+    if (eraAperto) return;
+    menu.classList.add('show');
+    // NUOVO: il menu è centrato sullo schermo (vedi .prio-menu nel CSS),
+    // qui decidiamo solo l'altezza: subito sotto il pulsante; se verso il
+    // basso non c'è spazio, si apre sopra. Così non viene mai tagliato.
+    const r = btn.getBoundingClientRect();
+    let top = r.bottom + 6;
+    if (top + menu.offsetHeight > window.innerHeight - 8)
+      top = Math.max(8, r.top - menu.offsetHeight - 6);
+    menu.style.top = top + 'px';
   };
 
   wrap.append(btn, menu);

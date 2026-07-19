@@ -317,7 +317,12 @@ body.sito-test #testBadge { display:block; background:repeating-linear-gradient(
    sul COMPUTER compare solo passando il mouse sopra la voce; sul
    TELEFONO (dove il mouse non c'è) resta sempre visibile nel menu. */
 .prio-wrap { position:relative; display:inline-block; }
-.prio-menu { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9000; background:white; border:1px solid #eee; border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,0.35); width:calc(100% - 48px); max-width:320px; padding:6px; }
+/* CORREZIONE: il menu ora è ancorato allo SCHERMO e centrato in orizzontale
+   (prima era attaccato al pulsante e sui telefoni usciva dal bordo destro,
+   tagliando le didascalie). L'altezza gliela dà list.js: sotto il pulsante,
+   o sopra se in basso non c'è spazio. La larghezza non supera mai lo schermo. */
+.prio-menu { display:none; position:fixed; left:50%; transform:translateX(-50%); z-index:9000; background:white; border:1px solid #eee; border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,0.18); width:min(300px, calc(100vw - 28px)); padding:6px; }
+.prio-menu.show { display:block; }
 .prio-option { display:block; width:100%; text-align:left; background:none; border:none; border-radius:10px; padding:9px 10px; font-family:inherit; cursor:pointer; }
 .prio-option + .prio-option { margin-top:2px; }
 .prio-option:hover { background:var(--bg); }
