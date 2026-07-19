@@ -181,7 +181,7 @@ function buildQtyWrap(col, i, item) {
 const PRIORITA = [
   { val: 'normale',    txt: '⚪ Normale',    desc: 'Senza fretta: si prende al solito giro di spesa.' },
   { val: 'importante', txt: '🟠 Importante', desc: 'Da non dimenticare: mettilo nel carrello alla prossima spesa.' },
-  { val: 'urgente',    txt: '🔴 Urgente',    desc: 'Serve subito: avvisa tutta la famiglia con una notifica.' }
+  { val: 'urgente',    txt: '🔴 Urgente',    desc: 'Serve subito: avvisa tutta la famiglia.' }
 ];
 
 // Un solo menu aperto alla volta: un tocco fuori li chiude tutti.
