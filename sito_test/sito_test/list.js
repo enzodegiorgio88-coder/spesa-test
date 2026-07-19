@@ -171,36 +171,65 @@ function buildQtyWrap(col, i, item) {
   return wrap;
 }
 
-// NUOVO: tendina priorità al posto del vecchio pulsante Urgente.
-// Un solo stato alla volta: ⚪ Normale, 🟠 Importante o 🔴 Urgente.
-// È una <select> vera: sugli smartphone si apre il comodo menu di
-// sistema. La notifica push alla famiglia parte SOLO quando si sceglie
-// Urgente, come prima; Importante è un promemoria visivo, senza notifica.
-function buildPrioritySelect(col, i, item) {
-  const sel = document.createElement('select');
-  sel.className = 'priority-select'
-    + (item.urgent ? ' urgente' : item.important ? ' importante' : '');
-  [
-    { val: 'normale',    txt: '⚪ Normale'    },
-    { val: 'importante', txt: '🟠 Importante' },
-    { val: 'urgente',    txt: '🔴 Urgente'    }
-  ].forEach(s => {
-    const o = document.createElement('option');
-    o.value = s.val; o.textContent = s.txt;
-    sel.appendChild(o);
+// NUOVO: menu priorità personalizzato, IDENTICO su telefono e computer.
+// La <select> nativa sugli smartphone apriva la finestra di sistema
+// (grande e diversa dal resto dell'app): ora il menu è disegnato da noi,
+// nello stile dell'app, con le tre scelte e una piccola didascalia d'uso
+// per ciascuna. Sul computer la didascalia compare SOLO passandoci sopra
+// col mouse; sul telefono, dove il mouse non c'è, resta sempre visibile
+// dentro il menu (vedi le regole .prio-desc in style.css).
+const PRIORITA = [
+  { val: 'normale',    txt: '⚪ Normale',    desc: 'Senza fretta: si prende al solito giro di spesa.' },
+  { val: 'importante', txt: '🟠 Importante', desc: 'Da non dimenticare: mettilo nel carrello alla prossima spesa.' },
+  { val: 'urgente',    txt: '🔴 Urgente',    desc: 'Serve subito: avvisa tutta la famiglia con una notifica.' }
+];
+
+// Un solo menu aperto alla volta: un tocco fuori li chiude tutti.
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.prio-wrap'))
+    document.querySelectorAll('.prio-menu.show').forEach(m => m.classList.remove('show'));
+});
+
+function buildPriorityMenu(col, i, item) {
+  const wrap = document.createElement('div'); wrap.className = 'prio-wrap';
+  const cur  = item.urgent ? 'urgente' : (item.important ? 'importante' : 'normale');
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'priority-select'
+    + (cur === 'urgente' ? ' urgente' : cur === 'importante' ? ' importante' : '');
+  btn.textContent = PRIORITA.find(s => s.val === cur).txt + ' ▾';
+
+  const menu = document.createElement('div'); menu.className = 'prio-menu';
+  PRIORITA.forEach(s => {
+    const opt = document.createElement('button');
+    opt.type = 'button';
+    opt.className = 'prio-option' + (s.val === cur ? ' attiva' : '');
+    const nome = document.createElement('span'); nome.className = 'prio-name'; nome.textContent = s.txt;
+    const desc = document.createElement('span'); desc.className = 'prio-desc'; desc.textContent = s.desc;
+    opt.append(nome, desc);
+    opt.onclick = (ev) => {
+      ev.stopPropagation();
+      state.data[col][i].urgent    = s.val === 'urgente';
+      state.data[col][i].important = s.val === 'importante';
+      const label = s.val === 'urgente' ? 'urgente' : s.val === 'importante' ? 'importante' : 'tornato normale';
+      pushAction(col, i, label + ' da ' + state.currentUserName);
+      if (s.val === 'urgente' && state.data[col][i].text.trim())
+        inviaNotificaUrgente(state.data[col][i].text, state.currentUserName);
+      saveToFirebase(); renderRow(col, i); updateStats();
+    };
+    menu.appendChild(opt);
   });
-  sel.value = item.urgent ? 'urgente' : (item.important ? 'importante' : 'normale');
-  sel.onchange = () => {
-    const v = sel.value;
-    state.data[col][i].urgent    = v === 'urgente';
-    state.data[col][i].important = v === 'importante';
-    const label = v === 'urgente' ? 'urgente' : v === 'importante' ? 'importante' : 'tornato normale';
-    pushAction(col, i, label + ' da ' + state.currentUserName);
-    if (v === 'urgente' && state.data[col][i].text.trim())
-      inviaNotificaUrgente(state.data[col][i].text, state.currentUserName);
-    saveToFirebase(); renderRow(col, i); updateStats();
+
+  btn.onclick = (ev) => {
+    ev.stopPropagation();
+    const eraAperto = menu.classList.contains('show');
+    document.querySelectorAll('.prio-menu.show').forEach(m => m.classList.remove('show'));
+    if (!eraAperto) menu.classList.add('show');
   };
-  return sel;
+
+  wrap.append(btn, menu);
+  return wrap;
 }
 
 function buildPriceWrap(col, i, item) {
@@ -261,7 +290,7 @@ function buildRowHeader(col, i, item) {
 
 function buildRowExtra(col, i, item) {
   const extra = document.createElement('div'); extra.className = 'item-extra';
-  extra.append(buildQtyWrap(col, i, item), buildPrioritySelect(col, i, item));
+  extra.append(buildQtyWrap(col, i, item), buildPriorityMenu(col, i, item));
   if (new Date() >= NOVITA_RELEASE) extra.appendChild(buildPriceWrap(col, i, item));
   return extra;
 }
