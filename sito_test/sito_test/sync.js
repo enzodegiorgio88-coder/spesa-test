@@ -37,6 +37,7 @@ function parseSnapshotData(val) {
     photo:      r.photo      || null,
     qty:        r.qty        || 1,
     urgent:     !!r.urgent,
+    important:  !!r.important,
     lastAction: r.lastAction || '',
     actions:    r.actions    || [],
     price:      r.price      || ''
@@ -189,7 +190,7 @@ async function doSave() {
     _saveId: saveId,
     lista: state.data.map(col => col.map(r => ({
       text: r.text || '', done: !!r.done, photo: r.photo || null,
-      qty: r.qty || 1, urgent: !!r.urgent,
+      qty: r.qty || 1, urgent: !!r.urgent, important: !!r.important,
       lastAction: r.lastAction || '', actions: r.actions || [], price: r.price || ''
     })))
   };

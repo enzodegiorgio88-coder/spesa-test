@@ -171,17 +171,36 @@ function buildQtyWrap(col, i, item) {
   return wrap;
 }
 
-function buildPriorityBtn(col, i, item) {
-  const btn = document.createElement('button');
-  btn.className = `priority-btn${item.urgent ? ' urgent' : ''}`;
-  btn.textContent = item.urgent ? '🔴 Urgente' : '⚪ Normale';
-  btn.onclick = () => {
-    state.data[col][i].urgent = !state.data[col][i].urgent;
-    pushAction(col, i, (state.data[col][i].urgent ? 'urgente' : 'tolto urgente') + ' da ' + state.currentUserName);
-    if (state.data[col][i].urgent && state.data[col][i].text.trim()) inviaNotificaUrgente(state.data[col][i].text, state.currentUserName);
+// NUOVO: tendina priorità al posto del vecchio pulsante Urgente.
+// Un solo stato alla volta: ⚪ Normale, 🟠 Importante o 🔴 Urgente.
+// È una <select> vera: sugli smartphone si apre il comodo menu di
+// sistema. La notifica push alla famiglia parte SOLO quando si sceglie
+// Urgente, come prima; Importante è un promemoria visivo, senza notifica.
+function buildPrioritySelect(col, i, item) {
+  const sel = document.createElement('select');
+  sel.className = 'priority-select'
+    + (item.urgent ? ' urgente' : item.important ? ' importante' : '');
+  [
+    { val: 'normale',    txt: '⚪ Normale'    },
+    { val: 'importante', txt: '🟠 Importante' },
+    { val: 'urgente',    txt: '🔴 Urgente'    }
+  ].forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.val; o.textContent = s.txt;
+    sel.appendChild(o);
+  });
+  sel.value = item.urgent ? 'urgente' : (item.important ? 'importante' : 'normale');
+  sel.onchange = () => {
+    const v = sel.value;
+    state.data[col][i].urgent    = v === 'urgente';
+    state.data[col][i].important = v === 'importante';
+    const label = v === 'urgente' ? 'urgente' : v === 'importante' ? 'importante' : 'tornato normale';
+    pushAction(col, i, label + ' da ' + state.currentUserName);
+    if (v === 'urgente' && state.data[col][i].text.trim())
+      inviaNotificaUrgente(state.data[col][i].text, state.currentUserName);
     saveToFirebase(); renderRow(col, i); updateStats();
   };
-  return btn;
+  return sel;
 }
 
 function buildPriceWrap(col, i, item) {
@@ -242,14 +261,15 @@ function buildRowHeader(col, i, item) {
 
 function buildRowExtra(col, i, item) {
   const extra = document.createElement('div'); extra.className = 'item-extra';
-  extra.append(buildQtyWrap(col, i, item), buildPriorityBtn(col, i, item));
+  extra.append(buildQtyWrap(col, i, item), buildPrioritySelect(col, i, item));
   if (new Date() >= NOVITA_RELEASE) extra.appendChild(buildPriceWrap(col, i, item));
   return extra;
 }
 
 function makeRow(col, i, item) {
   const li = document.createElement('li');
-  li.className = `item-row${item.urgent && !item.done ? ' urgent' : ''}`;
+  li.className = `item-row${item.urgent && !item.done ? ' urgent'
+                          : item.important && !item.done ? ' important' : ''}`;
   li.dataset.col = col;
   li.dataset.idx = i;
   li.append(buildRowHeader(col, i, item), buildRowExtra(col, i, item));

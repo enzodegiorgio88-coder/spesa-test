@@ -55,6 +55,7 @@ function normalizzaListaBackup(lista) {
         photo:      r.photo      || null,
         qty:        r.qty        || 1,
         urgent:     !!r.urgent,
+        important:  !!r.important,
         lastAction: r.lastAction || '',
         actions:    r.actions    || [],
         price:      r.price      || ''
@@ -329,6 +330,11 @@ function buildAnteprimaRiga(r) {
     const u = document.createElement('span'); u.className = 'bkpv-urgente';
     u.textContent = '🔴';
     row.appendChild(u);
+  }
+  if (r.important && !r.done) {
+    const im = document.createElement('span'); im.className = 'bkpv-urgente';
+    im.textContent = '🟠';
+    row.appendChild(im);
   }
   return row;
 }

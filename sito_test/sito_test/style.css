@@ -301,3 +301,12 @@ body.backup-modal-open { overflow:hidden; }
    totale. Nella copia ufficiale (IS_TEST = false) resta nascosta. */
 #testBadge { display:none; }
 body.sito-test #testBadge { display:block; background:repeating-linear-gradient(45deg,#fdcb6e,#fdcb6e 14px,#e17055 14px,#e17055 28px); color:#2d3436; text-align:center; font-size:12px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; padding:7px 10px; border-bottom:2px solid #d63031; text-shadow:0 1px 0 rgba(255,255,255,0.35); }
+
+/* ── NUOVO: tendina priorità (⚪ Normale / 🟠 Importante / 🔴 Urgente) ──
+   Sostituisce il vecchio pulsante Urgente: una sola tendina con i tre
+   stati, uno alla volta. Importante ha il suo colore ambra/arancione,
+   ben diverso dal rosso di Urgente; la riga si evidenzia di conseguenza. */
+.priority-select { appearance:none; -webkit-appearance:none; background:white; border:2px solid var(--muted); border-radius:20px; padding:3px 10px; font-family:inherit; font-size:11px; font-weight:800; color:var(--muted); cursor:pointer; outline:none; }
+.priority-select.importante { background:#f39c12; border-color:#f39c12; color:white; }
+.priority-select.urgente    { background:var(--casa); border-color:var(--casa); color:white; }
+.item-row.important { background:linear-gradient(90deg,rgba(243,156,18,0.08),transparent); border-left:3px solid #f39c12; padding-left:14px; margin-left:-4px; }

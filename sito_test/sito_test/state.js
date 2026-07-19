@@ -35,7 +35,7 @@ export const state = {
 
 export const emptyRow = () => ({
   text: '', done: false, photo: null, qty: 1,
-  urgent: false, lastAction: '', actions: [], price: ''
+  urgent: false, important: false, lastAction: '', actions: [], price: ''
 });
 
 export const ensureRows = (col) => {
