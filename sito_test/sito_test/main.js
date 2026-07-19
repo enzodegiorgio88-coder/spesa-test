@@ -7,7 +7,7 @@
 import { onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-import { auth } from './config.js';
+import { auth, IS_TEST } from './config.js';
 import { state } from './state.js';
 import { loadUserConfig, saveUserEmailConfig, handleRedirect } from './auth.js';
 import { processInvito, updateFamilyButton, registraMembro, checkInvitoParam } from './family.js';
@@ -85,6 +85,16 @@ async function setupApp(user) {
 }
 
 // ── AVVIO ──────────────────────────────────────────
+
+// Banner "SITO DI TEST": solo nella copia di test (IS_TEST = true in
+// config.js) il badge in cima alla pagina diventa visibile e il titolo
+// della scheda del browser viene marcato con 🧪 TEST, così le due copie
+// del sito non si confondono mai, nemmeno tra le schede aperte. Nella
+// copia ufficiale (IS_TEST = false) non compare niente di tutto questo.
+if (IS_TEST) {
+  document.body.classList.add('sito-test');
+  document.title = '🧪 TEST — ' + document.title;
+}
 
 checkInvitoParam();
 handleRedirect();
