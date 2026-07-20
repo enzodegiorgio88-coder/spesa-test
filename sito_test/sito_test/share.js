@@ -47,10 +47,35 @@ function buildListText() {
   return lines.join('\n');
 }
 
+// ─────────────────────────────────────────────────────────────
+// CORREZIONE luglio 2026: nell'anteprima del popup vogliamo vedere
+// il vero GRASSETTO (senza asterischi), ma negli appunti dobbiamo
+// comunque copiare il testo CON gli asterischi, perché è così che
+// WhatsApp capisce cosa mettere in grassetto. Quindi teniamo da
+// parte il testo "originale" e a schermo mostriamo una versione
+// convertita in <b>…</b>.
+// ─────────────────────────────────────────────────────────────
+
+// Testo originale (con asterischi) che finirà negli appunti.
+let testoDaCopiare = '';
+
+// I nomi dei prodotti li scrivi tu a mano: prima rendiamo il testo
+// sicuro per l'HTML (< > &), poi trasformiamo *…* nel grassetto vero.
+function anteprimaConGrassetto(txt) {
+  const sicuro = txt
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  // Ogni coppia di asterischi sulla stessa riga diventa <b>…</b>.
+  return sicuro.replace(/\*([^*\n]+)\*/g, '<b>$1</b>');
+}
+
 window.openCopyModal = () => {
   const text = buildListText();
   if (!text) { showToast('⚠️ La lista è vuota!'); return; }
-  document.getElementById('copyPreview').textContent = text;
+  testoDaCopiare = text;                       // lo conserviamo per la copia (con asterischi)
+  // Nell'anteprima mostriamo il grassetto vero, senza asterischi.
+  document.getElementById('copyPreview').innerHTML = anteprimaConGrassetto(text);
   document.getElementById('copyModal').classList.add('show');
   document.body.classList.add('copy-modal-open');
 };
@@ -63,7 +88,9 @@ window.closeCopyModal = (e) => {
 };
 
 window.doCopy = () => {
-  const text = document.getElementById('copyPreview').textContent;
+  // Copiamo il testo ORIGINALE con gli asterischi (non l'anteprima),
+  // così quando incolli su WhatsApp il grassetto compare dove serve.
+  const text = testoDaCopiare;
   const done = () => { document.getElementById('copyModal').classList.remove('show'); document.body.classList.remove('copy-modal-open'); showToast('✅ Lista copiata!'); };
   if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(() => fbCopy(text, done));
   else fbCopy(text, done);
