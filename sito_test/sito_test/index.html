@@ -2,7 +2,14 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- CORREZIONE LUGLIO 2026: "interactive-widget=resizes-content" dice a
+     Chrome su Android di RESTRINGERE la pagina quando si apre la tastiera,
+     invece di coprirla. Così la barra del totale resta agganciata in alto
+     direttamente dal browser anche mentre scrivi (niente più inseguimento
+     via JavaScript → niente scatti). Su iPhone/Safari l'impostazione viene
+     ignorata e resta tutto come prima. Effetto voluto: a tastiera aperta
+     la barra dei pulsanti in basso sale sopra la tastiera. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Spesa Famiglia">
