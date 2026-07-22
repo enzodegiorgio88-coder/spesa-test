@@ -35,7 +35,7 @@ export const provider    = new GoogleAuthProvider();
 // Stesso progetto Firebase, dati completamente separati. Tutti i
 // percorsi qui sotto si costruiscono DA SOLI in base a questa scelta:
 // non va toccato nient'altro in nessun altro file.
-export const IS_TEST = false;  // ← QUESTA COPIA: SITO UFFICIALE (nodi puliti: spesa, membri, inviti...)
+export const IS_TEST = true;  // ← QUESTA COPIA: SITO UFFICIALE (nodi puliti: spesa, membri, inviti...)
 
 // Suffisso dei percorsi: '_test' nella versione di test, niente in quella ufficiale.
 const T = IS_TEST ? '_test' : '';
