@@ -53,6 +53,17 @@ export const LABELS           = ['Casa', 'Persona', 'Alimentari'];
 export const COLORS           = ['#FF6B6B', '#4ECDC4', '#45B7D1'];
 export const NOVITA_RELEASE   = new Date('2026-07-01T00:00:00');
 export const NOVITA_KEY       = 'novita_v5_priorita_visto';
+
+export const NOVITA_RELEASE   = new Date('2026-07-01T00:00:00');
+export const NOVITA_KEY       = 'novita_v5_priorita_visto';
+
+// ── NUOVO LUGLIO 2026: popup "Sono in vacanza" ─────
+// Per le PROSSIME vacanze basta cambiare QUESTE DUE date: giorni nel
+// messaggio, periodo di comparsa e "già visto" si aggiornano DA SOLI.
+// Il popup compare dalle 00:00 di VACANZA_INIZIO (primo giorno di
+// vacanza) e sparisce alle 00:00 di VACANZA_FINE (giorno del ritorno).
+export const VACANZA_INIZIO = new Date('2026-07-25T00:00:00');
+export const VACANZA_FINE   = new Date('2026-07-28T00:00:00');
 export const INVITE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
 export const MIN_ROWS         = 15;
 

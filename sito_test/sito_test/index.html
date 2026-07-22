@@ -152,6 +152,28 @@
     </div>
   </div>
 
+   <!-- NUOVO LUGLIO 2026: popup "Sono in vacanza". Compare da solo, solo nel
+       periodo impostato in config.js (VACANZA_INIZIO → VACANZA_FINE), una
+       volta sola per dispositivo, come le Novità. I giorni nelle frasi
+       vengono riempiti automaticamente da novita.js in base alle date. -->
+  <div id="vacanzaScreen">
+    <div class="novita-card">
+      <div class="novita-top vacanza-top">
+        <div class="confetti" id="vacConfettiContainer"></div>
+        <div style="font-size:44px;margin-bottom:8px;animation:bounce 0.8s infinite alternate;">🏖️🌴☀️✈️</div>
+        <h2>🏝️ Sono in Vacanza! 😎</h2>
+        <p>🗓️ <span id="vacSottotitolo">Da sabato 25 a lunedì 27 luglio 2026</span> 🧳✨</p>
+      </div>
+      <div class="novita-body">
+        <div class="novita-item">👋😄 <strong>Ciao a tutti!</strong> Da <strong id="vacDal">sabato 25</strong> a <strong id="vacAl">lunedì 27 luglio</strong> mi prendo qualche giorno di meritato relax 🌞🍹 Torno <strong id="vacRitorno">martedì 28</strong>! 🎉</div>
+        <div class="novita-item vac-pulse">✅📱 <strong>Tranquilli: l'app resta SEMPRE attiva, 24 ore su 24, 7 giorni su 7!</strong> 🕐💪 Potete continuare a usare la lista, aggiungere articoli, prezzi e foto come sempre 🛒✨</div>
+        <div class="novita-item">⚠️🙏 <strong>Però attenzione:</strong> in questi giorni <strong>non potrò rispondere</strong> a problemi, dubbi, perplessità o domande 😅 Segnatevi tutto: al mio ritorno risponderò a ogni cosa! 🔙💬</div>
+        <div class="novita-item">🌊 Buona spesa a tutti e... a prestissimo! ❤️<br>— <strong>Vincenzo</strong> 😎🍦</div>
+        <button class="btn-novita-ok btn-vacanza-ok" onclick="chiudiVacanza()">Buone vacanze Vincenzo! 🏖️🎉✨</button>
+      </div>
+    </div>
+  </div>
+  
   <div id="urgentiModal" onclick="closeUrgentiModal(event)">
     <div class="urgenti-sheet" onclick="event.stopPropagation()">
       <div class="urgenti-header">
@@ -162,7 +184,7 @@
           <div class="prio-wrap">
             <button type="button" class="urg-filtro" id="btnUrgFiltro" onclick="toggleUrgFiltro(event)">🔴 Urgenti ▾</button>
             <div class="prio-menu" id="urgFiltroMenu">
-              <button type="button" class="prio-option" onclick="setUrgFiltro('urgente')"><span class="prio-name">🔴 Urgenti</span><span class="prio-desc">Serve subito: avvisa tutta la famiglia con una notifica.</span></button>
+              <button type="button" class="prio-option" onclick="setUrgFiltro('urgente')"><span class="prio-name">🔴 Urgenti</span><span class="prio-desc">Serve subito: avvisa tutta la famiglia.</span></button>
               <button type="button" class="prio-option" onclick="setUrgFiltro('importante')"><span class="prio-name">🟠 Importanti</span><span class="prio-desc">Da non dimenticare: mettilo nel carrello alla prossima spesa.</span></button>
             </div>
           </div>
@@ -215,7 +237,16 @@
         <span id="syncDot" style="font-size:11px;font-weight:700;opacity:0.85;background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:20px;color:white;">☁️ Sync</span>
         <span id="familyLabel" style="font-size:11px;font-weight:800;color:#ffeaa7;background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:20px;"></span>
         <button id="btnSwitchFamily" onclick="switchFamily()" style="display:none;background:linear-gradient(135deg,#6c5ce7,#a29bfe);border:none;border-radius:10px;color:white;font-size:11px;font-weight:800;padding:4px 10px;cursor:pointer;">⇄</button>
-        <button class="btn-urgenti" id="btnUrgenti" onclick="openUrgentiModal()" style="display:none;">🔴 Urgenti <span class="urg-count" id="urgBtnCount">0</span></button>
+        <!-- NUOVO: il pulsante è una tendina "Urgenti N ▾" nello stesso stile
+             del menu priorità: scegli Urgenti o Importanti e il popup si apre
+             già sulla vista giusta. I contatori si aggiornano da soli. -->
+        <div class="prio-wrap" id="urgBtnWrap" style="display:none;">
+          <button class="btn-urgenti" id="btnUrgenti" onclick="toggleUrgBtnMenu(event)">🔴 Urgenti <span class="urg-count" id="urgBtnCount">0</span> ▾</button>
+          <div class="prio-menu" id="urgBtnMenu">
+            <button type="button" class="prio-option" onclick="apriUrgenti('urgente')"><span class="prio-name">🔴 Urgenti <span class="urg-badge-menu" id="menuCountUrg">0</span></span><span class="prio-desc">Serve subito: avvisa tutta la famiglia.</span></button>
+            <button type="button" class="prio-option" onclick="apriUrgenti('importante')"><span class="prio-name">🟠 Importanti <span class="urg-badge-menu" id="menuCountImp">0</span></span><span class="prio-desc">Da non dimenticare: mettilo nel carrello alla prossima spesa.</span></button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -227,13 +258,17 @@
     <p id="connErrorDebug"></p>
   </div>
 
-  <div id="totaleBar" style="display:none">
+<div id="totaleBar" style="display:none">
     <div>
       <div class="tot-label">💶 Totale spesa stimato</div>
       <div class="tot-detail" id="totaleDetail">0 articoli con prezzo</div>
     </div>
     <div class="tot-amount">€ <span id="totaleAmount">0,00</span></div>
   </div>
+  <!-- CORREZIONE LUGLIO 2026: "segnaposto" invisibile che occupa lo spazio
+       della barra del totale quando questa viene inchiodata allo schermo
+       (position:fixed), così la pagina sotto non fa salti. Gestito da totals.js -->
+  <div id="totaleSpacer"></div>
 
   <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
   <div class="count-row">

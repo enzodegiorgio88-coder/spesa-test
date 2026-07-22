@@ -167,7 +167,19 @@ body.copy-modal-open { overflow:hidden; }
 .price-input { width:64px; border:none; background:transparent; font-family:inherit; font-size:14px; font-weight:800; color:#e65100; outline:none; text-align:right; }
 .price-input::placeholder { color:#ffca28; font-weight:600; }
 .price-line { font-size:11px; color:#f9a825; font-weight:700; background:#fff8e1; border-radius:20px; padding:2px 8px; }
-#totaleBar { background:linear-gradient(135deg,#2d3436,#636e72); color:white; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:99; box-shadow:0 2px 12px rgba(0,0,0,0.2); }
+/* CORREZIONE LUGLIO 2026: quando si scorre, totals.js aggiunge questa classe
+   alla barra del totale. Con position:fixed la barra è inchiodata allo
+   schermo e il browser non deve più riposizionarla a ogni movimento come
+   con lo sticky: sparisce del tutto l'effetto "a scatti". Lo sticky della
+   regola qui sopra resta come rete di sicurezza se JavaScript non parte. */
+#totaleBar.tot-fixed { position:fixed; top:0; left:0; right:0; }
+/* CORREZIONE LUGLIO 2026: la barra del totale resta incollata in alto
+   (position:sticky, già presente), ma su smartphone lo sticky può
+   "tremolare" durante lo scroll perché il browser la ridisegna a ogni
+   movimento. Con will-change + translateZ(0) la barra viene disegnata su
+   un livello grafico dedicato (GPU): stessa posizione e stesso aspetto,
+   ma scorrimento fluido e senza scatti. */
+#totaleBar { background:linear-gradient(135deg,#2d3436,#636e72); color:white; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:99; box-shadow:0 2px 12px rgba(0,0,0,0.2); will-change:transform; transform:translateZ(0); }
 #totaleBar .tot-label { font-size:13px; font-weight:700; opacity:0.8; }
 #totaleBar .tot-amount { font-size:22px; font-weight:900; color:#ffeaa7; letter-spacing:-0.5px; }
 #totaleBar .tot-detail { font-size:11px; opacity:0.65; font-weight:600; }
@@ -362,3 +374,29 @@ body.sito-test #testBadge { display:block; background:repeating-linear-gradient(
 @keyframes novitaSlide { from { opacity:0; transform:translateX(-18px); } to { opacity:1; transform:none; } }
 .btn-novita-ok { animation:novitaGlow 1.6s ease-in-out infinite; }
 @keyframes novitaGlow { 0%,100% { box-shadow:0 4px 16px rgba(255,107,107,0.4); } 50% { box-shadow:0 4px 26px rgba(243,156,18,0.75); } }
+
+/* ── NUOVO: contatori dentro la tendina del pulsante Urgenti/Importanti ── */
+.urg-badge-menu { background:#eee; color:#2d3436; border-radius:20px; padding:1px 7px; font-size:11px; font-weight:900; margin-left:4px; }
+
+/* ── CORREZIONE: testo dei menu Urgenti/Importanti dentro l'header ──
+   Questi menu (sia quello del pulsante in alto, sia quello DENTRO il
+   popup arancione) si aprono sopra un'intestazione colorata, dove una
+   regola rende TUTTO il testo bianco: così le scritte sparivano (bianco
+   su bianco). La tesserina del menu ha sempre sfondo bianco, quindi qui
+   riportiamo i colori giusti per QUALSIASI .prio-menu, senza toccare
+   l'intestazione. */
+.prio-menu .prio-name { color:var(--text); }
+.prio-menu .prio-desc { color:var(--muted); }
+.prio-menu .urg-badge-menu { color:#2d3436; }
+/* ── NUOVO LUGLIO 2026: popup "Sono in vacanza" ───────────────────
+   Stessa impostazione delle Novità (card che "salta fuori", coriandoli,
+   frasi che scivolano una dopo l'altra) ma in versione estiva: testata
+   giallo sole → azzurro mare, pulsante verde acqua con bagliore e la
+   riga "24 ore su 24" che pulsa dolcemente per farsi notare. */
+#vacanzaScreen { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:99990; align-items:center; justify-content:center; padding:24px; }
+#vacanzaScreen.show { display:flex; }
+.vacanza-top { background:linear-gradient(135deg,#fdcb6e,#00cec9); }
+.btn-vacanza-ok { background:linear-gradient(135deg,#00b894,#0984e3); animation:vacGlow 1.6s ease-in-out infinite; }
+@keyframes vacGlow { 0%,100% { box-shadow:0 4px 16px rgba(0,184,148,0.45); } 50% { box-shadow:0 4px 26px rgba(9,132,227,0.75); } }
+.vac-pulse { animation:novitaSlide 0.45s ease forwards, vacPulse 2.2s ease-in-out infinite; }
+@keyframes vacPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.03); } }

@@ -14,7 +14,7 @@ import { processInvito, updateFamilyButton, registraMembro, checkInvitoParam } f
 import { loadParoleBannate, loadAlimentiVietati } from './content-filter.js';
 import { startListening, monitorConnection, onDataChange } from './sync.js';
 import { showPrivacyNotice } from './utils.js';
-import { controllaNovita } from './novita.js';
+import { controllaNovita, controllaVacanza } from './novita.js';
 import { registraServiceWorker } from './notifications.js';
 import { renderAll, renderRow } from './list.js';
 import { onPhotoChange } from './photo.js';
@@ -81,7 +81,10 @@ async function setupApp(user) {
   startListening();
   monitorConnection();
   showPrivacyNotice();
-  setTimeout(controllaNovita, 800);
+     setTimeout(controllaNovita, 800);
+  // NUOVO LUGLIO 2026: poco dopo il controllo Novità, controlliamo se
+  // siamo nel periodo del popup "Sono in vacanza" (date in config.js).
+  setTimeout(controllaVacanza, 1200);
 }
 
 // ── AVVIO ──────────────────────────────────────────
