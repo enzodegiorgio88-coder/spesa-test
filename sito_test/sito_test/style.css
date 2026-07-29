@@ -400,3 +400,27 @@ body.sito-test #testBadge { display:block; background:repeating-linear-gradient(
 @keyframes vacGlow { 0%,100% { box-shadow:0 4px 16px rgba(0,184,148,0.45); } 50% { box-shadow:0 4px 26px rgba(9,132,227,0.75); } }
 .vac-pulse { animation:novitaSlide 0.45s ease forwards, vacPulse 2.2s ease-in-out infinite; }
 @keyframes vacPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.03); } }
+/* ── NUOVO LUGLIO 2026: pulsante ☰ e schermata MENU ───────────────
+   Le tre linee in alto a sinistra (tre trattini bianchi disegnati qui,
+   così si vedono identiche su ogni telefono senza dipendere dai
+   caratteri speciali) aprono una schermata a tutto schermo che entra
+   scivolando da sinistra. Dentro, per ora, solo un messaggio: è lo
+   spazio già pronto per le prossime funzioni. */
+.titolo-wrap { display:flex; align-items:center; gap:8px; min-width:0; }
+/* Il titolo non va mai a capo: se lo spazio è poco si accorcia coi puntini */
+.titolo-wrap h1 { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.btn-menu { display:flex; flex-direction:column; justify-content:center; gap:4px; width:34px; height:30px; padding:0 7px; background:rgba(255,255,255,0.15); border:none; border-radius:9px; cursor:pointer; flex-shrink:0; }
+.btn-menu span { display:block; height:3px; border-radius:3px; background:white; }
+.btn-menu:active { background:rgba(255,255,255,0.3); }
+
+#menuScreen { display:none; position:fixed; inset:0; z-index:9500; background:var(--bg); flex-direction:column; }
+#menuScreen.show { display:flex; animation:menuEntra 0.25s ease; }
+@keyframes menuEntra { from { transform:translateX(-100%); } to { transform:none; } }
+.menu-header { flex-shrink:0; background:linear-gradient(135deg,#2d3436,#636e72); color:white; padding:16px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 20px rgba(0,0,0,0.15); }
+.menu-header h2 { font-size:18px; font-weight:900; }
+.btn-close-menu { background:rgba(255,255,255,0.2); border:none; border-radius:50%; width:34px; height:34px; color:white; font-size:16px; font-family:inherit; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.menu-body { flex:1; overflow-y:auto; overscroll-behavior:contain; padding:20px 16px 40px; }
+.menu-vuoto { text-align:center; color:var(--muted); font-size:16px; font-weight:800; line-height:1.8; padding:48px 20px; }
+.menu-vuoto span { display:block; font-size:13px; font-weight:600; margin-top:6px; }
+/* Mentre il menu è aperto la lista dietro resta ferma (come per i popup) */
+body.menu-open { overflow:hidden; }

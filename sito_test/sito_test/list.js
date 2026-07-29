@@ -181,7 +181,7 @@ function buildQtyWrap(col, i, item) {
 const PRIORITA = [
   { val: 'normale',    txt: '⚪ Normale',    desc: 'Senza fretta: si prende al solito giro di spesa.' },
   { val: 'importante', txt: '🟠 Importante', desc: 'Da non dimenticare: mettilo nel carrello alla prossima spesa.' },
-  { val: 'urgente',    txt: '🔴 Urgente',    desc: 'Serve subito: avvisa tutta la famiglia con una notifica.' }
+  { val: 'urgente',    txt: '🔴 Urgente',    desc: 'Serve subito: avvisa tutta la famiglia.' }
 ];
 
 // Un solo menu aperto alla volta: un tocco fuori li chiude tutti.
@@ -194,6 +194,36 @@ document.addEventListener('click', (e) => {
 window.addEventListener('scroll', () => {
   document.querySelectorAll('.prio-menu.show').forEach(m => m.classList.remove('show'));
 }, { passive: true });
+
+// CORREZIONE: posizionamento del menu in due modi diversi.
+// Sul TELEFONO resta centrato in orizzontale sullo schermo (così non
+// viene mai tagliato ai bordi); sul COMPUTER invece si apre attaccato
+// al suo pulsante, come una tendina classica, senza mai uscire dallo
+// schermo. In verticale sempre sotto il pulsante, o sopra se in basso
+// non c'è spazio. Usata sia dal menu priorità sia dai menu Urgenti/
+// Importanti (urgent.js la importa da qui).
+export function posizionaMenuPrio(btn, menu) {
+  const r = btn.getBoundingClientRect();
+  // CORREZIONE LUGLIO 2026: prima ci fidavamo SOLO del fatto che il browser
+  // dichiarasse "ho il mouse". Alcuni computer (e i portatili con schermo
+  // touch) non lo dichiarano, e lì il menu restava piantato in mezzo allo
+  // schermo. Ora basta ANCHE che la finestra sia larga almeno 1000px per
+  // trattarlo da computer: i telefoni non ci arrivano mai, nemmeno girati
+  // in orizzontale, quindi da cellulare non cambia assolutamente nulla.
+  const daComputer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+                  || window.innerWidth >= 1000;
+  if (daComputer) {
+    menu.style.transform = 'none';
+    menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - menu.offsetWidth - 8)) + 'px';
+  } else {
+    menu.style.left = '50%';
+    menu.style.transform = 'translateX(-50%)';
+  }
+  let top = r.bottom + 6;
+  if (top + menu.offsetHeight > window.innerHeight - 8)
+    top = Math.max(8, r.top - menu.offsetHeight - 6);
+  menu.style.top = top + 'px';
+}
 
 function buildPriorityMenu(col, i, item) {
   const wrap = document.createElement('div'); wrap.className = 'prio-wrap';
@@ -232,14 +262,7 @@ function buildPriorityMenu(col, i, item) {
     document.querySelectorAll('.prio-menu.show').forEach(m => m.classList.remove('show'));
     if (eraAperto) return;
     menu.classList.add('show');
-    // NUOVO: il menu è centrato sullo schermo (vedi .prio-menu nel CSS),
-    // qui decidiamo solo l'altezza: subito sotto il pulsante; se verso il
-    // basso non c'è spazio, si apre sopra. Così non viene mai tagliato.
-    const r = btn.getBoundingClientRect();
-    let top = r.bottom + 6;
-    if (top + menu.offsetHeight > window.innerHeight - 8)
-      top = Math.max(8, r.top - menu.offsetHeight - 6);
-    menu.style.top = top + 'px';
+    posizionaMenuPrio(btn, menu);
   };
 
   wrap.append(btn, menu);
@@ -382,19 +405,27 @@ function updateStats() {
 
   updateTotale();
 
-  // NUOVO: il pulsante in alto compare anche quando ci sono SOLO articoli
-  // importanti (e diventa arancione); se c'è almeno un urgente resta
-  // rosso e conta gli urgenti, come prima.
-  const imp    = all.filter(r => r.important && !r.done);
-  const urgBtn = document.getElementById('btnUrgenti');
+  // NUOVO: il pulsante in alto è diventato una tendina ("Urgenti 2 ▾"):
+  // compare se c'è almeno un urgente O un importante, mostra il numero
+  // che cambia da solo, e i contatori dentro il menu restano aggiornati.
+  // Con soli importanti diventa arancione e mostra il loro conteggio.
+  const imp     = all.filter(r => r.important && !r.done);
+  const urgWrap = document.getElementById('urgBtnWrap');
+  const urgBtn  = document.getElementById('btnUrgenti');
   if (urg.length || imp.length) {
     const rosso = urg.length > 0;
-    urgBtn.style.display = 'flex';
+    urgWrap.style.display = 'inline-block';
     urgBtn.classList.toggle('importanti', !rosso);
     urgBtn.innerHTML = (rosso ? '🔴 Urgenti ' : '🟠 Importanti ')
-      + `<span class="urg-count" id="urgBtnCount">${rosso ? urg.length : imp.length}</span>`;
+      + `<span class="urg-count" id="urgBtnCount">${rosso ? urg.length : imp.length}</span> ▾`;
+    const mUrg = document.getElementById('menuCountUrg');
+    const mImp = document.getElementById('menuCountImp');
+    if (mUrg) mUrg.textContent = urg.length;
+    if (mImp) mImp.textContent = imp.length;
   } else {
-    urgBtn.style.display = 'none';
+    urgWrap.style.display = 'none';
+    const menu = document.getElementById('urgBtnMenu');
+    if (menu) menu.classList.remove('show');
   }
 }
 

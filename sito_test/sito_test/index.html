@@ -222,9 +222,37 @@
     </div>
   </div>
 
+  <!-- NUOVO LUGLIO 2026: SCHERMATA MENU ──────────────────────────────
+       Si apre toccando le tre linee ☰ in alto a sinistra. Per ora è
+       volutamente vuota: è la "stanza" dove aggiungeremo le prossime
+       funzioni, una alla volta, senza affollare la schermata della lista.
+       Le voci nuove vanno messe dentro <div class="menu-body">. -->
+  <div id="menuScreen">
+    <div class="menu-header">
+      <h2>☰ Menu</h2>
+      <button class="btn-close-menu" onclick="chiudiMenu()" aria-label="Chiudi il menu">✕</button>
+    </div>
+    <div class="menu-body" id="menuBody">
+      <!-- QUI dentro aggiungeremo le voci del menu -->
+      <div class="menu-vuoto">
+        🚧 Menu in costruzione!
+        <span>Qui arriveranno presto le nuove funzioni ✨</span>
+      </div>
+    </div>
+  </div>
+
   <header>
     <div class="header-top">
-      <h1>🛒 Spesa Famiglia</h1>
+      <!-- NUOVO LUGLIO 2026: pulsante con le tre linee, a sinistra del
+           carrello. Le linee sono tre trattini bianchi disegnati col CSS
+           (non un carattere speciale), così si vedono identiche su tutti
+           i telefoni. Apre la schermata Menu qui sopra. -->
+      <div class="titolo-wrap">
+        <button class="btn-menu" id="btnMenu" onclick="apriMenu()" aria-label="Apri il menu">
+          <span></span><span></span><span></span>
+        </button>
+        <h1>🛒 Spesa Famiglia</h1>
+      </div>
       <div class="user-info">
         <img class="user-avatar" id="userAvatar" src="" alt="">
         <span class="user-name" id="userName"></span>

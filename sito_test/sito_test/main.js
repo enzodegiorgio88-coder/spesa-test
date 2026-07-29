@@ -26,6 +26,7 @@ import { onPhotoChange } from './photo.js';
 import './urgent.js';
 import './share.js';
 import './backup.js';
+import './menu.js';   // NUOVO LUGLIO 2026: schermata Menu (icona ☰)
 
 // ── COLLEGAMENTO TRA MODULI ─────────────────────────
 // sync.js e photo.js non importano list.js (per evitare dipendenze

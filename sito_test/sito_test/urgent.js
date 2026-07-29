@@ -4,6 +4,7 @@
 
 import { COLORS, NOVITA_RELEASE } from './config.js';
 import { state } from './state.js';
+import { posizionaMenuPrio } from './list.js';
 
 function buildUrgentiCategory(c, items, showPrices) {
   const cat   = document.createElement('div'); cat.className = 'urg-category';
@@ -54,13 +55,15 @@ function renderUrgentiBody() {
       ? '<div class="urg-empty">🎉 Nessun articolo urgente!<br><span style="font-size:13px;font-weight:600;">Tutto sotto controllo.</span></div>'
       : '<div class="urg-empty">🟠 Nessun articolo importante!<br><span style="font-size:13px;font-weight:600;">Niente promemoria per ora.</span></div>';
 
-  document.getElementById('urgModalTitle').textContent = rosso ? '🔴 Articoli Urgenti' : '🟠 Articoli Importanti';
+  const tit = document.getElementById('urgModalTitle');
+  if (tit) tit.textContent = rosso ? '🔴 Articoli Urgenti' : '🟠 Articoli Importanti';
   document.getElementById('urgModalSub').textContent = totale > 0
     ? `${totale} ${totale === 1
         ? (rosso ? 'articolo da prendere' : 'articolo da non dimenticare')
         : (rosso ? 'articoli da prendere' : 'articoli da non dimenticare')}`
     : (rosso ? 'Nessun urgente' : 'Nessun importante');
-  document.getElementById('btnUrgFiltro').textContent = rosso ? '🔴 Urgenti ▾' : '🟠 Importanti ▾';
+  const fil = document.getElementById('btnUrgFiltro');
+  if (fil) fil.textContent = rosso ? '🔴 Urgenti ▾' : '🟠 Importanti ▾';
   document.getElementById('urgentiModal').classList.toggle('importanti', !rosso);
 }
 
@@ -85,11 +88,28 @@ window.toggleUrgFiltro = (ev) => {
   document.querySelectorAll('.prio-menu.show').forEach(m => m.classList.remove('show'));
   if (era) return;
   menu.classList.add('show');
-  const r = btn.getBoundingClientRect();
-  let top = r.bottom + 6;
-  if (top + menu.offsetHeight > window.innerHeight - 8)
-    top = Math.max(8, r.top - menu.offsetHeight - 6);
-  menu.style.top = top + 'px';
+  posizionaMenuPrio(btn, menu);
+};
+
+// ── NUOVO: tendina del PULSANTE in alto ("Urgenti N ▾") ───────────
+// Toccandolo si apre il menu con le due viste e i loro contatori;
+// scegliendone una, il popup si apre direttamente su quella vista.
+window.toggleUrgBtnMenu = (ev) => {
+  ev.stopPropagation();
+  const btn  = document.getElementById('btnUrgenti');
+  const menu = document.getElementById('urgBtnMenu');
+  const era  = menu.classList.contains('show');
+  document.querySelectorAll('.prio-menu.show').forEach(m => m.classList.remove('show'));
+  if (era) return;
+  menu.classList.add('show');
+  posizionaMenuPrio(btn, menu);
+};
+
+window.apriUrgenti = (vista) => {
+  document.querySelectorAll('.prio-menu.show').forEach(m => m.classList.remove('show'));
+  filtroUrgenti = vista;
+  renderUrgentiBody();
+  document.getElementById('urgentiModal').classList.add('show');
 };
 
 window.setUrgFiltro = (tipo) => {
