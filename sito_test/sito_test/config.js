@@ -47,6 +47,8 @@ export const INVITE_IDX_PATH = 'inviti' + T + '_by_famiglia'; // indice inviti p
 export const MEMBRI_PATH     = 'membri' + T;                  // membri delle famiglie
 export const BACKUP_PATH     = 'backup' + T;                  // copie di backup nell'app (usato da backup.js)
 export const STORAGE_PREFIX  = 'famiglie' + T;                // cartella foto su Firebase Storage (usato da photo.js)
+// NUOVO LUGLIO 2026: memoria dei prezzi (usato da prezzi.js)
+export const PREZZI_PATH     = 'prezzi' + T; 
 
 // ── COSTANTI ───────────────────────────────────────
 export const LABELS           = ['Casa', 'Persona', 'Alimentari'];

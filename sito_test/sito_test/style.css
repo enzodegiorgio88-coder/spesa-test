@@ -424,3 +424,17 @@ body.sito-test #testBadge { display:block; background:repeating-linear-gradient(
 .menu-vuoto span { display:block; font-size:13px; font-weight:600; margin-top:6px; }
 /* Mentre il menu è aperto la lista dietro resta ferma (come per i popup) */
 body.menu-open { overflow:hidden; }
+/* ── NUOVO LUGLIO 2026: memoria dei prezzi (prezzi.js) ──────────────
+   Tesserina che scivola dentro da destra, all'altezza della barra del
+   totale. L'altezza esatta la calcola prezzi.js misurando dove sta
+   davvero #totaleBar: qui c'è solo l'aspetto e l'animazione. Togliendo
+   la classe .dentro la stessa transizione la riporta fuori a destra,
+   cioè l'animazione dell'entrata al contrario. */
+.prezzo-card { position:fixed; right:0; top:90px; z-index:9000; width:min(330px, calc(100vw - 24px)); background:white; border:2px solid #ffd54f; border-right:none; border-radius:16px 0 0 16px; box-shadow:0 10px 34px rgba(0,0,0,0.25); padding:13px 14px; transform:translateX(115%); opacity:0; transition:transform 0.42s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease; }
+.prezzo-card.dentro { transform:none; opacity:1; }
+.prezzo-testo { font-size:12.5px; font-weight:600; color:var(--text); line-height:1.5; margin-bottom:11px; }
+.prezzo-testo b { font-weight:900; }
+.prezzo-azioni { display:flex; gap:8px; }
+.prezzo-azioni button { flex:1; padding:10px; border:none; border-radius:11px; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer; }
+.btn-prezzo-annulla { background:#2d3436; color:white; }
+.btn-prezzo-ok { background:linear-gradient(135deg,#00b894,#00cec9); color:white; }

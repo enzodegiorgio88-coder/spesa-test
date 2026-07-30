@@ -10,6 +10,10 @@ import { saveToFirebase } from './sync.js';
 import { buildPhotoWrap } from './photo.js';
 import { inviaNotificaUrgente } from './notifications.js';
 import { updateTotale } from './totals.js';
+// NUOVO LUGLIO 2026: memoria dei prezzi. prezzi.js non importa list.js
+// (niente dipendenze circolari): riceve da qui, al momento della chiamata,
+// la funzione da eseguire quando premi "Aggiungi" sulla tesserina.
+import { ricordaPrezzo, proponiPrezzoSeConosciuto } from './prezzi.js';
 
 // ── COSTRUZIONE RIGHE ──────────────────────────────
 
@@ -75,6 +79,14 @@ function buildDelBtn(col, i) {
   btn.onclick = () => onDeleteRow(col, i);
   return btn;
 }
+// NUOVO LUGLIO 2026: cosa succede quando premi "Aggiungi" sulla tesserina
+// della memoria prezzi — il prezzo ricordato finisce nel campo € della
+// riga, esattamente come se l'avessi scritto a mano.
+function applicaPrezzoRicordato(col, i, prezzo) {
+  if (!state.data[col] || !state.data[col][i]) return;
+  state.data[col][i].price = prezzo;
+  saveToFirebase(); renderRow(col, i); updateStats();
+}
 
 function buildTextInput(col, i, item, onTextChange) {
   const inp = document.createElement('input');
@@ -105,8 +117,13 @@ function buildTextInput(col, i, item, onTextChange) {
       if (!acts.length || acts[acts.length - 1] !== label) acts.push(label);
       state.data[col][i].lastAction = acts.join(' · ');
     }
-    updateAuthorDiv(inp.closest('li'), state.data[col][i].lastAction);
+ updateAuthorDiv(inp.closest('li'), state.data[col][i].lastAction);
     saveToFirebase(); updateStats();
+    // NUOVO LUGLIO 2026: se questo articolo è già stato pagato in passato,
+    // dopo una breve pausa di digitazione compare la tesserina con il
+    // prezzo ricordato. Tutti i controlli (prezzo già presente, proposta
+    // già scartata, articolo sconosciuto) stanno dentro prezzi.js.
+    proponiPrezzoSeConosciuto(col, i, (p) => applicaPrezzoRicordato(col, i, p));
   };
   inp.onkeydown = (ev) => {
     if (ev.key !== 'Enter') return;
@@ -285,9 +302,13 @@ function buildPriceWrap(col, i, item) {
     let v = inp.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
     const parti = v.split('.');
     if (parti.length > 2) v = parti[0] + '.' + parti.slice(1).join('');
-    if (v !== inp.value) inp.value = v;
+if (v !== inp.value) inp.value = v;
     state.data[col][i].price = v;
     saveToFirebase(); updateStats();
+    // NUOVO LUGLIO 2026: quello che scrivi qui entra nella memoria dei
+    // prezzi di famiglia, così la prossima volta che qualcuno scrive
+    // questo stesso articolo l'app propone da sola il prezzo.
+    ricordaPrezzo(state.data[col][i].text, v, state.currentUserName);
   };
   // Mentre si scrive il prezzo la tastiera occupa mezzo schermo: nascondiamo
   // la barra dei pulsanti in basso (stessa logica del campo articolo).
