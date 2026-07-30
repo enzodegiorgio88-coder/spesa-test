@@ -58,7 +58,10 @@ function normalizzaListaBackup(lista) {
         important:  !!r.important,
         lastAction: r.lastAction || '',
         actions:    r.actions    || [],
-        price:      r.price      || ''
+        price:      r.price      || '',
+        // CORREZIONE LUGLIO 2026: anche il ripristino conserva "author",
+        // altrimenti tornare a un backup svuoterebbe di nuovo il campo.
+        author:     r.author     || ''
       };
     }));
   }

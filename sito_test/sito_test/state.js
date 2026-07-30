@@ -33,9 +33,14 @@ export const state = {
   restPollInterval:   null
 };
 
+// CORREZIONE LUGLIO 2026: aggiunto "author", cioè chi ha creato la riga.
+// list.js lo scriveva già, ma non essendo elencato né qui né in sync.js
+// non arrivava mai su Firebase e spariva al primo aggiornamento: una riga
+// toccata da un altro familiare tornava "nuova" e la cronologia diceva
+// "aggiunto da..." invece di "modificato da...".
 export const emptyRow = () => ({
   text: '', done: false, photo: null, qty: 1,
-  urgent: false, important: false, lastAction: '', actions: [], price: ''
+  urgent: false, important: false, lastAction: '', actions: [], price: '', author: ''
 });
 
 export const ensureRows = (col) => {

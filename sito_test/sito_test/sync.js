@@ -40,8 +40,31 @@ function parseSnapshotData(val) {
     important:  !!r.important,
     lastAction: r.lastAction || '',
     actions:    r.actions    || [],
-    price:      r.price      || ''
+    price:      r.price      || '',
+    // CORREZIONE LUGLIO 2026: "author" va riletto insieme agli altri campi,
+    // altrimenti a ogni aggiornamento la riga risulta di nuovo senza padrone.
+    // Se la casella è vuota (articolo scritto PRIMA di questa correzione)
+    // il nome viene ripescato dalla cronologia: vedi la funzione qui sotto.
+    author:     autoreDallaCronologia(r)
   })));
+}
+
+// CORREZIONE LUGLIO 2026: recupero del creatore per gli articoli vecchi.
+// Le righe salvate prima che "author" arrivasse davvero su Firebase hanno
+// la casella vuota, ma il nome è rimasto scritto nella cronologia: il primo
+// passaggio di "actions" è quasi sempre "aggiunto da MARIA". Lo leggiamo da
+// lì, così la riga si ritrova il padrone giusto invece di essere assegnata
+// al primo che la tocca. Se "author" c'è già non tocchiamo niente, e se
+// nella cronologia non c'è nessun "aggiunto da..." restiamo come prima.
+function autoreDallaCronologia(r) {
+  if (r.author) return r.author;
+  // Firebase a volte restituisce "actions" come oggetto invece che come
+  // array (stessa cosa già vista nei backup): li gestiamo tutti e due.
+  const acts  = r.actions;
+  const primo = Array.isArray(acts) ? acts[0]
+              : (acts && typeof acts === 'object' ? Object.values(acts)[0] : '');
+  const m = String(primo || '').match(/^aggiunto da (.+)$/i);
+  return m ? m[1].trim() : '';
 }
 
 // ── FALLBACK HTTPS (usato quando il canale realtime/WebSocket è bloccato
@@ -191,7 +214,11 @@ async function doSave() {
     lista: state.data.map(col => col.map(r => ({
       text: r.text || '', done: !!r.done, photo: r.photo || null,
       qty: r.qty || 1, urgent: !!r.urgent, important: !!r.important,
-      lastAction: r.lastAction || '', actions: r.actions || [], price: r.price || ''
+      lastAction: r.lastAction || '', actions: r.actions || [], price: r.price || '',
+      // CORREZIONE LUGLIO 2026: "author" ora viaggia davvero verso Firebase.
+      // Le regole del database lo prevedevano già (stringa max 50 caratteri):
+      // era il codice a dimenticarlo nel pacchetto da salvare.
+      author: r.author || ''
     })))
   };
   // Copia di sicurezza locale PRIMA di tentare la rete: se l'app viene
