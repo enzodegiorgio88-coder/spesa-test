@@ -48,7 +48,10 @@ export const MEMBRI_PATH     = 'membri' + T;                  // membri delle fa
 export const BACKUP_PATH     = 'backup' + T;                  // copie di backup nell'app (usato da backup.js)
 export const STORAGE_PREFIX  = 'famiglie' + T;                // cartella foto su Firebase Storage (usato da photo.js)
 // NUOVO LUGLIO 2026: memoria dei prezzi (usato da prezzi.js)
-export const PREZZI_PATH     = 'prezzi' + T; 
+export const PREZZI_PATH     = 'prezzi' + T;
+// NUOVO SETTEMBRE 2026: la spesa già fatta, messa da parte invece che
+// buttata, per il riepilogo di fine mese (usato da archivio.js)
+export const ARCHIVIO_PATH   = 'archivio' + T;
 
 // ── COSTANTI ───────────────────────────────────────
 export const LABELS           = ['Casa', 'Persona', 'Alimentari'];

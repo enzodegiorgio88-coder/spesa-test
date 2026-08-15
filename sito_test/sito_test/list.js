@@ -14,6 +14,9 @@ import { updateTotale } from './totals.js';
 // (niente dipendenze circolari): riceve da qui, al momento della chiamata,
 // la funzione da eseguire quando premi "Aggiungi" sulla tesserina.
 import { ricordaPrezzo, proponiPrezzoSeConosciuto } from './prezzi.js';
+// NUOVO SETTEMBRE 2026: archivio della spesa fatta. Stessa regola di
+// prezzi.js — archivio.js non importa list.js, quindi nessun ciclo.
+import { archiviaSpesa } from './archivio.js';
 
 // ── COSTRUZIONE RIGHE ──────────────────────────────
 
@@ -488,12 +491,25 @@ window.addRow = (col) => {
 window.clearDone = async () => {
   const ok = await customConfirm({
     icon: '🗑️',
+    // NUOVO SETTEMBRE 2026: il testo dice la verità su dove finiscono.
+    // Sparire dalla lista e sparire davvero non sono più la stessa cosa:
+    // meglio dirlo, invece di far credere che si stia cancellando tutto.
     title: 'Rimuovere articoli?',
-    message: 'Vuoi rimuovere tutti gli articoli già spuntati dalla lista?',
+    message: 'Gli articoli spuntati spariscono dalla lista, ma restano nel riepilogo di fine mese.',
     okText: 'Sì, rimuovi',
     tema: 'rosso'
   });
   if (!ok) return;
-  for (let c = 0; c < 3; c++) { state.data[c] = state.data[c].filter(r => !r.done); ensureRows(c); }
+  // NUOVO SETTEMBRE 2026: un attimo prima di buttarle, mettiamo da parte
+  // le righe spuntate. Le raccogliamo PRIMA del filter, che è l'ultimo
+  // momento in cui esistono ancora — e con il prezzo già dentro, visto
+  // che si spunta dopo aver comprato.
+  const spuntate = [];
+  for (let c = 0; c < 3; c++) {
+    state.data[c].forEach(r => { if (r.done) spuntate.push({ riga: r, col: c }); });
+    state.data[c] = state.data[c].filter(r => !r.done);
+    ensureRows(c);
+  }
+  archiviaSpesa(spuntate);   // non blocca: se fallisce, lo svuotamento va avanti lo stesso
   saveToFirebase(); renderAll();
 };
