@@ -233,12 +233,38 @@
       <button class="btn-close-menu" onclick="chiudiMenu()" aria-label="Chiudi il menu">✕</button>
     </div>
     <div class="menu-body" id="menuBody">
-      <!-- QUI dentro aggiungeremo le voci del menu -->
+      <!-- NUOVO SETTEMBRE 2026: prima voce vera del menu. Apre il
+           riepilogo di quello che è stato comprato (statistiche.js). -->
+      <button class="menu-voce" onclick="apriStatistiche()">
+        <span class="menu-voce-icona">📊</span>
+        <span class="menu-voce-testo">
+          Statistiche
+          <span>Cosa avete comprato, mese per mese</span>
+        </span>
+        <span class="menu-voce-freccia">›</span>
+      </button>
       <div class="menu-vuoto">
         🚧 Menu in costruzione!
         <span>Qui arriveranno presto le nuove funzioni ✨</span>
       </div>
     </div>
+  </div>
+
+  <!-- NUOVO SETTEMBRE 2026: schermata Statistiche (statistiche.js).
+       Si apre sopra il Menu, che resta aperto dietro: chiudendola con la
+       ✕ si torna al Menu. Il contenuto lo costruisce tutto il JS dentro
+       #statBody — qui c'è solo l'intelaiatura e le frecce dei mesi. -->
+  <div id="statScreen">
+    <div class="menu-header">
+      <h2>📊 Statistiche</h2>
+      <button class="btn-close-menu" onclick="chiudiStatistiche()" aria-label="Chiudi le statistiche">✕</button>
+    </div>
+    <div class="stat-nav">
+      <button class="stat-freccia" onclick="statCambiaMese(-1)" aria-label="Mese precedente">‹</button>
+      <span class="stat-mese" id="statMeseTitolo"></span>
+      <button class="stat-freccia" id="statAvanti" onclick="statCambiaMese(1)" aria-label="Mese successivo">›</button>
+    </div>
+    <div class="menu-body" id="statBody"></div>
   </div>
 
   <header>

@@ -424,6 +424,56 @@ body.sito-test #testBadge { display:block; background:repeating-linear-gradient(
 .menu-vuoto span { display:block; font-size:13px; font-weight:600; margin-top:6px; }
 /* Mentre il menu è aperto la lista dietro resta ferma (come per i popup) */
 body.menu-open { overflow:hidden; }
+
+/* ── NUOVO SETTEMBRE 2026: voci del menu e schermata Statistiche ────
+   La schermata sta a z-index più alto del menu perché ci si apre sopra:
+   chiudendola con la ✕ si ritrova il menu dietro, ancora aperto. */
+.menu-voce { width:100%; display:flex; align-items:center; gap:13px; background:white; border:none; border-radius:16px; padding:16px 15px; margin-bottom:12px; font-family:inherit; text-align:left; cursor:pointer; box-shadow:0 3px 14px rgba(0,0,0,0.07); }
+.menu-voce:active { transform:scale(0.98); }
+.menu-voce-icona { font-size:26px; flex-shrink:0; }
+.menu-voce-testo { flex:1; font-size:16px; font-weight:900; color:var(--text); line-height:1.3; }
+.menu-voce-testo span { display:block; font-size:12.5px; font-weight:600; color:var(--muted); margin-top:3px; }
+.menu-voce-freccia { font-size:22px; color:var(--muted); flex-shrink:0; }
+
+#statScreen { display:none; position:fixed; inset:0; z-index:9600; background:var(--bg); flex-direction:column; }
+#statScreen.show { display:flex; animation:menuEntra 0.25s ease; }
+.stat-nav { flex-shrink:0; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 16px; background:white; border-bottom:2px solid rgba(0,0,0,0.06); }
+.stat-mese { flex:1; text-align:center; font-size:16px; font-weight:900; color:var(--text); text-transform:capitalize; }
+.stat-freccia { background:var(--bg); border:none; border-radius:50%; width:36px; height:36px; font-size:20px; font-family:inherit; font-weight:900; color:var(--text); cursor:pointer; flex-shrink:0; }
+.stat-freccia:disabled { opacity:0.25; cursor:default; }
+
+.stat-grossi { display:flex; gap:12px; margin-bottom:6px; }
+.stat-grosso { flex:1; background:linear-gradient(135deg,#6c5ce7,#a29bfe); color:white; border-radius:18px; padding:18px 12px; text-align:center; box-shadow:0 6px 20px rgba(108,92,231,0.28); }
+.stat-grosso-num { font-size:27px; font-weight:900; line-height:1.1; }
+.stat-grosso-lab { font-size:12px; font-weight:700; opacity:0.9; margin-top:4px; }
+
+.stat-frase { text-align:center; font-size:13px; font-weight:600; color:var(--muted); margin:10px 0 16px; line-height:1.5; }
+.stat-frase b { color:var(--text); font-weight:900; }
+
+.stat-confronto { background:white; border-radius:16px; padding:15px; margin-bottom:14px; box-shadow:0 3px 14px rgba(0,0,0,0.07); }
+.stat-confronto .stat-frase { margin:10px 0 0; }
+.stat-confronto-righe { display:flex; gap:12px; }
+.stat-delta { flex:1; text-align:center; border-radius:13px; padding:11px 8px; }
+.stat-delta.su   { background:#ffeaa7; }
+.stat-delta.giu  { background:#c8f7dc; }
+.stat-delta.pari { background:var(--bg); }
+.stat-delta-val { display:block; font-size:19px; font-weight:900; color:var(--text); }
+.stat-delta-lab { display:block; font-size:11.5px; font-weight:700; color:var(--muted); margin-top:2px; }
+
+.stat-card { background:white; border-radius:16px; padding:15px; margin-bottom:14px; box-shadow:0 3px 14px rgba(0,0,0,0.07); }
+.stat-card-titolo { font-size:14px; font-weight:900; color:var(--text); margin-bottom:13px; }
+.stat-card .stat-frase { margin:0; text-align:left; font-size:14px; }
+
+.stat-bar-row { margin-bottom:12px; }
+.stat-bar-row:last-child { margin-bottom:0; }
+.stat-bar-testa { display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:5px; }
+.stat-bar-nome { font-size:13.5px; font-weight:800; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.stat-bar-num { font-size:12.5px; font-weight:900; color:var(--muted); flex-shrink:0; }
+.stat-bar { height:9px; background:var(--bg); border-radius:6px; overflow:hidden; }
+.stat-bar-fill { height:100%; border-radius:6px; transition:width 0.5s ease; min-width:4px; }
+
+.stat-vuoto { text-align:center; color:var(--muted); font-size:15px; font-weight:800; line-height:1.7; padding:52px 20px; }
+.stat-vuoto span { display:block; font-size:12.5px; font-weight:600; margin-top:8px; }
 /* ── NUOVO LUGLIO 2026: memoria dei prezzi (prezzi.js) ──────────────
    Tesserina che scivola dentro da destra, all'altezza della barra del
    totale. L'altezza esatta la calcola prezzi.js misurando dove sta
