@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="120 162 784 722" width="784" height="722" role="img" aria-label="Spesa Famiglia">
+  <title>Spesa Famiglia</title>
+  <!-- Spesa Famiglia - logo versione ricca. Vettoriale puro, nessun font. -->
+  <g transform="translate(0 -22)">
+    <!-- LA FAMIGLIA: tre figure nei tre colori delle categorie dell'app
+         (Casa rosso, Persona turchese, Alimentari azzurro). Colori diversi
+         = si distinguono anche quando sono vicine e anche in piccolo. -->
+    <g>
+      <circle cx="380" cy="244" r="52" fill="#FF6B6B"/>
+      <path d="M294 610 V400 a86 86 0 0 1 172 0 V610 Z" fill="#FF6B6B"/>
+      <circle cx="560" cy="286" r="48" fill="#4ECDC4"/>
+      <path d="M480 610 V430 a80 80 0 0 1 160 0 V610 Z" fill="#4ECDC4"/>
+      <circle cx="730" cy="348" r="38" fill="#45B7D1"/>
+      <path d="M668 610 V470 a62 62 0 0 1 124 0 V610 Z" fill="#45B7D1"/>
+    </g>
+
+    <!-- VERDURA che spunta dal cesto, a sinistra dove c'e' spazio libero -->
+    <g fill="#5FBB6E">
+      <ellipse cx="196" cy="522" rx="29" ry="74" transform="rotate(-26 196 522)"/>
+      <ellipse cx="238" cy="498" rx="30" ry="92"/>
+      <ellipse cx="286" cy="522" rx="29" ry="74" transform="rotate(26 286 522)"/>
+    </g>
+
+    <!-- FRUTTA dentro al cesto: si intravede fra le doghe, cosi il cesto
+         sembra pieno invece che vuoto. Disegnata PRIMA del cesto. -->
+    <g>
+      <circle cx="348" cy="726" r="64" fill="#FFA45B"/>
+      <circle cx="512" cy="750" r="58" fill="#FFD166"/>
+      <circle cx="668" cy="726" r="56" fill="#F0806C"/>
+    </g>
+
+    <!-- IL CESTO: crema. Variante per SFONDI SCURI (login e header dell'app) -->
+    <g fill="none" stroke="#F8F4E6" stroke-width="44" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M168 614 L296 838 Q310 876 348 876 L676 876 Q714 876 728 838 L856 614"/>
+      <path d="M345 632 L400 824"/>
+      <path d="M512 632 L512 824"/>
+      <path d="M679 632 L624 824"/>
+      <!-- Bordo superiore per ULTIMO: copre la base delle figure e della frutta -->
+      <path d="M150 600 L874 600"/>
+    </g>
+  </g>
+</svg>

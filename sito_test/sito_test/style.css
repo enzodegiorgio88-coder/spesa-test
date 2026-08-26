@@ -32,6 +32,15 @@ body { font-family: -apple-system,'Segoe UI',sans-serif; background: var(--bg); 
 .cd-sep { font-size: 18px; font-weight: 900; color: #ffeaa7; opacity: 0.5; margin-bottom: 10px; flex-shrink: 0; }
 .countdown-sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 10px; font-weight: 600; text-align: center; }
 #loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 32px 24px; text-align: center; background: linear-gradient(135deg, #2d3436 0%, #636e72 100%); }
+/* NUOVO SETTEMBRE 2026: logo a colori sopra il titolo del login.
+   Misura in vw con un tetto in px: su un telefono stretto si
+   rimpicciolisce da solo, su un monitor grande non diventa gigante.
+   Entra con una dissolvenza breve, cosi' non "sbatte" in faccia
+   mentre la pagina sta ancora caricando. */
+.login-logo { width: min(160px, 42vw); height: auto; margin-bottom: 10px;
+              animation: logoEntra 0.55s ease both; }
+@keyframes logoEntra { from { opacity: 0; transform: translateY(-10px) scale(0.94); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .login-logo { animation: none; } }
 #loginScreen h1 { font-size: 32px; font-weight: 800; color: white; margin-bottom: 8px; }
 #loginScreen > p { font-size: 14px; color: rgba(255,255,255,0.65); margin-bottom: 40px; }
 .login-card { background: white; border-radius: 24px; padding: 36px 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }

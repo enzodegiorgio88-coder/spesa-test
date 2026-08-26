@@ -61,7 +61,15 @@
 
 <!-- LOGIN SCREEN — visibile di default mentre Firebase inizializza -->
 <div id="loginScreen" style="display:flex">
-  <h1>🛒 Spesa Famiglia</h1>
+  <!-- NUOVO SETTEMBRE 2026: il logo a colori al posto della sola scritta.
+       E' la versione "ricca" (famiglia + verdura + frutta), quella con il
+       cesto CREMA: serve perche' questa schermata ha lo sfondo scuro.
+       Sui fondi chiari andrebbe la versione col cesto scuro, che qui non
+       si userebbe mai. E' un SVG, quindi resta nitido a qualsiasi misura
+       e pesa due kilobyte. L'emoji 🛒 nel titolo l'abbiamo tolta: adesso
+       la dice il disegno, ripeterla sarebbe solo rumore. -->
+  <img src="ricca-sfondo-scuro.svg" alt="" class="login-logo">
+  <h1>Spesa Famiglia</h1>
   <p>Lista della spesa condivisa in tempo reale</p>
   <div class="login-card">
     <h2>Benvenuto!</h2>
