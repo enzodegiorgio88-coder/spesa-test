@@ -59,6 +59,25 @@ export const COLORS           = ['#FF6B6B', '#4ECDC4', '#45B7D1'];
 export const NOVITA_RELEASE   = new Date('2026-07-01T00:00:00');
 export const NOVITA_KEY       = 'novita_v5_priorita_visto';
 
+// ── NUOVO SETTEMBRE 2026: accensione delle Statistiche ──
+// Stesse identiche righe del sito ufficiale, tenute qui perché i due
+// siti devono comportarsi allo stesso modo. La differenza la fa da sola
+// IS_TEST qui sotto: in questa copia le Statistiche sono SEMPRE accese,
+// così si possono provare adesso senza aspettare il 1° settembre.
+export const NOVITA_SETTEMBRE = new Date('2026-09-01T00:00:00');
+
+// Una funzione e non una costante: la costante verrebbe calcolata una
+// volta sola all'apertura dell'app, e chi lascia la pagina aperta la
+// notte del 31 agosto non vedrebbe comparire niente fino al riavvio.
+export function statisticheAttive() {
+  return IS_TEST || new Date() >= NOVITA_SETTEMBRE;
+}
+
+// Quanto manca all'accensione, in millisecondi (0 se è già passata).
+export function msAllAccensione() {
+  return Math.max(0, NOVITA_SETTEMBRE - new Date());
+}
+
 // ── NUOVO LUGLIO 2026: popup "Sono in vacanza" ─────
 // Per le PROSSIME vacanze basta cambiare QUESTE DUE date: giorni nel
 // messaggio, periodo di comparsa e "già visto" si aggiornano DA SOLI.

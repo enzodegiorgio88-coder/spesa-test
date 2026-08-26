@@ -208,6 +208,27 @@ function confronto(oggi, prima) {
   return box;
 }
 
+// ── I DUE NUMERI GROSSI ────────────────────────────
+// Le due tessere viola in cima: quanti articoli e quanti soldi.
+// Sta in una funzione a parte perché servono in DUE momenti diversi:
+// nel mese pieno e nel mese ancora vuoto, dove vanno mostrate lo stesso
+// con gli zeri dentro (vedi disegna()).
+function numeriGrossi(articoli, totale) {
+  const grossi = document.createElement('div');
+  grossi.className = 'stat-grossi';
+  [[articoli, articoli === 1 ? 'articolo' : 'articoli'],
+   ['€ ' + soldi(totale), 'spesi']
+  ].forEach(([n, lab]) => {
+    const d = document.createElement('div');
+    d.className = 'stat-grosso';
+    const v = document.createElement('div'); v.className = 'stat-grosso-num'; v.textContent = n;
+    const e = document.createElement('div'); e.className = 'stat-grosso-lab'; e.textContent = lab;
+    d.append(v, e);
+    grossi.appendChild(d);
+  });
+  return grossi;
+}
+
 // ── DISEGNO DELLA SCHERMATA ────────────────────────
 
 function disegna() {
@@ -225,7 +246,13 @@ function disegna() {
 
   const pacchetti = normalizza(archivio[meseAperto]);
 
+  // MESE ANCORA VUOTO: gli zeri si mostrano lo stesso.
+  // Prima qui c'era solo una scritta, e la schermata sembrava rotta. Le
+  // due tessere con 0 e € 0,00 dicono la stessa cosa in modo più chiaro:
+  // il conto è partito, semplicemente non c'è ancora niente dentro. È
+  // anche quello che si vede il primo giorno, quando l'archivio è nuovo.
   if (!pacchetti.length) {
+    corpo.appendChild(numeriGrossi(0, 0));
     const vuoto = document.createElement('div');
     vuoto.className = 'stat-vuoto';
     vuoto.textContent = '🛒 Nessuna spesa registrata in questo mese';
@@ -241,19 +268,7 @@ function disegna() {
                ? calcolaMese(normalizza(archivio[meseSpostato(meseAperto, -1)])) : null;
 
   // 1. I due numeri grossi
-  const grossi = document.createElement('div');
-  grossi.className = 'stat-grossi';
-  [[s.articoli, s.articoli === 1 ? 'articolo' : 'articoli'],
-   ['€ ' + soldi(s.totale), 'spesi']
-  ].forEach(([n, lab]) => {
-    const d = document.createElement('div');
-    d.className = 'stat-grosso';
-    const v = document.createElement('div'); v.className = 'stat-grosso-num'; v.textContent = n;
-    const e = document.createElement('div'); e.className = 'stat-grosso-lab'; e.textContent = lab;
-    d.append(v, e);
-    grossi.appendChild(d);
-  });
-  corpo.appendChild(grossi);
+  corpo.appendChild(numeriGrossi(s.articoli, s.totale));
   corpo.appendChild(frase(
     `in ${s.spese} ${s.spese === 1 ? 'spesa' : 'spese'}` +
     (s.articoli ? ` · media € ${soldi(s.totale / s.articoli)} ad articolo` : '')

@@ -2,7 +2,7 @@
 // list.js — Rendering liste, modifica articoli, statistiche
 // ════════════════════════════════════════════════════════════════
 
-import { NOVITA_RELEASE } from './config.js';
+import { NOVITA_RELEASE, statisticheAttive } from './config.js';
 import { state, ensureRows, emptyRow } from './state.js';
 import { haBlasfemia, haAlimentoVietato } from './content-filter.js';
 import { mostraBlocco, customConfirm } from './modals.js';
@@ -491,11 +491,15 @@ window.addRow = (col) => {
 window.clearDone = async () => {
   const ok = await customConfirm({
     icon: '🗑️',
+    title: 'Rimuovere articoli?',
     // NUOVO SETTEMBRE 2026: il testo dice la verità su dove finiscono.
     // Sparire dalla lista e sparire davvero non sono più la stessa cosa:
     // meglio dirlo, invece di far credere che si stia cancellando tutto.
-    title: 'Rimuovere articoli?',
-    message: 'Gli articoli spuntati spariscono dalla lista, ma restano nel riepilogo di fine mese.',
+    // Finché le Statistiche non sono accese resta la frase di prima,
+    // altrimenti prometteremmo un riepilogo che ancora non esiste.
+    message: statisticheAttive()
+      ? 'Gli articoli spuntati spariscono dalla lista, ma restano nel riepilogo di fine mese.'
+      : 'Vuoi rimuovere tutti gli articoli già spuntati dalla lista?',
     okText: 'Sì, rimuovi',
     tema: 'rosso'
   });

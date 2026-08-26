@@ -7,7 +7,7 @@
 import { onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-import { auth, IS_TEST } from './config.js';
+import { auth, IS_TEST, statisticheAttive, msAllAccensione } from './config.js';
 import { state } from './state.js';
 import { loadUserConfig, saveUserEmailConfig, handleRedirect } from './auth.js';
 import { processInvito, updateFamilyButton, registraMembro, checkInvitoParam } from './family.js';
@@ -15,6 +15,8 @@ import { loadParoleBannate, loadAlimentiVietati } from './content-filter.js';
 import { startListening, monitorConnection, onDataChange } from './sync.js';
 import { showPrivacyNotice } from './utils.js';
 import { controllaNovita, controllaVacanza } from './novita.js';
+// NUOVO SETTEMBRE 2026: la manina che indica il ☰ la prima volta.
+import { mostraCoach } from './coach.js';
 import { registraServiceWorker } from './notifications.js';
 import { renderAll, renderRow } from './list.js';
 import { onPhotoChange } from './photo.js';
@@ -87,6 +89,12 @@ async function setupApp(user) {
   // NUOVO LUGLIO 2026: poco dopo il controllo Novità, controlliamo se
   // siamo nel periodo del popup "Sono in vacanza" (date in config.js).
   setTimeout(controllaVacanza, 1200);
+  // NUOVO SETTEMBRE 2026: la manina che indica il ☰. Serve per chi il
+  // popup delle Novità l'ha già chiuso un'altra volta (o su un altro
+  // telefono): a quello lo mostra chiudiNovita(), a questo tocca qui.
+  // Se un popup è ancora aperto mostraCoach() non fa niente e riproverà
+  // alla chiusura, quindi le due strade non si accavallano mai.
+  setTimeout(mostraCoach, 2400);
 }
 
 // ── AVVIO ──────────────────────────────────────────
@@ -99,6 +107,30 @@ async function setupApp(user) {
 if (IS_TEST) {
   document.body.classList.add('sito-test');
   document.title = '🧪 TEST — ' + document.title;
+}
+
+// ── NUOVO SETTEMBRE 2026: accensione delle Statistiche ──
+// Righe identiche al sito ufficiale, di proposito: quello che si prova
+// qui deve essere esattamente quello che succederà là. La differenza la
+// fa solo statisticheAttive(), che in questa copia risponde sempre "sì"
+// perché IS_TEST è true — quindi qui il pulsante ☰ c'è già adesso.
+function accendiStatistiche() {
+  document.body.classList.add('statistiche-on');
+}
+
+if (statisticheAttive()) {
+  accendiStatistiche();
+} else {
+  // A PAGINA GIÀ APERTA: sveglia puntata all'ora esatta, così a
+  // mezzanotte il pulsante compare da solo senza ricaricare niente.
+  const manca = msAllAccensione();
+  if (manca > 0 && manca < 24 * 24 * 60 * 60 * 1000) {
+    setTimeout(() => {
+      if (!statisticheAttive()) return;
+      accendiStatistiche();
+      controllaNovita();
+    }, manca + 1000);
+  }
 }
 
 checkInvitoParam();

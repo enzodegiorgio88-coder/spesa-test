@@ -409,7 +409,13 @@ body.sito-test #testBadge { display:block; background:repeating-linear-gradient(
 .titolo-wrap { display:flex; align-items:center; gap:8px; min-width:0; }
 /* Il titolo non va mai a capo: se lo spazio è poco si accorcia coi puntini */
 .titolo-wrap h1 { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.btn-menu { display:flex; flex-direction:column; justify-content:center; gap:4px; width:34px; height:30px; padding:0 7px; background:rgba(255,255,255,0.15); border:none; border-radius:9px; cursor:pointer; flex-shrink:0; }
+/* PRIMA DEL 1° SETTEMBRE IL PULSANTE NON SI VEDE (sul sito ufficiale).
+   Sta nascosto qui nel CSS e non in JavaScript: così non esiste nessun
+   istante in cui compare per poi sparire mentre la pagina si carica.
+   Lo accende main.js mettendo "statistiche-on" sul body — in questa
+   copia di TEST succede sempre e subito, perché IS_TEST è true. */
+.btn-menu { display:none; flex-direction:column; justify-content:center; gap:4px; width:34px; height:30px; padding:0 7px; background:rgba(255,255,255,0.15); border:none; border-radius:9px; cursor:pointer; flex-shrink:0; }
+body.statistiche-on .btn-menu { display:flex; }
 .btn-menu span { display:block; height:3px; border-radius:3px; background:white; }
 .btn-menu:active { background:rgba(255,255,255,0.3); }
 
@@ -488,3 +494,70 @@ body.menu-open { overflow:hidden; }
 .prezzo-azioni button { flex:1; padding:10px; border:none; border-radius:11px; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer; }
 .btn-prezzo-annulla { background:#2d3436; color:white; }
 .btn-prezzo-ok { background:linear-gradient(135deg,#00b894,#00cec9); color:white; }
+/* ── NUOVO SETTEMBRE 2026: emoji ballerine del popup Novità ─────────
+   Prima era un blocco unico che rimbalzava tutto insieme. Ora ogni
+   emoji ha il suo ritardo, così ballano una dopo l'altra come un'onda:
+   costa due righe di CSS e si nota subito. */
+.novita-emoji { display:flex; justify-content:center; gap:4px; margin-bottom:8px; font-size:40px; line-height:1; }
+.novita-emoji span { display:inline-block; animation:ballonzola 1.1s ease-in-out infinite; }
+.novita-emoji span:nth-child(2) { animation-delay:0.12s; }
+.novita-emoji span:nth-child(3) { animation-delay:0.24s; }
+.novita-emoji span:nth-child(4) { animation-delay:0.36s; }
+.novita-emoji span:nth-child(5) { animation-delay:0.48s; }
+@keyframes ballonzola { 0%,100% { transform:translateY(0) rotate(0deg); } 50% { transform:translateY(-11px) rotate(-8deg); } }
+
+/* ── NUOVO SETTEMBRE 2026: LA MANINA CHE INDICA IL MENU (coach.js) ──
+   Serve a far trovare il pulsante ☰ la prima volta: senza, le tre
+   linee sono una novità in un angolo che nessuno guarda.
+   Tutto lo schermo si scurisce TRANNE il pulsante, che resta acceso.
+
+   COME SI FA IL BUCO. Non si ritaglia niente: si usa un'ombra con
+   un'espansione enorme (box-shadow spread 9999px). L'ombra copre tutto
+   lo schermo tranne il rettangolo dell'elemento, che resta trasparente
+   — quindi il pulsante che sta sotto si vede, illuminato, e tutto il
+   resto è scuro. Il rettangolo lo mette coach.js nel punto esatto in
+   cui si trova davvero il pulsante, misurandolo.
+
+   PERCHÉ DUE STRATI. #coachBlocco sta sotto e prende tutti i tocchi
+   fuori dal buco (così non si può toccare nient'altro); #coachBuco sta
+   sopra e prende solo quello dentro al buco, cioè il tocco "giusto".
+   Il pulsante vero non viene mai toccato: ci pensa coach.js a chiamare
+   apriMenu(). Meno acrobazie con gli z-index dentro l'intestazione. */
+#coachBlocco { display:none; position:fixed; inset:0; z-index:9700; }
+body.coach-on #coachBlocco { display:block; }
+/* Mentre la manina è accesa la pagina non si scrolla: il buco è
+   inchiodato sopra il pulsante e, se la pagina scorresse, resterebbe
+   indietro illuminando un punto vuoto. */
+body.coach-on { overflow:hidden; }
+
+#coachBuco { display:none; position:fixed; z-index:9701; border-radius:12px; cursor:pointer;
+             animation:coachPulsa 1.5s ease-in-out infinite; }
+body.coach-on #coachBuco { display:block; }
+@keyframes coachPulsa {
+  0%,100% { box-shadow:0 0 0 9999px rgba(0,0,0,0.74), 0 0 0 3px rgba(255,255,255,0.85), 0 0 18px 4px rgba(255,234,167,0.7); }
+  50%     { box-shadow:0 0 0 9999px rgba(0,0,0,0.74), 0 0 0 4px rgba(255,255,255,1),    0 0 32px 11px rgba(255,234,167,1); }
+}
+
+#coachFumetto { display:none; position:fixed; z-index:9702; width:min(290px, calc(100vw - 30px)); }
+body.coach-on #coachFumetto { display:block; animation:coachEntra 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.3s both; }
+@keyframes coachEntra { from { opacity:0; transform:translateY(-14px) scale(0.9); } to { opacity:1; transform:none; } }
+/* La freccetta punta in su, verso il pulsante, e saltella piano */
+.coach-freccia { font-size:20px; color:#ffeaa7; line-height:1; margin-left:13px; margin-bottom:-2px;
+                 text-shadow:0 2px 8px rgba(0,0,0,0.5); animation:coachSaltella 1s ease-in-out infinite; }
+@keyframes coachSaltella { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
+.coach-testo { background:white; border-radius:16px; padding:13px 15px; box-shadow:0 12px 38px rgba(0,0,0,0.45);
+               font-size:14.5px; font-weight:900; color:var(--text); line-height:1.45; }
+.coach-testo b { color:var(--text); }
+.coach-testo span { display:block; font-size:12.5px; font-weight:700; color:#636e72; margin-top:5px; }
+/* Tocco fuori dal pulsante: il fumetto fa "no" con la testa invece di
+   non far succedere niente, così si capisce che l'unica strada è il ☰ */
+#coachFumetto.scuoti { animation:coachScuoti 0.45s ease; }
+@keyframes coachScuoti { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-9px); } 40% { transform:translateX(9px); } 60% { transform:translateX(-6px); } 80% { transform:translateX(6px); } }
+
+/* Chi ha chiesto meno animazioni nelle impostazioni del telefono le
+   riceve tutte ferme: resta il buco luminoso, che è quello che conta. */
+@media (prefers-reduced-motion: reduce) {
+  #coachBuco, .coach-freccia, .novita-emoji span { animation:none; }
+  #coachBuco { box-shadow:0 0 0 9999px rgba(0,0,0,0.74), 0 0 0 4px rgba(255,255,255,1), 0 0 26px 8px rgba(255,234,167,0.95); }
+  body.coach-on #coachFumetto { animation:none; }
+}

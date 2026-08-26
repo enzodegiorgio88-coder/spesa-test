@@ -25,7 +25,7 @@
 import { ref, push, set, remove }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-import { db, ARCHIVIO_PATH } from './config.js';
+import { db, ARCHIVIO_PATH, statisticheAttive } from './config.js';
 import { state } from './state.js';
 
 // Quanti mesi teniamo. Tredici e non dodici di proposito: così a
@@ -92,6 +92,13 @@ function rigaPerArchivio(r, col) {
 // non un articolo della spesa.
 export function archiviaSpesa(righe) {
   try {
+    // NUOVO SETTEMBRE 2026: prima dell'accensione non si archivia NIENTE.
+    // È voluto, ed è la ragione per cui la prima volta che si aprono le
+    // Statistiche i numeri sono tutti a zero: il conteggio parte dal 1°
+    // settembre, non da quando il sito è stato messo online. Così nessuno
+    // apre la schermata e ci trova dentro le prove fatte nei giorni prima.
+    if (!statisticheAttive()) return;
+
     if (!state.currentFamilyId) return;
     if (!Array.isArray(righe) || !righe.length) return;
 
