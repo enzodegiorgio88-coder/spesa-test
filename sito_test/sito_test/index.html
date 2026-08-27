@@ -332,7 +332,37 @@
         <button class="btn-menu" id="btnMenu" onclick="apriMenu()" aria-label="Apri il menu">
           <span></span><span></span><span></span>
         </button>
-        <h1>🛒 Spesa Famiglia</h1>
+        <!-- NUOVO SETTEMBRE 2026: al posto dell'emoji 🛒 c'e' il logo vero,
+             lo stesso disegno di ricca-sfondo-scuro.svg (login) e dell'icona
+             sulla schermata Home, ridotto all'essenziale: la famiglia nei tre
+             colori delle categorie (Casa rosso, Persona turchese, Alimentari
+             azzurro) piu' il cesto, senza verdura ne' frutta — a 26px
+             diventerebbero puntini di colore e basta.
+             Sta scritto qui dentro invece che in un file a parte per due
+             motivi: nessuna richiesta in piu' al server, e il cesto usa
+             "currentColor", cioe' si prende da solo il bianco che
+             l'intestazione da' al titolo qui accanto — se un giorno si
+             cambia il colore del testo, il cesto lo segue senza toccarlo.
+             Le figure sono disegnate PRIMA del cesto: cosi il bordo crema
+             passa davanti e sembrano dentro, non appiccicate sopra.
+             E' fuori dall'<h1> di proposito: l'h1 accorcia il testo coi
+             puntini quando lo spazio manca, e il logo verrebbe tagliato. -->
+        <svg class="logo-titolo" viewBox="128 180 768 730" aria-hidden="true" focusable="false">
+          <circle cx="380" cy="244" r="52" fill="#FF6B6B"/>
+          <path d="M294 610 V400 a86 86 0 0 1 172 0 V610 Z" fill="#FF6B6B"/>
+          <circle cx="560" cy="286" r="48" fill="#4ECDC4"/>
+          <path d="M480 610 V430 a80 80 0 0 1 160 0 V610 Z" fill="#4ECDC4"/>
+          <circle cx="730" cy="348" r="38" fill="#45B7D1"/>
+          <path d="M668 610 V470 a62 62 0 0 1 124 0 V610 Z" fill="#45B7D1"/>
+          <g fill="none" stroke="currentColor" stroke-width="44" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M168 614 L296 838 Q310 876 348 876 L676 876 Q714 876 728 838 L856 614"/>
+            <path d="M345 632 L400 824"/>
+            <path d="M512 632 L512 824"/>
+            <path d="M679 632 L624 824"/>
+            <path d="M150 600 L874 600"/>
+          </g>
+        </svg>
+        <h1>Spesa Famiglia</h1>
       </div>
       <!-- SPOSTATO SETTEMBRE 2026: qui c'erano la foto dell'account, il
            nome e il pulsante "Esci". Sono passati dentro la schermata Menu

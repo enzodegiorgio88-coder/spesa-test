@@ -417,6 +417,12 @@ body.sito-test #testBadge { display:block; background:repeating-linear-gradient(
 .titolo-wrap { display:flex; align-items:center; gap:8px; min-width:0; }
 /* Il titolo non va mai a capo: se lo spazio è poco si accorcia coi puntini */
 .titolo-wrap h1 { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* NUOVO SETTEMBRE 2026: il logo che ha preso il posto dell'emoji 🛒.
+   Non si stringe mai quando lo spazio manca (flex-shrink:0) — a cedere
+   deve essere il testo, non il disegno. Non gli diamo nessun colore: il
+   cesto è disegnato in "currentColor" e prende il bianco che header dà
+   al testo, le tre figure hanno invece i colori fissi delle categorie. */
+.logo-titolo { width:26px; height:26px; flex-shrink:0; }
 /* PRIMA DEL 1° SETTEMBRE IL PULSANTE NON SI VEDE (sul sito ufficiale).
    Sta nascosto qui nel CSS e non in JavaScript: così non esiste nessun
    istante in cui compare per poi sparire mentre la pagina si carica.
