@@ -44,8 +44,18 @@ onPhotoChange(renderRow);
 function setUserUI(user) {
   document.getElementById('loginScreen').style.display  = 'none';
   document.getElementById('appScreen').style.display    = 'block';
-  document.getElementById('userAvatar').src             = user.photoURL || '';
-  document.getElementById('userName').textContent       = user.displayName?.split(' ')[0] || user.email;
+  // La foto ora sta in una scheda grande dentro il Menu: se l'account non
+  // ce l'ha (login con email e password) si nasconde il cerchietto, invece
+  // di lasciare l'icona di immagine rotta che si vedrebbe con src vuoto.
+  const foto   = user.photoURL || '';
+  const avatar = document.getElementById('userAvatar');
+  avatar.src             = foto;
+  avatar.style.display   = foto ? '' : 'none';
+  // Accanto alla foto va scritto SOLO il nome ("vincenzo"), mai l'email
+  // intera. Se l'account non ha un nome suo (login con email e password)
+  // si tiene il pezzo davanti alla @, che è la cosa più vicina al nome.
+  const nome = user.displayName?.split(' ')[0] || (user.email || '').split('@')[0];
+  document.getElementById('userName').textContent = nome;
 }
 
 function showLoginScreen() {
