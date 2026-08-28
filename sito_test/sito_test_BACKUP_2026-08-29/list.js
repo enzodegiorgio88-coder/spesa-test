@@ -7,7 +7,7 @@ import { state, ensureRows, emptyRow } from './state.js';
 import { haBlasfemia, haAlimentoVietato } from './content-filter.js';
 import { mostraBlocco, customConfirm } from './modals.js';
 import { saveToFirebase } from './sync.js';
-import { buildPhotoMini, buildPhotoBtn } from './photo.js';
+import { buildPhotoWrap } from './photo.js';
 import { inviaNotificaUrgente } from './notifications.js';
 import { updateTotale } from './totals.js';
 // NUOVO LUGLIO 2026: memoria dei prezzi. prezzi.js non importa list.js
@@ -17,8 +17,6 @@ import { ricordaPrezzo, proponiPrezzoSeConosciuto } from './prezzi.js';
 // NUOVO SETTEMBRE 2026: archivio della spesa fatta. Stessa regola di
 // prezzi.js — archivio.js non importa list.js, quindi nessun ciclo.
 import { archiviaSpesa } from './archivio.js';
-// NUOVO SETTEMBRE 2026: icone disegnate al posto delle emoji nei pulsanti.
-import { ico, pallino, pallinoHTML } from './icone.js';
 
 // ── COSTRUZIONE RIGHE ──────────────────────────────
 
@@ -47,48 +45,6 @@ function aggiornaBarraInBasso() {
 function onFieldFocus() { clearTimeout(_editTimer); aggiornaBarraInBasso(); }
 function onFieldBlur()  { clearTimeout(_editTimer); _editTimer = setTimeout(aggiornaBarraInBasso, 120); }
 
-// ── RIGHE APERTE ───────────────────────────────────
-// NUOVO SETTEMBRE 2026. Prima ogni articolo mostrava tutto insieme e
-// occupava 145px: se ne vedevano tre per schermata. Ora la riga chiusa è
-// una riga sola e quantità, priorità, prezzo, foto ed elimina compaiono
-// toccandola.
-// Quali righe siano aperte lo teniamo QUI e non dentro l'articolo,
-// perché l'articolo va su Firebase: se ci finisse dentro, aprire una
-// riga la aprirebbe anche sul telefono di tutti gli altri. Ogni riga
-// esiste due volte (vista per categoria e vista Tutto): le teniamo
-// allineate, così cambiando vista non si richiude da sola.
-const righeAperte = new Set();
-const chiaveRiga  = (col, i) => col + ':' + i;
-
-function toggleRiga(col, i) {
-  const k = chiaveRiga(col, i);
-  const aperta = !righeAperte.has(k);
-  if (aperta) righeAperte.add(k); else righeAperte.delete(k);
-  document.querySelectorAll(`#list-${col} [data-idx="${i}"], #all-${col} [data-idx="${i}"]`)
-    .forEach(el => el.classList.toggle('aperta', aperta));
-}
-
-// Dopo un'eliminazione gli articoli scalano di posto: la riga 3 diventa
-// la 2. Le posizioni memorizzate non valgono più e aprirebbero la riga
-// sbagliata, quindi per quella categoria si riparte da tutte chiuse.
-// Apre la riga senza mai chiuderla, al contrario di toggleRiga. La usa
-// il campo del nome appena si scrive la prima lettera: chi sta
-// aggiungendo un articolo nuovo vuole quasi sempre metterci anche il
-// prezzo o la foto, e con la riga chiusa avrebbe dovuto aprirla a mano
-// ogni volta. Se la riga è già aperta non fa niente, così continuando
-// a digitare non si richiude da sola a metà parola.
-function apriRiga(col, i) {
-  const k = chiaveRiga(col, i);
-  if (righeAperte.has(k)) return;
-  righeAperte.add(k);
-  document.querySelectorAll(`#list-${col} [data-idx="${i}"], #all-${col} [data-idx="${i}"]`)
-    .forEach(el => el.classList.add('aperta'));
-}
-
-function scordaRigheAperte(col) {
-  [...righeAperte].forEach(k => { if (k.startsWith(col + ':')) righeAperte.delete(k); });
-}
-
 function pushAction(col, i, label) {
   if (!state.data[col][i].actions) state.data[col][i].actions = [];
   const acts = state.data[col][i].actions;
@@ -113,7 +69,6 @@ function onCheckToggle(col, i) {
 
 function onDeleteRow(col, i) {
   state.data[col].splice(i, 1);
-  scordaRigheAperte(col);
   ensureRows(col);
   saveToFirebase();
   renderCol(col, `list-${col}`);
@@ -121,14 +76,10 @@ function onDeleteRow(col, i) {
   updateStats();
 }
 
-// Il cestino della singola riga è passato DENTRO la riga aperta: prima
-// stava sempre in vista accanto al nome ed era facilissimo sfiorarlo.
-// Ora per cancellare un articolo servono due tocchi voluti.
 function buildDelBtn(col, i) {
   const btn = document.createElement('button');
-  btn.type = 'button'; btn.className = 'del-btn';
-  btn.append(ico('cestino'), document.createTextNode('Elimina'));
-  btn.onclick = (ev) => { ev.stopPropagation(); onDeleteRow(col, i); };
+  btn.className = 'del-btn'; btn.textContent = '✕';
+  btn.onclick = () => onDeleteRow(col, i);
   return btn;
 }
 // NUOVO LUGLIO 2026: cosa succede quando premi "Aggiungi" sulla tesserina
@@ -159,13 +110,6 @@ function buildTextInput(col, i, item, onTextChange) {
     }
     state.data[col][i].text = inp.value;
     if (onTextChange) onTextChange(inp.value);
-    // Appena si scrive, la riga si apre da sola con prezzo, foto ed
-    // elimina già pronti. Vale in tutte e tre le categorie e anche
-    // nella vista "Tutto", perché apriRiga apre tutte e due le copie
-    // della riga. Non tocca il campo in cui si sta scrivendo: aggiunge
-    // solo una classe, non ri-disegna niente, quindi non si perde il
-    // punto in cui si è arrivati a digitare.
-    apriRiga(col, i);
     if (!typingLogged) {
       typingLogged = true;
       if (!state.data[col][i].actions) state.data[col][i].actions = [];
@@ -254,14 +198,10 @@ function buildQtyWrap(col, i, item) {
 // per ciascuna. Sul computer la didascalia compare SOLO passandoci sopra
 // col mouse; sul telefono, dove il mouse non c'è, resta sempre visibile
 // dentro il menu (vedi le regole .prio-desc in style.css).
-// I pallini ⚪ 🟠 🔴 erano emoji dentro il testo: ogni telefono li
-// disegnava a modo suo e non erano nemmeno i colori dell'app. Ora il
-// pallino è un cerchio in CSS (vedi pallino() in icone.js) e il testo
-// resta testo.
 const PRIORITA = [
-  { val: 'normale',    txt: 'Normale',    desc: 'Senza fretta: si prende al solito giro di spesa.' },
-  { val: 'importante', txt: 'Importante', desc: 'Da non dimenticare: mettilo nel carrello alla prossima spesa.' },
-  { val: 'urgente',    txt: 'Urgente',    desc: 'Serve subito: avvisa tutta la famiglia.' }
+  { val: 'normale',    txt: '⚪ Normale',    desc: 'Senza fretta: si prende al solito giro di spesa.' },
+  { val: 'importante', txt: '🟠 Importante', desc: 'Da non dimenticare: mettilo nel carrello alla prossima spesa.' },
+  { val: 'urgente',    txt: '🔴 Urgente',    desc: 'Serve subito: avvisa tutta la famiglia.' }
 ];
 
 // Un solo menu aperto alla volta: un tocco fuori li chiude tutti.
@@ -313,15 +253,14 @@ function buildPriorityMenu(col, i, item) {
   btn.type = 'button';
   btn.className = 'priority-select'
     + (cur === 'urgente' ? ' urgente' : cur === 'importante' ? ' importante' : '');
-  btn.append(pallino(cur), document.createTextNode(PRIORITA.find(s => s.val === cur).txt + ' ▾'));
+  btn.textContent = PRIORITA.find(s => s.val === cur).txt + ' ▾';
 
   const menu = document.createElement('div'); menu.className = 'prio-menu';
   PRIORITA.forEach(s => {
     const opt = document.createElement('button');
     opt.type = 'button';
     opt.className = 'prio-option' + (s.val === cur ? ' attiva' : '');
-    const nome = document.createElement('span'); nome.className = 'prio-name';
-    nome.append(pallino(s.val), document.createTextNode(s.txt));
+    const nome = document.createElement('span'); nome.className = 'prio-name'; nome.textContent = s.txt;
     const desc = document.createElement('span'); desc.className = 'prio-desc'; desc.textContent = s.desc;
     opt.append(nome, desc);
     opt.onclick = (ev) => {
@@ -387,42 +326,17 @@ if (v !== inp.value) inp.value = v;
   return wrap;
 }
 
-// ── QUELLO CHE RESTA IN VISTA A RIGA CHIUSA ────────
-// Chiudendo la riga il prezzo e la quantità sparirebbero, e sono proprio
-// le due cose che si vogliono vedere a colpo d'occhio mentre si è al
-// supermercato. Quindi restano nella riga come due targhette piccole, e
-// spariscono solo quando la riga si apre (lì sotto ci sono già il campo
-// € e il −x1+, sarebbe scritto due volte).
-function buildPrezzoBadge(item) {
-  const p = parseFloat(item.price);
-  if (!item.price || !(p > 0)) return null;
-  const totale = p * (item.qty || 1);
-  const s = document.createElement('span'); s.className = 'riga-prezzo';
-  s.textContent = '€ ' + totale.toFixed(2).replace('.', ',');
-  return s;
-}
-
-function buildQtyBadge(item) {
-  if (!item.qty || item.qty <= 1) return null;
-  const s = document.createElement('span'); s.className = 'riga-qty';
-  s.textContent = '×' + item.qty;
-  return s;
-}
-
-function buildRowHeader(col, i, item, apriChiudi) {
+function buildRowHeader(col, i, item) {
   const inner = document.createElement('div'); inner.className = 'item-inner';
   const chk   = document.createElement('button');
   chk.className = `chk${item.done ? ` done-${col}` : ''}`;
-  // La spunta è disegnata e non è più il carattere ✓: stessa ragione
-  // delle tre linee del menu ☰, così è identica su tutti i telefoni.
-  if (item.done) chk.appendChild(ico('spunta'));
+  chk.textContent = item.done ? '✓' : '';
   chk.onclick = () => onCheckToggle(col, i);
 
   // Icona 🔗 visibile solo se il testo contiene un URL: aprendola si va
   // direttamente al sito, mentre il testo resta modificabile nell'input.
   const link = document.createElement('a');
-  link.className = 'link-btn'; link.appendChild(ico('link'));
-  link.setAttribute('aria-label', 'Apri il sito di questo articolo');
+  link.className = 'link-btn'; link.textContent = '🔗';
   link.target = '_blank'; link.rel = 'noopener noreferrer';
   const aggiornaLink = (testo) => {
     const url = estraiUrl(testo);
@@ -431,60 +345,24 @@ function buildRowHeader(col, i, item, apriChiudi) {
   };
   aggiornaLink(item.text);
 
-  // La freccetta che apre e chiude. Gira di 90° quando la riga è aperta
-  // (è solo CSS: .item-row.aperta .riga-toggle .ico).
-  const tog = document.createElement('button');
-  tog.type = 'button'; tog.className = 'riga-toggle';
-  tog.setAttribute('aria-label', 'Mostra o nascondi le opzioni di questo articolo');
-  tog.appendChild(ico('freccia'));
-  tog.onclick = (ev) => { ev.stopPropagation(); apriChiudi(); };
-
-  inner.appendChild(chk);
-  // La miniatura c'è solo se la foto c'è davvero: niente più riquadro
-  // tratteggiato vuoto su ogni riga.
-  const mini = buildPhotoMini(col, i, item);
-  if (mini) inner.appendChild(mini);
-  inner.appendChild(buildTextInput(col, i, item, aggiornaLink));
-  inner.appendChild(link);
-  const qb = buildQtyBadge(item);    if (qb) inner.appendChild(qb);
-  const pb = buildPrezzoBadge(item); if (pb) inner.appendChild(pb);
-  inner.appendChild(tog);
-
-  // Si apre e si chiude toccando un punto qualsiasi della riga. I campi e
-  // i pulsanti sono esclusi, altrimenti scrivere il nome di un articolo o
-  // spuntarlo aprirebbe la riga per sbaglio ogni volta.
-  inner.addEventListener('click', (ev) => {
-    if (ev.target.closest('input, button, a, label, .photo-mini')) return;
-    apriChiudi();
-  });
+  inner.append(chk, buildPhotoWrap(col, i, item), buildTextInput(col, i, item, aggiornaLink), link, buildDelBtn(col, i));
   return inner;
 }
 
-// Tutto quello che compare toccando la riga. Dentro ci sono anche il
-// pulsante della foto e quello per eliminare, che prima stavano sempre
-// in vista.
 function buildRowExtra(col, i, item) {
   const extra = document.createElement('div'); extra.className = 'item-extra';
   extra.append(buildQtyWrap(col, i, item), buildPriorityMenu(col, i, item));
   if (new Date() >= NOVITA_RELEASE) extra.appendChild(buildPriceWrap(col, i, item));
-  extra.append(buildPhotoBtn(col, i, item), buildDelBtn(col, i));
   return extra;
 }
 
 function makeRow(col, i, item) {
   const li = document.createElement('li');
-  // Alla riga vengono attaccate anche due classi nuove: "done-riga"
-  // (per sbiadire la targhetta del prezzo su un articolo già preso) e
-  // "aperta", che ricompare da sola se questa riga era aperta prima di
-  // un ri-disegno — per esempio quando arriva una modifica di un altro
-  // membro della famiglia mentre la si sta usando.
   li.className = `item-row${item.urgent && !item.done ? ' urgent'
-                          : item.important && !item.done ? ' important' : ''}`
-    + (item.done ? ' done-riga' : '')
-    + (righeAperte.has(chiaveRiga(col, i)) ? ' aperta' : '');
+                          : item.important && !item.done ? ' important' : ''}`;
   li.dataset.col = col;
   li.dataset.idx = i;
-  li.append(buildRowHeader(col, i, item, () => toggleRiga(col, i)), buildRowExtra(col, i, item));
+  li.append(buildRowHeader(col, i, item), buildRowExtra(col, i, item));
   if (item.lastAction) {
     const auth = document.createElement('div'); auth.className = 'item-author';
     auth.textContent = item.lastAction; li.appendChild(auth);
@@ -562,8 +440,7 @@ function updateStats() {
     const rosso = urg.length > 0;
     urgWrap.style.display = 'inline-block';
     urgBtn.classList.toggle('importanti', !rosso);
-    urgBtn.innerHTML = pallinoHTML(rosso ? 'urgente' : 'importante')
-      + (rosso ? ' Urgenti ' : ' Importanti ')
+    urgBtn.innerHTML = (rosso ? '🔴 Urgenti ' : '🟠 Importanti ')
       + `<span class="urg-count" id="urgBtnCount">${rosso ? urg.length : imp.length}</span> ▾`;
     const mUrg = document.getElementById('menuCountUrg');
     const mImp = document.getElementById('menuCountImp');

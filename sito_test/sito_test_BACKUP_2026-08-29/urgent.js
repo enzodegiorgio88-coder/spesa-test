@@ -5,20 +5,11 @@
 import { COLORS, NOVITA_RELEASE } from './config.js';
 import { state } from './state.js';
 import { posizionaMenuPrio } from './list.js';
-// NUOVO SETTEMBRE 2026: icone disegnate e pallini CSS al posto delle
-// emoji nei comandi. Restano emoji, invece, i messaggi di lista vuota
-// qui sotto: quelli sono il modo di parlare dell'app, non un comando.
-import { icoHTML, pallinoHTML } from './icone.js';
 
 function buildUrgentiCategory(c, items, showPrices) {
   const cat   = document.createElement('div'); cat.className = 'urg-category';
   const title = document.createElement('div'); title.className = 'urg-cat-title';
-  // Il pallino colorato dice già di che categoria si tratta: accanto ci
-  // va l'icona della stessa categoria delle linguette, non un'emoji.
-  const ICONE_CAT = ['casa', 'persona', 'carrello'];
-  const NOMI_CAT  = ['Casa', 'Persona', 'Alimentari'];
-  title.innerHTML = `<span style="width:10px;height:10px;border-radius:50%;background:${COLORS[c]};flex-shrink:0;display:inline-block;"></span> `
-    + icoHTML(ICONE_CAT[c]) + ' ' + NOMI_CAT[c];
+  title.innerHTML = `<span style="width:10px;height:10px;border-radius:50%;background:${COLORS[c]};flex-shrink:0;display:inline-block;"></span> ${ ['🏠 Casa','👤 Persona','🛒 Alimentari'][c] }`;
   cat.appendChild(title);
 
   items.forEach(item => {
@@ -65,16 +56,14 @@ function renderUrgentiBody() {
       : '<div class="urg-empty">🟠 Nessun articolo importante!<br><span style="font-size:13px;font-weight:600;">Niente promemoria per ora.</span></div>';
 
   const tit = document.getElementById('urgModalTitle');
-  if (tit) tit.innerHTML = pallinoHTML(rosso ? 'urgente' : 'importante')
-    + (rosso ? ' Articoli Urgenti' : ' Articoli Importanti');
+  if (tit) tit.textContent = rosso ? '🔴 Articoli Urgenti' : '🟠 Articoli Importanti';
   document.getElementById('urgModalSub').textContent = totale > 0
     ? `${totale} ${totale === 1
         ? (rosso ? 'articolo da prendere' : 'articolo da non dimenticare')
         : (rosso ? 'articoli da prendere' : 'articoli da non dimenticare')}`
     : (rosso ? 'Nessun urgente' : 'Nessun importante');
   const fil = document.getElementById('btnUrgFiltro');
-  if (fil) fil.innerHTML = pallinoHTML(rosso ? 'urgente' : 'importante')
-    + (rosso ? ' Urgenti ▾' : ' Importanti ▾');
+  if (fil) fil.textContent = rosso ? '🔴 Urgenti ▾' : '🟠 Importanti ▾';
   document.getElementById('urgentiModal').classList.toggle('importanti', !rosso);
 }
 

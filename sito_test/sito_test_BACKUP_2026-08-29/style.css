@@ -60,7 +60,7 @@ body { font-family: -apple-system,'Segoe UI',sans-serif; background: var(--bg); 
 .btn-back { width: 100%; padding: 10px; background: white; color: #2d3436; border: 2px solid #eee; border-radius: 10px; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; }
 .form-error { color: #d63031; font-size: 12px; font-weight: 700; margin-top: 8px; text-align: center; display: none; }
 .form-error.show { display: block; }
-#appScreen { display: none; padding-bottom: 84px; }
+#appScreen { display: none; padding-bottom: 120px; }
 /* CORREZIONE LUGLIO 2026 (punto 3): l'intestazione NON è più fissa (tolto
    position:sticky). Prima header e #totaleBar erano entrambi sticky a top:0
    e, scorrendo, il totale finiva NASCOSTO sotto l'header (z-index più alto).
@@ -95,26 +95,21 @@ header p { font-size:11px; opacity:0.65; }
 .all-section { background:white; border-radius:14px; padding:0 16px; margin-bottom:12px; box-shadow:0 2px 16px rgba(0,0,0,0.08); }
 .sec-title { display:flex; align-items:center; gap:8px; padding:12px 0 8px; font-weight:800; font-size:14px; border-bottom:2px solid var(--bg); margin-bottom:4px; }
 .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-.item-row { border-bottom:1px solid var(--bg); padding:2px 0 2px 6px; display:flex; flex-direction:column; list-style:none; position:relative; }
-/* Il pallino • che stava qui è stato tolto (settembre 2026): con la riga
-   alta tre righe, il top:50% lo piazzava a mezza altezza, staccato dal
-   nome dell articolo e appiccicato al -x1+. Sembrava un difetto. */
+.item-row { border-bottom:1px solid var(--bg); padding:8px 0; display:flex; flex-direction:column; list-style:none; position:relative; padding-left:12px; }
+.item-row::before { content:'•'; position:absolute; left:0; top:50%; transform:translateY(-50%); font-size:10px; color:#2d3436; line-height:1; }
 #list-0,#list-1,#list-2,#all-0,#all-1,#all-2 { padding-left:4px; }
-.item-row.urgent { background:linear-gradient(90deg,rgba(255,107,107,0.06),transparent); border-left:3px solid var(--casa); padding-left:9px; margin-left:-4px; }
-.item-inner { display:flex; align-items:center; gap:8px; padding:5px 0; }
-.item-extra { display:flex; align-items:center; gap:8px; padding:2px 0 8px 36px; flex-wrap:wrap; row-gap:6px; }
+.item-row.urgent { background:linear-gradient(90deg,rgba(255,107,107,0.06),transparent); border-left:3px solid var(--casa); padding-left:14px; margin-left:-4px; }
+.item-inner { display:flex; align-items:center; gap:8px; }
+.item-extra { display:flex; align-items:center; gap:8px; padding:4px 0 2px 36px; flex-wrap:wrap; row-gap:6px; }
 .chk { width:28px; height:28px; border-radius:8px; flex-shrink:0; border:2.5px solid var(--muted); background:transparent; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; cursor:pointer; transition:all 0.2s; }
 .chk.done-0 { background:var(--casa); border-color:var(--casa); }
 .chk.done-1 { background:var(--persona); border-color:var(--persona); }
 .chk.done-2 { background:var(--alim); border-color:var(--alim); }
 .photo-box { flex-shrink:0; width:46px; height:46px; border-radius:10px; overflow:hidden; position:relative; }
 .photo-box img { width:100%; height:100%; object-fit:cover; cursor:pointer; display:block; }
-/* Qui stavano le tre regole di .photo-placeholder: il riquadro
-   tratteggiato 46x46 con dentro 📷 e la scritta "foto", che compariva
-   su OGNI riga anche quando foto non ce n'era. Tolto a settembre 2026
-   insieme alla riga compatta: adesso la miniatura si vede solo se la
-   foto c'è davvero (.photo-mini) e il pulsante per aggiungerla sta
-   nella riga aperta (.btn-foto). */
+.photo-placeholder { width:46px; height:46px; border-radius:10px; border:2px dashed var(--muted); background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; gap:1px; }
+.photo-placeholder span:first-child { font-size:16px; line-height:1; }
+.photo-placeholder span:last-child { font-size:8px; font-weight:700; color:var(--muted); }
 .photo-del { position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.55); border:none; border-radius:50%; width:16px; height:16px; color:white; font-size:9px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .item-input { flex:1; border:none; background:transparent; font-family:inherit; font-size:16px; font-weight:600; color:var(--text); padding:4px 0; outline:none; min-width:0; }
 .item-input::placeholder { color:var(--muted); font-weight:400; font-size:14px; }
@@ -124,16 +119,16 @@ header p { font-size:11px; opacity:0.65; }
 .qty-val { font-size:14px; font-weight:800; color:var(--text); min-width:20px; text-align:center; }
 .priority-btn { background:none; border:2px solid var(--muted); border-radius:20px; padding:3px 10px; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer; color:var(--muted); transition:all 0.2s; }
 .priority-btn.urgent { background:var(--casa); border-color:var(--casa); color:white; }
-.del-btn { background:#fff5f5; border:1.5px solid #ffdada; color:#e05252; font-family:inherit; font-size:11px; font-weight:800; cursor:pointer; padding:4px 10px; border-radius:20px; flex-shrink:0; }
+.del-btn { background:none; border:none; color:var(--muted); font-size:15px; cursor:pointer; padding:4px 6px; border-radius:8px; flex-shrink:0; }
 .add-btn { display:flex; align-items:center; gap:6px; margin-top:10px; padding:11px 14px; background:var(--bg); border:2px dashed var(--muted); border-radius:10px; color:var(--muted); font-family:inherit; font-weight:700; font-size:14px; cursor:pointer; width:100%; }
-.item-author { font-size:10px; color:var(--muted); font-weight:600; padding:0 0 6px 36px; letter-spacing:0.3px; }
+.item-author { font-size:10px; color:var(--muted); font-weight:600; padding:1px 0 0 36px; letter-spacing:0.3px; }
 .bottom-bar { position:fixed; bottom:0; left:0; right:0; background:white; border-top:1px solid #eee; padding:8px 16px 14px; display:flex; gap:8px; z-index:200; flex-wrap:wrap; }
 .btn-view { flex:1; padding:10px; border:2px solid var(--muted); border-radius:10px; background:white; font-family:inherit; font-weight:800; font-size:12px; cursor:pointer; color:var(--text); transition:all 0.2s; }
 .btn-view.active { background:var(--text); color:white; border-color:var(--text); }
 .btn-clear { padding:10px 12px; border:2px solid #ff7675; border-radius:10px; background:white; font-family:inherit; font-weight:800; font-size:12px; cursor:pointer; color:#ff7675; }
 .btn-row2 { display:flex; gap:8px; width:100%; }
 .btn-copy { flex:1; padding:11px; border:none; border-radius:10px; background:linear-gradient(135deg,#25D366,#128C7E); color:white; font-family:inherit; font-weight:800; font-size:12px; cursor:pointer; }
-#toast { position:fixed; bottom:96px; left:50%; transform:translateX(-50%); background:#2d3436; color:white; padding:10px 20px; border-radius:20px; font-size:13px; font-weight:700; opacity:0; transition:opacity 0.3s; pointer-events:none; white-space:nowrap; z-index:9999; }
+#toast { position:fixed; bottom:130px; left:50%; transform:translateX(-50%); background:#2d3436; color:white; padding:10px 20px; border-radius:20px; font-size:13px; font-weight:700; opacity:0; transition:opacity 0.3s; pointer-events:none; white-space:nowrap; z-index:9999; }
 #toast.show { opacity:1; }
 #zoom { display:flex; position:fixed; inset:0; background:rgba(0,0,0,0); z-index:9999; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity 0.25s ease, background 0.25s ease; }
 #zoom.show { opacity:1; pointer-events:all; background:rgba(0,0,0,0.88); }
@@ -287,8 +282,8 @@ html.auth-pending #loadingOverlay { display:flex; }
    niente foto o icone che si trascinano insieme al dito. Toccare, scrivere,
    e la pressione lunga sui pulsanti quantità funzionano come prima. */
 .item-row, .item-row input, .item-row button, .item-row a, .item-row img, .item-row label { touch-action: pan-y; }
-.item-row img, .link-btn, .btn-foto { -webkit-user-drag: none; }
-.chk, .del-btn, .qty-wrap, .priority-btn, .btn-foto, .riga-toggle, .riga-prezzo, .riga-qty, .item-author, .link-btn { -webkit-user-select: none; user-select: none; }
+.item-row img, .link-btn, .photo-placeholder { -webkit-user-drag: none; }
+.chk, .del-btn, .qty-wrap, .priority-btn, .photo-placeholder, .item-author, .link-btn { -webkit-user-select: none; user-select: none; }
 /* ── NUOVO LUGLIO 2026: anteprima del contenuto di un file di backup ──
    Il file scelto con "Apri un file di backup scaricato" NON si apre in
    programmi esterni: tutto il contenuto viene mostrato qui, dentro l'app,
@@ -331,10 +326,10 @@ body.sito-test #testBadge { display:block; background:repeating-linear-gradient(
    Sostituisce il vecchio pulsante Urgente: una sola tendina con i tre
    stati, uno alla volta. Importante ha il suo colore ambra/arancione,
    ben diverso dal rosso di Urgente; la riga si evidenzia di conseguenza. */
-.priority-select { appearance:none; -webkit-appearance:none; background:white; border:2px solid var(--muted); border-radius:20px; padding:3px 10px; font-family:inherit; font-size:11px; font-weight:800; color:var(--muted); cursor:pointer; outline:none; display:inline-flex; align-items:center; gap:5px; }
+.priority-select { appearance:none; -webkit-appearance:none; background:white; border:2px solid var(--muted); border-radius:20px; padding:3px 10px; font-family:inherit; font-size:11px; font-weight:800; color:var(--muted); cursor:pointer; outline:none; }
 .priority-select.importante { background:#f39c12; border-color:#f39c12; color:white; }
 .priority-select.urgente    { background:var(--casa); border-color:var(--casa); color:white; }
-.item-row.important { background:linear-gradient(90deg,rgba(243,156,18,0.08),transparent); border-left:3px solid #f39c12; padding-left:9px; margin-left:-4px; }
+.item-row.important { background:linear-gradient(90deg,rgba(243,156,18,0.08),transparent); border-left:3px solid #f39c12; padding-left:14px; margin-left:-4px; }
 
 /* ── NUOVO: menu priorità personalizzato (uguale su telefono e computer) ──
    Il pallino apre un menu disegnato da noi, non più la finestra di
@@ -352,7 +347,7 @@ body.sito-test #testBadge { display:block; background:repeating-linear-gradient(
 .prio-option + .prio-option { margin-top:2px; }
 .prio-option:hover { background:var(--bg); }
 .prio-option.attiva { background:#f0f3f7; }
-.prio-name { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:800; color:var(--text); }
+.prio-name { display:block; font-size:13px; font-weight:800; color:var(--text); }
 .prio-desc { display:block; font-size:11px; font-weight:600; color:var(--muted); margin-top:2px; line-height:1.4; }
 @media (hover: hover) and (pointer: fine) {
   .prio-option .prio-desc { display:none; }
@@ -445,9 +440,8 @@ body.statistiche-on .btn-menu { display:flex; }
 .menu-header h2 { font-size:18px; font-weight:900; }
 .btn-close-menu { background:rgba(255,255,255,0.2); border:none; border-radius:50%; width:34px; height:34px; color:white; font-size:16px; font-family:inherit; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .menu-body { flex:1; overflow-y:auto; overscroll-behavior:contain; padding:20px 16px 40px; }
-/* Qui stavano le due regole di .menu-vuoto, il riquadro "Menu in
-   costruzione". Tolte a settembre 2026: il menu adesso ha quattro voci
-   (Statistiche, Genera Link, Fai Backup, Ripristina) e non è più vuoto. */
+.menu-vuoto { text-align:center; color:var(--muted); font-size:16px; font-weight:800; line-height:1.8; padding:48px 20px; }
+.menu-vuoto span { display:block; font-size:13px; font-weight:600; margin-top:6px; }
 /* Mentre il menu è aperto la lista dietro resta ferma (come per i popup) */
 body.menu-open { overflow:hidden; }
 
@@ -600,137 +594,3 @@ body.coach-on #coachFumetto { display:block; animation:coachEntra 0.5s cubic-bez
   #coachBuco { box-shadow:0 0 0 9999px rgba(0,0,0,0.74), 0 0 0 4px rgba(255,255,255,1), 0 0 26px 8px rgba(255,234,167,0.95); }
   body.coach-on #coachFumetto { animation:none; }
 }
-
-/* ═══════════════════════════════════════════════════════════════════
-   NUOVO SETTEMBRE 2026 — ICONE DISEGNATE E RIGA COMPATTA
-   ═══════════════════════════════════════════════════════════════════ */
-
-/* ── LE ICONE ──────────────────────────────────────
-   Regola unica per TUTTE le icone dell'app. I disegni stanno nel
-   <svg id="sprite-icone"> in cima all'index.html e non hanno colore
-   scritto dentro: "stroke:currentColor" fa sì che ognuna prenda DA SOLA
-   il colore del testo del pulsante che la contiene. È per questo che
-   l'icona della linguetta Casa diventa rossa quando la linguetta è
-   attiva, e quella di "Copia" è bianca sul verde WhatsApp, senza una
-   riga di CSS in più. La misura è in "em": l'icona cresce e cala
-   insieme al testo che le sta accanto. */
-.ico { width:1.15em; height:1.15em; flex-shrink:0; display:inline-block; vertical-align:-0.18em;
-       fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-
-/* ── I PALLINI DI PRIORITÀ ─────────────────────────
-   ⚪ 🟠 🔴 non erano icone ma STATI, e per uno stato basta un cerchio
-   colorato: così è esattamente il colore dell'app, non quello scelto
-   dal telefono. Dentro un pulsante già pieno di colore (Urgente attivo)
-   il pallino diventa bianco, altrimenti sparirebbe sul fondo. */
-.pallino { width:9px; height:9px; border-radius:50%; display:inline-block; flex-shrink:0; background:#c3ccd4; }
-.pallino-importante { background:#f39c12; }
-.pallino-urgente    { background:var(--casa); }
-.priority-select.urgente .pallino,
-.priority-select.importante .pallino,
-.btn-urgenti .pallino,
-.urg-filtro .pallino { background:white; }
-
-/* ── LA RIGA CHIUSA E LA RIGA APERTA ───────────────
-   Prima ogni articolo occupava 145px: quattro righe sovrapposte (nome,
-   quantità+priorità, prezzo, autore) anche solo per dire "Latte". Su uno
-   schermo da 812px se ne vedevano TRE, e su un Android da 640px uno e
-   mezzo — in una lista della spesa.
-   Ora l'articolo chiuso è una riga sola (spunta, nome, prezzo) e tutto
-   il resto compare toccando la riga. Non è stato tolto niente: smette
-   solo di gridare tutto insieme. */
-.item-row:not(.aperta) .item-extra,
-.item-row:not(.aperta) .item-author { display:none; }
-
-/* La freccetta che gira quando la riga si apre. */
-.riga-toggle { background:none; border:none; padding:5px 2px; margin:0; color:var(--muted); cursor:pointer;
-               flex-shrink:0; display:flex; align-items:center; }
-.riga-toggle .ico { width:15px; height:15px; transition:transform 0.18s ease; }
-.item-row.aperta .riga-toggle .ico { transform:rotate(90deg); }
-
-/* Prezzo e quantità riassunti nella riga chiusa: spariscono quando la
-   riga si apre, perché lì sotto ci sono già il campo € e il −x1+. */
-.riga-prezzo { font-size:12.5px; font-weight:800; color:#e65100; background:#fff8e1;
-               border:1.5px solid #ffd54f; border-radius:20px; padding:2px 9px; flex-shrink:0; white-space:nowrap; }
-.riga-qty { font-size:11px; font-weight:800; color:var(--muted); background:var(--bg);
-            border-radius:20px; padding:2px 7px; flex-shrink:0; }
-.item-row.aperta .riga-prezzo,
-.item-row.aperta .riga-qty { display:none; }
-.item-row.done-riga .riga-prezzo { opacity:0.45; }
-
-/* ── LA FOTO ───────────────────────────────────────
-   Prima ogni riga aveva un riquadro tratteggiato 46x46 con dentro 📷 e
-   la scritta "foto", vuoto nel 95% dei casi. Un bordo tratteggiato vuol
-   dire "qui manca qualcosa": il risultato era che OGNI riga sembrava
-   incompleta. Ora: se la foto c'è si vede la miniatura nella riga
-   chiusa; se non c'è, il pulsante per aggiungerla sta fra le altre
-   cose, dentro la riga aperta. */
-.photo-mini { width:30px; height:30px; border-radius:8px; overflow:hidden; flex-shrink:0; position:relative; }
-.photo-mini img { width:100%; height:100%; object-fit:cover; display:block; cursor:pointer; }
-.btn-foto { display:inline-flex; align-items:center; gap:5px; background:var(--bg); border:1.5px solid #e4e9ef;
-            border-radius:20px; padding:4px 10px; font-family:inherit; font-size:11px; font-weight:800;
-            color:var(--muted); cursor:pointer; }
-.btn-foto .ico { width:14px; height:14px; }
-.btn-foto.ha-foto { color:#e17055; border-color:#ffd0c2; background:#fff5f2; }
-
-/* Il cestino della singola riga è passato dentro la riga aperta: si
-   cancella con due tocchi invece che con uno solo di striscio. */
-.del-btn { display:inline-flex; align-items:center; gap:5px; }
-.del-btn .ico { width:15px; height:15px; }
-.link-btn { display:inline-flex; align-items:center; color:var(--alim); }
-.link-btn .ico { width:17px; height:17px; }
-
-/* ── MISURE DELLE ICONE NEI VARI POSTI ─────────────  */
-.tab .ico { width:17px; height:17px; }
-.btn-clear .ico, .btn-copy .ico { width:15px; height:15px; }
-.btn-clear, .btn-copy { display:inline-flex; align-items:center; justify-content:center; gap:6px; }
-.tot-label { display:flex; align-items:center; gap:6px; }
-.tot-label .ico { width:16px; height:16px; }
-.count-row .ico { width:14px; height:14px; }
-.count-row span { display:inline-flex; align-items:center; gap:5px; }
-.menu-voce-icona { display:flex; align-items:center; justify-content:center; }
-.menu-voce-icona .ico { width:26px; height:26px; stroke-width:1.9; }
-.btn-google .ico { width:22px; height:22px; }
-#syncDot .ico { width:13px; height:13px; }
-
-/* La spunta ✓ dentro il quadratino era un carattere: ora è disegnata,
-   così è identica su tutti i telefoni come le tre linee del menu ☰. */
-.chk .ico { width:16px; height:16px; stroke-width:3; }
-
-/* ── LA BARRA IN BASSO ─────────────────────────────
-   Era alta 155px su tre file, con sette pulsanti di sette colori
-   diversi. Backup, Ripristina e Genera Link si usano una volta al mese
-   ma occupavano schermo tutti i giorni: sono passati nel menu ☰, che
-   intanto era vuoto. Restano qui solo le cose di ogni giorno. */
-.bottom-bar { padding:8px 16px 12px; }
-.btn-copy { padding:12px; font-size:13px; }
-
-/* La spunta dei "completati" resta verde come lo era la ✅ che ha
-   sostituito: nella riga dei contatori è l'unica nota di colore
-   positiva, e senza tornerebbe grigia come tutto il resto. */
-.count-row span:first-child .ico { color:#00b894; }
-
-/* ── LE ICONE DELLA VISTA "TUTTO" ──────────────────
-   Nella vista per categoria l'icona si colora solo quando la linguetta è
-   attiva. Qui le tre sezioni si vedono tutte insieme e nessuna è
-   "attiva": ognuna tiene sempre il colore della sua categoria, lo stesso
-   del pallino che le sta accanto. */
-.sec-title .ico { width:17px; height:17px; }
-.sec-title .ico-casa    { color:var(--casa); }
-.sec-title .ico-persona { color:var(--persona); }
-.sec-title .ico-alim    { color:var(--alim); }
-
-/* ── LE TINTE DEL MENU ─────────────────────────────
-   Le quattro icone del menu erano tutte dello stesso grigio scuro e la
-   schermata sembrava spenta. Adesso ognuna sta dentro un quadratino
-   morbido con la sua tinta, così si riconoscono a colpo d'occhio senza
-   doverle leggere. I colori non sono nuovi: sono già quelli dell'app —
-   l'azzurro degli Alimentari, il verde che aveva il pulsante "Genera
-   Link", il viola dei pulsanti di backup e l'arancione degli
-   "Importanti". Il fondo è la stessa tinta molto schiarita, così resta
-   pulito e non diventa un semaforo. */
-.menu-voce-icona { width:44px; height:44px; border-radius:14px; }
-.menu-voce-icona .ico { width:23px; height:23px; stroke-width:2; }
-.menu-voce-icona.tinta-blu     { color:#2f9ec4; background:#e7f5fa; }
-.menu-voce-icona.tinta-verde   { color:#00a383; background:#e3f7f2; }
-.menu-voce-icona.tinta-viola   { color:#6c5ce7; background:#eeebfd; }
-.menu-voce-icona.tinta-arancio { color:#dd8a0c; background:#fdf1dd; }

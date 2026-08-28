@@ -25,30 +25,14 @@
       if (el) el.textContent = pad2(vals[i % 4]);
     });
     if (diff <= 0) {
-      // CORREZIONE SETTEMBRE 2026 — IL CONTO ALLA ROVESCIA FINITO
-      // Prima, a conto finito, il riquadro nella schermata di accesso
-      // restava lì con 00:00:00:00 e la scritta "La novità è
-      // disponibile!". Per sempre, fino alla data successiva. Un
-      // riquadro scuro grande quanto un pulsante, con dentro quattro
-      // zeri che non dicono niente: il dettaglio che fa sembrare
-      // abbandonata un'app tenuta benissimo.
-      // Ora, finito il conto, il riquadro sparisce del tutto insieme al
-      // pulsante 🚀 Novità, e la schermata di accesso torna pulita. Per
-      // il prossimo aggiornamento basta rimettere una TARGET futura qui
-      // sopra e il riquadro si ripresenta da solo.
-      document.querySelectorAll('.countdown-wrap').forEach(function(w) {
-        w.style.display = 'none';
-      });
+      const sub = document.getElementById('cd-sub');
+      if (sub) sub.textContent = '🎉 La novità è disponibile!';
       const btn = document.getElementById('btnCountdown');
       if (btn) btn.style.display = 'none';
-      clearInterval(orologio);   // finito: non serve più ricontrollare ogni secondo
     }
   }
-  // L'orologio è in una variabile perché a conto finito si ferma da solo
-  // (vedi clearInterval qui sopra): senza, continuerebbe a girare ogni
-  // secondo per sempre a nascondere una cosa già nascosta.
-  var orologio = setInterval(tick, 1000);
   tick();
+  setInterval(tick, 1000);
 
   // Mostra errori JS visibili in pagina per debug
   window.addEventListener('error', function(e) {

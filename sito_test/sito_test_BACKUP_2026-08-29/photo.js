@@ -2,16 +2,15 @@
 // photo.js — Upload, compressione, anteprima, zoom, eliminazione foto
 // ════════════════════════════════════════════════════════════════
 // Come sync.js, per evitare una dipendenza circolare con list.js
-// (buildPhotoMini/buildPhotoBtn sono usate da list.js, ma dopo un upload
-// o una eliminazione serve ri-disegnare la riga, e quella funzione vive
-// in list.js), questo modulo non importa list.js: usa una callback
-// registrata da main.js tramite onPhotoChange().
+// (buildPhotoWrap viene usato da list.js, ma dopo un upload/eliminazione
+// serve ri-renderizzare la riga, funzione che vive in list.js), questo
+// modulo non importa list.js: usa una callback registrata da main.js
+// tramite onPhotoChange().
 
 import { firebaseApp, auth, STORAGE_PREFIX } from './config.js';
 import { state } from './state.js';
 import { showToast } from './utils.js';
 import { saveToFirebase } from './sync.js';
-import { ico } from './icone.js';
 
 let rerenderRow = () => {};
 export function onPhotoChange(callback) { rerenderRow = callback; }
@@ -109,52 +108,25 @@ function onDeletePhoto(col, i) {
   rerenderRow(col, i);
 }
 
-// ── LA FOTO DENTRO LA RIGA (rifatta a settembre 2026) ────────────
-// PRIMA: ogni riga della lista mostrava un riquadro tratteggiato 46x46
-// con dentro 📷 e la scritta "foto", anche quando foto non ce n'era.
-// Era la cosa più vistosa di ogni articolo ed era vuota quasi sempre;
-// e un bordo tratteggiato vuol dire "qui manca qualcosa", quindi ogni
-// riga sembrava incompleta.
-// ADESSO sono due pezzi separati:
-//   buildPhotoMini → la miniatura, e SOLO se la foto c'è davvero. Sta
-//                    nella riga chiusa, perché è un'informazione utile.
-//   buildPhotoBtn  → il pulsante per aggiungerla o cambiarla. Sta nella
-//                    riga aperta, insieme a quantità, priorità e prezzo.
-
-function creaInputFile(col, i) {
-  const fi = document.createElement('input');
-  fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none';
-  fi.onchange = (ev) => handlePhoto(col, i, ev);
-  return fi;
-}
-
-// Miniatura per la riga chiusa. Restituisce null quando non c'è foto:
-// chi chiama deve controllare prima di attaccarla.
-export function buildPhotoMini(col, i, item) {
-  if (!item.photo) return null;
-  const box = document.createElement('div'); box.className = 'photo-mini';
-  const img = document.createElement('img'); img.src = item.photo; img.alt = 'foto articolo';
-  // Il tocco sulla miniatura apre la foto grande e NON apre/chiude la
-  // riga: senza stopPropagation farebbe tutte e due le cose insieme.
-  img.onclick = (ev) => { ev.stopPropagation(); openZoom(item.photo); };
-  box.appendChild(img);
-  return box;
-}
-
-// Pulsante per la riga aperta: "Foto" se non ce n'è, "Togli foto" se c'è.
-export function buildPhotoBtn(col, i, item) {
+export function buildPhotoWrap(col, i, item) {
+  const wrap = document.createElement('div');
+  wrap.style.flexShrink = '0';
   if (item.photo) {
-    const btn = document.createElement('button');
-    btn.type = 'button'; btn.className = 'btn-foto ha-foto';
-    btn.append(ico('cestino'), document.createTextNode('Togli foto'));
-    btn.onclick = (ev) => { ev.stopPropagation(); onDeletePhoto(col, i); };
-    return btn;
+    const box = document.createElement('div'); box.className = 'photo-box';
+    const img = document.createElement('img'); img.src = item.photo;
+    img.onclick = () => openZoom(item.photo);
+    const db2 = document.createElement('button'); db2.className = 'photo-del'; db2.textContent = '✕';
+    db2.onclick = (ev) => { ev.stopPropagation(); onDeletePhoto(col, i); };
+    box.append(img, db2); wrap.appendChild(box);
+  } else {
+    const label = document.createElement('label');
+    const ph = document.createElement('div'); ph.className = 'photo-placeholder';
+    ph.innerHTML = '<span>📷</span><span>foto</span>';
+    const fi = document.createElement('input'); fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none';
+    fi.onchange = (ev) => handlePhoto(col, i, ev);
+    label.append(ph, fi); wrap.appendChild(label);
   }
-  const label = document.createElement('label');
-  label.className = 'btn-foto';
-  label.append(ico('foto'), document.createTextNode('Foto'));
-  label.appendChild(creaInputFile(col, i));
-  return label;
+  return wrap;
 }
 
 window.openZoom  = (src) => { document.getElementById('zoomImg').src = src; document.getElementById('zoom').classList.add('show'); };

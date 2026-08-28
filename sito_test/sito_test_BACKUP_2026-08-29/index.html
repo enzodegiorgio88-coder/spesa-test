@@ -50,93 +50,6 @@
 </script>
 </head>
 <body>
-<!-- ═══════════════════════════════════════════════════════════════
-     NUOVO SETTEMBRE 2026 — IL FOGLIO DELLE ICONE
-     Qui stanno i disegni veri delle icone, UNA VOLTA SOLA. I pulsanti
-     non li ricopiano: li richiamano con <use href="#i-nome">, quindi
-     la stessa icona può comparire in cinquanta righe della lista senza
-     pesare cinquanta volte. Il blocco è invisibile (serve solo da
-     magazzino): si nasconde con width/height a zero e non con
-     "display:none", che su qualche browser vecchio spegne anche i
-     richiami. I disegni NON hanno colore scritto dentro: lo prendono
-     dal pulsante che li contiene (vedi la regola .ico in style.css).
-     Per aggiungerne una: un nuovo <symbol id="i-qualcosa"> qui, e il
-     nome dentro NOMI_ICONE in icone.js. ═══════════════════════════ -->
-<svg id="sprite-icone" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
-     style="position:absolute;width:0;height:0;overflow:hidden">
-  <symbol id="i-casa" viewBox="0 0 24 24">
-    <path d="M3 10.4 12 3.2l9 7.2"/>
-    <path d="M5.6 9.3V19.6a1.2 1.2 0 0 0 1.2 1.2h10.4a1.2 1.2 0 0 0 1.2-1.2V9.3"/>
-    <path d="M9.9 20.8v-5.4h4.2v5.4"/>
-  </symbol>
-  <symbol id="i-persona" viewBox="0 0 24 24">
-    <circle cx="12" cy="8" r="3.7"/>
-    <path d="M4.9 20.6a7.1 7.1 0 0 1 14.2 0"/>
-  </symbol>
-  <symbol id="i-carrello" viewBox="0 0 24 24">
-    <path d="M2.6 3.6h2.5l2.6 11.1h9.6l2.2-8H6.4"/>
-    <circle cx="10" cy="19.3" r="1.5"/>
-    <circle cx="17.1" cy="19.3" r="1.5"/>
-  </symbol>
-  <symbol id="i-cestino" viewBox="0 0 24 24">
-    <path d="M4 6.6h16"/>
-    <path d="M9.6 6.6V4.1h4.8v2.5"/>
-    <path d="M6.6 6.6 7.7 19.9a1.1 1.1 0 0 0 1.1 1h6.4a1.1 1.1 0 0 0 1.1-1L17.4 6.6"/>
-    <path d="M10.4 10.6v6.2M13.6 10.6v6.2"/>
-  </symbol>
-  <symbol id="i-copia" viewBox="0 0 24 24">
-    <rect x="8.6" y="3.2" width="11.2" height="14" rx="2.2"/>
-    <path d="M15.6 20.8H6.4a2.2 2.2 0 0 1-2.2-2.2V7.4"/>
-  </symbol>
-  <symbol id="i-link" viewBox="0 0 24 24">
-    <path d="M10.4 13.6a4.2 4.2 0 0 0 6 0l2.5-2.5a4.2 4.2 0 0 0-6-6l-1.4 1.4"/>
-    <path d="M13.6 10.4a4.2 4.2 0 0 0-6 0l-2.5 2.5a4.2 4.2 0 0 0 6 6l1.4-1.4"/>
-  </symbol>
-  <symbol id="i-scarica" viewBox="0 0 24 24">
-    <path d="M12 3.4v11.2"/>
-    <path d="M7.6 10.2 12 14.6l4.4-4.4"/>
-    <path d="M4.4 16.4v2.4a1.8 1.8 0 0 0 1.8 1.8h11.6a1.8 1.8 0 0 0 1.8-1.8v-2.4"/>
-  </symbol>
-  <symbol id="i-cartella" viewBox="0 0 24 24">
-    <path d="M3.6 18.8V6.4a1.6 1.6 0 0 1 1.6-1.6h3.8l2 2.6h7.4a1.6 1.6 0 0 1 1.6 1.6v9.8a1.6 1.6 0 0 1-1.6 1.6H5.2a1.6 1.6 0 0 1-1.6-1.6Z"/>
-    <path d="M12 17.4v-5.6"/>
-    <path d="M9.6 14.2 12 11.8l2.4 2.4"/>
-  </symbol>
-  <symbol id="i-foto" viewBox="0 0 24 24">
-    <rect x="2.6" y="6.8" width="18.8" height="13.6" rx="2.6"/>
-    <path d="M8.4 6.8 9.8 4.2h4.4l1.4 2.6"/>
-    <circle cx="12" cy="13.6" r="3.5"/>
-  </symbol>
-  <symbol id="i-euro" viewBox="0 0 24 24">
-    <rect x="2.4" y="5.6" width="19.2" height="12.8" rx="2.4"/>
-    <path d="M14.6 10.1a3.3 3.3 0 1 0 0 3.8"/>
-    <path d="M8.6 11.2h4.2M8.6 12.8h4.2"/>
-  </symbol>
-  <symbol id="i-statistiche" viewBox="0 0 24 24">
-    <path d="M3.6 20.4h16.8"/>
-    <path d="M6.4 17.6v-5.2M11 17.6V6.8M15.6 17.6v-7.4M20.2 17.6v-3"/>
-  </symbol>
-  <symbol id="i-busta" viewBox="0 0 24 24">
-    <rect x="2.6" y="5.2" width="18.8" height="13.6" rx="2.4"/>
-    <path d="M3.6 7.4 12 13l8.4-5.6"/>
-  </symbol>
-  <symbol id="i-chiudi" viewBox="0 0 24 24">
-    <path d="M6.2 6.2 17.8 17.8M17.8 6.2 6.2 17.8"/>
-  </symbol>
-  <symbol id="i-spunta" viewBox="0 0 24 24">
-    <path d="M4.6 12.6 9.6 17.6 19.4 6.8"/>
-  </symbol>
-  <symbol id="i-freccia" viewBox="0 0 24 24">
-    <path d="M9.4 5.4 16 12l-6.6 6.6"/>
-  </symbol>
-  <symbol id="i-nuvola" viewBox="0 0 24 24">
-    <path d="M17.2 19H7.1a4.3 4.3 0 0 1-.6-8.5 5.5 5.5 0 0 1 10.6 1.1 3.8 3.8 0 0 1 .1 7.4Z"/>
-  </symbol>
-  <symbol id="i-piu" viewBox="0 0 24 24">
-    <path d="M12 5.2v13.6M5.2 12h13.6"/>
-  </symbol>
-</svg>
-
 
 <!-- BADGE "SITO DI TEST": nascosto di default, compare solo nella copia
      di test (body.sito-test, aggiunta da main.js quando IS_TEST è true) -->
@@ -166,15 +79,9 @@
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
         Accedi con Google
       </button>
-      <!-- NUOVO SETTEMBRE 2026: qui c'erano ✉️ 🔶 📧. Il rombo arancione
-           come logo di Yahoo, a due centimetri dalla G vera di Google,
-           faceva sembrare improvvisati gli altri tre pulsanti. Ora tutti
-           e tre hanno la stessa busta disegnata: sono tre accessi con
-           email, e a dire quale sia il fornitore ci pensano il nome e il
-           colore del pulsante. Non inventiamo un logo che non è il loro. -->
-      <button class="btn-google" style="background:#4B5EFC;border-color:#4B5EFC;color:white;margin-bottom:12px;" onclick="showEmailForm('virgilio')"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-busta"></use></svg> Accedi con Virgilio</button>
-      <button class="btn-google" style="background:#6001D2;border-color:#6001D2;color:white;margin-bottom:12px;" onclick="showEmailForm('yahoo')"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-busta"></use></svg> Accedi con Yahoo</button>
-      <button class="btn-google" style="background:#E40046;border-color:#E40046;color:white;" onclick="showEmailForm('libero')"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-busta"></use></svg> Accedi con Libero</button>
+      <button class="btn-google" style="background:#4B5EFC;border-color:#4B5EFC;color:white;margin-bottom:12px;" onclick="showEmailForm('virgilio')">✉️ Accedi con Virgilio</button>
+      <button class="btn-google" style="background:#6001D2;border-color:#6001D2;color:white;margin-bottom:12px;" onclick="showEmailForm('yahoo')">🔶 Accedi con Yahoo</button>
+      <button class="btn-google" style="background:#E40046;border-color:#E40046;color:white;" onclick="showEmailForm('libero')">📧 Accedi con Libero</button>
     </div>
     <div class="login-form" id="emailForm">
       <h3 id="emailFormTitle" style="font-size:16px;font-weight:800;margin-bottom:16px;color:var(--text);">Accedi con Email</h3>
@@ -294,15 +201,15 @@
   <div id="urgentiModal" onclick="closeUrgentiModal(event)">
     <div class="urgenti-sheet" onclick="event.stopPropagation()">
       <div class="urgenti-header">
-        <div><h3 id="urgModalTitle"><span class="pallino pallino-urgente" aria-hidden="true"></span> Articoli Urgenti</h3><span id="urgModalSub">Da acquistare subito</span></div>
+        <div><h3 id="urgModalTitle">🔴 Articoli Urgenti</h3><span id="urgModalSub">Da acquistare subito</span></div>
         <div style="display:flex;align-items:center;gap:8px;">
           <!-- NUOVO: tendina per passare dagli Urgenti agli Importanti,
                stessa grafica e stesse didascalie del menu priorità -->
           <div class="prio-wrap">
-            <button type="button" class="urg-filtro" id="btnUrgFiltro" onclick="toggleUrgFiltro(event)"><span class="pallino pallino-urgente" aria-hidden="true"></span> Urgenti ▾</button>
+            <button type="button" class="urg-filtro" id="btnUrgFiltro" onclick="toggleUrgFiltro(event)">🔴 Urgenti ▾</button>
             <div class="prio-menu" id="urgFiltroMenu">
-              <button type="button" class="prio-option" onclick="setUrgFiltro('urgente')"><span class="prio-name"><span class="pallino pallino-urgente" aria-hidden="true"></span> Urgenti</span><span class="prio-desc">Serve subito: avvisa tutta la famiglia.</span></button>
-              <button type="button" class="prio-option" onclick="setUrgFiltro('importante')"><span class="prio-name"><span class="pallino pallino-importante" aria-hidden="true"></span> Importanti</span><span class="prio-desc">Da non dimenticare: mettilo nel carrello alla prossima spesa.</span></button>
+              <button type="button" class="prio-option" onclick="setUrgFiltro('urgente')"><span class="prio-name">🔴 Urgenti</span><span class="prio-desc">Serve subito: avvisa tutta la famiglia.</span></button>
+              <button type="button" class="prio-option" onclick="setUrgFiltro('importante')"><span class="prio-name">🟠 Importanti</span><span class="prio-desc">Da non dimenticare: mettilo nel carrello alla prossima spesa.</span></button>
             </div>
           </div>
           <button class="btn-close-urg" onclick="closeUrgentiModal()">✕</button>
@@ -354,43 +261,10 @@
            tutto. Apre il riepilogo di quello che è stato comprato
            (statistiche.js). -->
       <button class="menu-voce" onclick="apriStatistiche()">
-        <span class="menu-voce-icona tinta-blu"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-statistiche"></use></svg></span>
+        <span class="menu-voce-icona">📊</span>
         <span class="menu-voce-testo">
           Statistiche
           <span>Cosa avete comprato, mese per mese</span>
-        </span>
-        <span class="menu-voce-freccia">›</span>
-      </button>
-      <!-- NUOVO SETTEMBRE 2026: LE TRE VOCI ARRIVATE DALLA BARRA IN BASSO
-           Genera Link, Fai Backup e Ripristina stavano fra i sette
-           pulsanti fissi in fondo allo schermo. Si usano una volta al
-           mese ma occupavano spazio tutti i giorni, e la lista della
-           spesa ne restava schiacciata. Qui stanno bene: il menu era
-           vuoto e diceva "in costruzione".
-           chiudiMenu() PRIMA di aprire: queste due finestre stanno a
-           z-index 8888, il menu a 9500, quindi senza chiuderlo prima
-           si aprirebbero dietro al menu e non si vedrebbero. -->
-      <button class="menu-voce" onclick="chiudiMenu(); openInvitoModal()">
-        <span class="menu-voce-icona tinta-verde"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-link"></use></svg></span>
-        <span class="menu-voce-testo">
-          Genera Link Invito
-          <span>Invita qualcuno nella lista di famiglia</span>
-        </span>
-        <span class="menu-voce-freccia">›</span>
-      </button>
-      <button class="menu-voce" onclick="chiudiMenu(); scaricaBackup()">
-        <span class="menu-voce-icona tinta-viola"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-scarica"></use></svg></span>
-        <span class="menu-voce-testo">
-          Fai Backup
-          <span>Salva una copia della lista</span>
-        </span>
-        <span class="menu-voce-freccia">›</span>
-      </button>
-      <button class="menu-voce" onclick="chiudiMenu(); ripristinaBackup()">
-        <span class="menu-voce-icona tinta-arancio"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-cartella"></use></svg></span>
-        <span class="menu-voce-testo">
-          Ripristina Backup
-          <span>Rimetti la lista com'era prima</span>
         </span>
         <span class="menu-voce-freccia">›</span>
       </button>
@@ -410,7 +284,10 @@
         </div>
         <button class="btn-logout" onclick="logout()">Esci</button>
       </div>
-
+      <div class="menu-vuoto">
+        
+        <span></span>
+      </div>
     </div>
   </div>
 
@@ -499,17 +376,17 @@
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <span class="online-badge"><span class="online-dot"></span>In tempo reale</span>
       <div style="display:flex;align-items:center;gap:8px;">
-        <span id="syncDot" style="font-size:11px;font-weight:700;opacity:0.85;background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:20px;color:white;"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-nuvola"></use></svg> Sync</span>
+        <span id="syncDot" style="font-size:11px;font-weight:700;opacity:0.85;background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:20px;color:white;">☁️ Sync</span>
         <span id="familyLabel" style="font-size:11px;font-weight:800;color:#ffeaa7;background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:20px;"></span>
         <button id="btnSwitchFamily" onclick="switchFamily()" style="display:none;background:linear-gradient(135deg,#6c5ce7,#a29bfe);border:none;border-radius:10px;color:white;font-size:11px;font-weight:800;padding:4px 10px;cursor:pointer;">⇄</button>
         <!-- NUOVO: il pulsante è una tendina "Urgenti N ▾" nello stesso stile
              del menu priorità: scegli Urgenti o Importanti e il popup si apre
              già sulla vista giusta. I contatori si aggiornano da soli. -->
         <div class="prio-wrap" id="urgBtnWrap" style="display:none;">
-          <button class="btn-urgenti" id="btnUrgenti" onclick="toggleUrgBtnMenu(event)"><span class="pallino pallino-urgente" aria-hidden="true"></span> Urgenti <span class="urg-count" id="urgBtnCount">0</span> ▾</button>
+          <button class="btn-urgenti" id="btnUrgenti" onclick="toggleUrgBtnMenu(event)">🔴 Urgenti <span class="urg-count" id="urgBtnCount">0</span> ▾</button>
           <div class="prio-menu" id="urgBtnMenu">
-            <button type="button" class="prio-option" onclick="apriUrgenti('urgente')"><span class="prio-name"><span class="pallino pallino-urgente" aria-hidden="true"></span> Urgenti <span class="urg-badge-menu" id="menuCountUrg">0</span></span><span class="prio-desc">Serve subito: avvisa tutta la famiglia.</span></button>
-            <button type="button" class="prio-option" onclick="apriUrgenti('importante')"><span class="prio-name"><span class="pallino pallino-importante" aria-hidden="true"></span> Importanti <span class="urg-badge-menu" id="menuCountImp">0</span></span><span class="prio-desc">Da non dimenticare: mettilo nel carrello alla prossima spesa.</span></button>
+            <button type="button" class="prio-option" onclick="apriUrgenti('urgente')"><span class="prio-name">🔴 Urgenti <span class="urg-badge-menu" id="menuCountUrg">0</span></span><span class="prio-desc">Serve subito: avvisa tutta la famiglia.</span></button>
+            <button type="button" class="prio-option" onclick="apriUrgenti('importante')"><span class="prio-name">🟠 Importanti <span class="urg-badge-menu" id="menuCountImp">0</span></span><span class="prio-desc">Da non dimenticare: mettilo nel carrello alla prossima spesa.</span></button>
           </div>
         </div>
       </div>
@@ -525,7 +402,7 @@
 
 <div id="totaleBar" style="display:none">
     <div>
-      <div class="tot-label"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-euro"></use></svg> Totale spesa stimato</div>
+      <div class="tot-label">💶 Totale spesa stimato</div>
       <div class="tot-detail" id="totaleDetail">0 articoli con prezzo</div>
     </div>
     <div class="tot-amount">€ <span id="totaleAmount">0,00</span></div>
@@ -537,8 +414,8 @@
 
   <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
   <div class="count-row">
-    <span><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-spunta"></use></svg> <span id="doneCount">0</span> completati</span>
-    <span><span class="pallino pallino-urgente" aria-hidden="true"></span> <span id="urgCount">0</span> urgenti &nbsp;|&nbsp; Tot: <span id="totCount">0</span></span>
+    <span>✅ <span id="doneCount">0</span> completati</span>
+    <span>🔴 <span id="urgCount">0</span> urgenti &nbsp;|&nbsp; Tot: <span id="totCount">0</span></span>
     <button id="btnCountdown" onclick="toggleCountdownPopup()" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);border:none;border-radius:20px;color:white;font-size:10px;font-weight:800;padding:3px 10px;cursor:pointer;">🚀 Novità</button>
   </div>
 
@@ -562,14 +439,9 @@
   </div>
 
   <div class="tabs" id="tabsBar">
-    <!-- Le icone sono disegnate e prendono DA SOLE il colore della
-         linguetta (stroke:currentColor): quella di Casa diventa rossa
-         quando Casa è attiva, come il pallino, la spunta e la barra di
-         avanzamento. Con le emoji 🏠👤🛒 restavano dei colori loro, che
-         non c'entravano niente con i colori delle categorie. -->
-    <button class="tab active" data-i="0" onclick="showTab(0)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-casa"></use></svg> Casa <span class="badge" id="b0">0</span></button>
-    <button class="tab" data-i="1" onclick="showTab(1)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-persona"></use></svg> Persona <span class="badge" id="b1">0</span></button>
-    <button class="tab" data-i="2" onclick="showTab(2)"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-carrello"></use></svg> Alim. <span class="badge" id="b2">0</span></button>
+    <button class="tab active" data-i="0" onclick="showTab(0)">🏠 Casa <span class="badge" id="b0">0</span></button>
+    <button class="tab" data-i="1" onclick="showTab(1)">👤 Persona <span class="badge" id="b1">0</span></button>
+    <button class="tab" data-i="2" onclick="showTab(2)">🛒 Alim. <span class="badge" id="b2">0</span></button>
   </div>
 
   <div class="panel active" id="panel-0"><ul id="list-0"></ul><button class="add-btn" onclick="addRow(0)">＋ Aggiungi voce</button></div>
@@ -577,31 +449,22 @@
   <div class="panel" id="panel-2"><ul id="list-2"></ul><button class="add-btn" onclick="addRow(2)">＋ Aggiungi voce</button></div>
 
   <div class="all-view" id="allView">
-    <!-- Le tre sezioni della vista "Tutto" usano le STESSE icone delle
-         linguette qui sopra (casa, persona, carrello) e non più 🏠👤🛒:
-         passando da una vista all'altra le categorie restano le stesse
-         anche a vedersi. Qui l'icona è sempre del colore della sua
-         categoria, perché le tre sezioni si vedono tutte insieme e non
-         ce n’è una "attiva" come fra le linguette. -->
-    <div class="all-section"><div class="sec-title"><div class="dot" style="background:var(--casa)"></div><svg class="ico ico-casa" aria-hidden="true" focusable="false"><use href="#i-casa"></use></svg> Casa</div><ul id="all-0"></ul></div>
-    <div class="all-section"><div class="sec-title"><div class="dot" style="background:var(--persona)"></div><svg class="ico ico-persona" aria-hidden="true" focusable="false"><use href="#i-persona"></use></svg> Persona</div><ul id="all-1"></ul></div>
-    <div class="all-section"><div class="sec-title"><div class="dot" style="background:var(--alim)"></div><svg class="ico ico-alim" aria-hidden="true" focusable="false"><use href="#i-carrello"></use></svg> Alimentari</div><ul id="all-2"></ul></div>
+    <div class="all-section"><div class="sec-title"><div class="dot" style="background:var(--casa)"></div>🏠 Casa</div><ul id="all-0"></ul></div>
+    <div class="all-section"><div class="sec-title"><div class="dot" style="background:var(--persona)"></div>👤 Persona</div><ul id="all-1"></ul></div>
+    <div class="all-section"><div class="sec-title"><div class="dot" style="background:var(--alim)"></div>🛒 Alimentari</div><ul id="all-2"></ul></div>
   </div>
 
-  <!-- NUOVO SETTEMBRE 2026: LA BARRA IN BASSO È DIMAGRITA
-       Era alta 155px su tre file, sette pulsanti di sette colori diversi
-       (nero, bianco, rosso, verde, turchese, viola, viola): si mangiava
-       un terzo dello schermo del telefono tutti i giorni.
-       Genera Link, Fai Backup e Ripristina sono passati nel menu ☰ qui
-       sopra. Qui restano solo le cose che si usano davvero ogni volta
-       che si apre l'app: cambiare vista, togliere i fatti, copiare la
-       lista per WhatsApp. Due file invece di tre, ~100px invece di 155. -->
   <div class="bottom-bar">
     <button class="btn-view active" id="btnTab" onclick="setView('tab')">Per categoria</button>
     <button class="btn-view" id="btnAll" onclick="setView('all')">Tutto</button>
-    <button class="btn-clear" onclick="clearDone()"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-cestino"></use></svg> Fatti</button>
+    <button class="btn-clear" onclick="clearDone()">🗑 Fatti</button>
     <div class="btn-row2">
-      <button class="btn-copy" onclick="openCopyModal()"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-copia"></use></svg> Copia la lista per WhatsApp</button>
+      <button class="btn-copy" onclick="openCopyModal()">📋 Copia WhatsApp</button>
+      <button class="btn-copy" style="background:linear-gradient(135deg,#00b894,#00cec9);" onclick="openInvitoModal()">🔗 Genera Link Invito</button>
+    </div>
+    <div class="btn-row2">
+      <button class="btn-backup" onclick="scaricaBackup()">💾 Fai Backup</button>
+      <button class="btn-backup" onclick="ripristinaBackup()">📂 Ripristina Backup</button>
     </div>
   </div>
 
@@ -643,7 +506,7 @@
   <button onclick="acceptPrivacy()">Ho capito</button>
 </div>
 
-<div style="text-align:center;padding:12px 16px 100px;font-size:11px;color:#b2bec3;font-weight:600;letter-spacing:0.3px;">
+<div style="text-align:center;padding:12px 16px 140px;font-size:11px;color:#b2bec3;font-weight:600;letter-spacing:0.3px;">
   © Vincenzo De Giorgio — Creata il 17 maggio 2026 — Tutti i diritti riservati
 </div>
 
