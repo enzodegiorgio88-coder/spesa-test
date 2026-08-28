@@ -445,7 +445,7 @@ body.statistiche-on .btn-menu { display:flex; }
 /* Mentre il menu è aperto la lista dietro resta ferma (come per i popup) */
 body.menu-open { overflow:hidden; }
 
-/* ── NUOVO SETTEMBRE 2026: CHI È ENTRATO, in cima al menu ───────────
+/* ── NUOVO SETTEMBRE 2026: CHI È ENTRATO, in fondo al menu ──────────
    Stessa scheda bianca delle voci del menu, ma non si tocca: serve solo
    a far vedere con quale account si sta usando l'app. Sopra la foto con
    accanto il nome; sotto, da solo e spinto contro il bordo destro, il

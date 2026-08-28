@@ -257,11 +257,24 @@
       <button class="btn-close-menu" onclick="chiudiMenu()" aria-label="Chiudi il menu">✕</button>
     </div>
     <div class="menu-body" id="menuBody">
+      <!-- NUOVO SETTEMBRE 2026: prima voce vera del menu, in cima a
+           tutto. Apre il riepilogo di quello che è stato comprato
+           (statistiche.js). -->
+      <button class="menu-voce" onclick="apriStatistiche()">
+        <span class="menu-voce-icona">📊</span>
+        <span class="menu-voce-testo">
+          Statistiche
+          <span>Cosa avete comprato, mese per mese</span>
+        </span>
+        <span class="menu-voce-freccia">›</span>
+      </button>
       <!-- NUOVO SETTEMBRE 2026: CHI È ENTRATO ────────────────────────
-           Prima scheda del menu, sopra "Statistiche". In alto la foto
-           dell'account con cui si è entrati e accanto il solo nome
-           ("vincenzo", mai l'email intera — ci pensa main.js); sotto,
-           da solo e in fondo a destra, il pulsante per uscire.
+           SPOSTATA SOTTO "Statistiche" (agosto 2026): in cima al menu ci
+           vanno le cose che si usano, uscire è l'ultima e sta in fondo,
+           così non la si tocca per sbaglio.
+           In alto la foto dell'account con cui si è entrati e accanto il
+           solo nome ("vincenzo", mai l'email intera — ci pensa main.js);
+           sotto, da solo e in fondo a destra, il pulsante per uscire.
            Gli id restano quelli di prima (userAvatar / userName)
            perché li riempie main.js appena finito il login. -->
       <div class="menu-utente">
@@ -271,16 +284,6 @@
         </div>
         <button class="btn-logout" onclick="logout()">Esci</button>
       </div>
-      <!-- NUOVO SETTEMBRE 2026: prima voce vera del menu. Apre il
-           riepilogo di quello che è stato comprato (statistiche.js). -->
-      <button class="menu-voce" onclick="apriStatistiche()">
-        <span class="menu-voce-icona">📊</span>
-        <span class="menu-voce-testo">
-          Statistiche
-          <span>Cosa avete comprato, mese per mese</span>
-        </span>
-        <span class="menu-voce-freccia">›</span>
-      </button>
       <div class="menu-vuoto">
         
         <span></span>
