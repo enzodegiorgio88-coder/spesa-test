@@ -4,7 +4,7 @@
 
 import { LABELS } from './config.js';
 import { state } from './state.js';
-import { showToast, fbCopy } from './utils.js';
+import { showToast, fbCopy, aNumero, euroDopo } from './utils.js';
 
 function buildListText() {
   const oggi  = new Date().toLocaleDateString('it-IT');
@@ -13,8 +13,9 @@ function buildListText() {
   const importanti = [];   // NUOVO: come gli urgenti, sezione dedicata in fondo
   let has = false;
   let totale = 0;
-  // Formato importi: "2,50 €"
-  const fmtE = (n) => n.toFixed(2).replace('.', ',') + ' €';
+  // Formato importi: "2,50 €", "1.250,00 €" — lo stesso di tutto il resto
+  // dell'app, deciso una volta sola in utils.js (euroDopo).
+  const fmtE = euroDopo;
 
   for (let c = 0; c < 3; c++) {
     const items = state.data[c].filter(r => r.text.trim());
@@ -23,7 +24,7 @@ function buildListText() {
     lines.push('\n' + ['🏠','👤','🛒'][c] + ` *${LABELS[c]}*`, '─────────────────');
     items.forEach(r => {
       const flag = r.urgent && !r.done ? ' 🔴' : (r.important && !r.done ? ' 🟠' : '');
-      const p    = parseFloat(r.price);
+      const p    = aNumero(r.price);
       // Sempre chiari prezzo unitario, quantità e totale:
       //  - prezzo e quantità > 1  → "2,00 € × 2 = 4,00 €"
       //  - solo prezzo            → "2,00 €"

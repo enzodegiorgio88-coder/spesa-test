@@ -4,6 +4,11 @@
 
 import { NOVITA_RELEASE, statisticheAttive } from './config.js';
 import { state, ensureRows, emptyRow } from './state.js';
+// showToast: gli avvisi brevi in fondo allo schermo (gli stessi che usa
+// "Copia la lista per WhatsApp" quando la lista è vuota).
+// aNumero/euro: l'unico modo di leggere e di scrivere un importo in tutta
+// l'app — vedi il fondo di utils.js.
+import { showToast, aNumero, euro } from './utils.js';
 import { haBlasfemia, haAlimentoVietato } from './content-filter.js';
 import { mostraBlocco, customConfirm } from './modals.js';
 import { saveToFirebase } from './sync.js';
@@ -140,6 +145,80 @@ function applicaPrezzoRicordato(col, i, prezzo) {
   saveToFirebase(); renderRow(col, i); updateStats();
 }
 
+// ── IMPORTI SEMPRE D'ACCORDO CON L'ARTICOLO ────────
+// CORREZIONE SETTEMBRE 2026 — il bug del prezzo che non si vedeva.
+//
+// Prezzo e quantità compaiono in tre posti della stessa riga: la
+// targhetta del prezzo e quella della quantità (che si vedono a riga
+// chiusa) e la scritta "= € ..." accanto al campo € (dentro la tendina).
+// Tutti e tre venivano costruiti SOLO da makeRow, cioè solo quando la
+// riga veniva ridisegnata da capo. Scrivere nel campo € non ridisegnava
+// niente: aggiornava lo stato, salvava su Firebase e basta. Il prezzo
+// quindi compariva più tardi e apparentemente a caso — cioè al primo
+// ×2, alla prima foto o alla prima spunta, che sono le azioni che
+// chiamano renderRow(). E al contrario, cancellando il prezzo, la
+// vecchia targhetta restava a schermo con il totale di prima.
+//
+// Qui rimettiamo d'accordo quei tre pezzi con lo stato dell'articolo
+// SENZA ridisegnare la riga: ridisegnarla cancellerebbe il campo € che
+// si ha ancora sotto le dita. Quello che si vede dipende sempre e solo
+// da state.data[col][i], mai da quello che era stato scritto prima.
+function sincronizzaImporti(li, item) {
+  const inner = li.querySelector('.item-inner');
+  if (!inner) return;
+  const tog = inner.querySelector('.riga-toggle');
+  const p   = aNumero(item.price);
+  const qty = item.qty || 1;
+
+  // Targhetta della quantità: solo da ×2 in su.
+  let qb = inner.querySelector('.riga-qty');
+  if (qty > 1) {
+    if (!qb) {
+      qb = document.createElement('span'); qb.className = 'riga-qty';
+      // Va prima della targhetta del prezzo, come la mette makeRow.
+      inner.insertBefore(qb, inner.querySelector('.riga-prezzo') || tog);
+    }
+    qb.textContent = '×' + qty;
+  } else if (qb) qb.remove();
+
+  // Targhetta del prezzo: prezzo × quantità. Se il prezzo viene
+  // cancellato la targhetta sparisce, non resta il totale di prima.
+  let pb = inner.querySelector('.riga-prezzo');
+  if (p > 0) {
+    if (!pb) {
+      pb = document.createElement('span'); pb.className = 'riga-prezzo';
+      inner.insertBefore(pb, tog);
+    }
+    pb.textContent = euro(p * qty);
+  } else if (pb) pb.remove();
+
+  // Dentro la tendina: la scritta "= € ..." accanto al campo €.
+  const wrap = li.querySelector('.price-wrap');
+  if (wrap) {
+    let line = wrap.querySelector('.price-line');
+    if (p > 0 && qty > 1) {
+      if (!line) { line = document.createElement('span'); line.className = 'price-line'; wrap.appendChild(line); }
+      line.textContent = '= ' + euro(p * qty);
+    } else if (line) line.remove();
+  }
+
+  // Ogni riga esiste due volte (vista per categoria e vista Tutto): la
+  // copia in cui non si sta scrivendo va allineata, altrimenti cambiando
+  // vista si ritroverebbe il valore di prima. Il campo che si ha sotto
+  // le dita non si tocca mai.
+  const inp = li.querySelector('.price-input');
+  if (inp && inp !== document.activeElement && inp.value !== (item.price || ''))
+    inp.value = item.price || '';
+  li.querySelectorAll('.qty-val').forEach(v => { v.textContent = 'x' + qty; });
+}
+
+function aggiornaImportiRiga(col, i) {
+  const item = state.data[col] && state.data[col][i];
+  if (!item) return;
+  document.querySelectorAll(`#list-${col} [data-idx="${i}"], #all-${col} [data-idx="${i}"]`)
+    .forEach(li => sincronizzaImporti(li, item));
+}
+
 function buildTextInput(col, i, item, onTextChange) {
   const inp = document.createElement('input');
   inp.type = 'text';
@@ -202,14 +281,16 @@ function buildQtyWrap(col, i, item) {
   const wrap = document.createElement('div'); wrap.className = 'qty-wrap';
   const val  = document.createElement('span'); val.className = 'qty-val'; val.textContent = 'x' + item.qty;
 
-  // Aggiorna solo il numero a schermo, senza ridisegnare la riga:
-  // così il pulsante resta "vivo" durante la pressione continua.
+  // Aggiorna il numero e gli importi a schermo, senza ridisegnare la
+  // riga: così il pulsante resta "vivo" durante la pressione continua.
   const cambia = (delta) => {
     const cur  = state.data[col][i].qty || 1;
     const next = Math.max(1, cur + delta);
     if (next === cur) return;
     state.data[col][i].qty = next;
-    val.textContent = 'x' + next;
+    // Numero, targhette e "= € ..." vengono tutti da qui: prima il
+    // totale della riga si aggiornava solo al rilascio del pulsante.
+    aggiornaImportiRiga(col, i);
   };
   // Salvataggio e ridisegno UNA volta sola, al rilascio o al singolo tap.
   const conferma = () => {
@@ -366,8 +447,12 @@ function buildPriceWrap(col, i, item) {
     let v = inp.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
     const parti = v.split('.');
     if (parti.length > 2) v = parti[0] + '.' + parti.slice(1).join('');
-if (v !== inp.value) inp.value = v;
+    if (v !== inp.value) inp.value = v;
     state.data[col][i].price = v;
+    // Il prezzo si vede SUBITO nella riga, senza dover toccare la
+    // quantità o aggiungere una foto — e cancellandolo sparisce subito
+    // anche la targhetta, invece di restare con il totale di prima.
+    aggiornaImportiRiga(col, i);
     saveToFirebase(); updateStats();
     // NUOVO LUGLIO 2026: quello che scrivi qui entra nella memoria dei
     // prezzi di famiglia, così la prossima volta che qualcuno scrive
@@ -379,9 +464,11 @@ if (v !== inp.value) inp.value = v;
   inp.onfocus = onFieldFocus;
   inp.onblur  = onFieldBlur;
   wrap.append(icon, inp);
-  if (item.price && parseFloat(item.price) > 0 && item.qty > 1) {
+  if (aNumero(item.price) > 0 && item.qty > 1) {
     const line = document.createElement('span'); line.className = 'price-line';
-    line.textContent = '= €' + (parseFloat(item.price) * item.qty).toFixed(2);
+    // Prima qui il totale restava all'inglese ("= €7.50"): unico punto
+    // dell'app con il punto al posto della virgola.
+    line.textContent = '= ' + euro(aNumero(item.price) * item.qty);
     wrap.appendChild(line);
   }
   return wrap;
@@ -394,11 +481,10 @@ if (v !== inp.value) inp.value = v;
 // spariscono solo quando la riga si apre (lì sotto ci sono già il campo
 // € e il −x1+, sarebbe scritto due volte).
 function buildPrezzoBadge(item) {
-  const p = parseFloat(item.price);
-  if (!item.price || !(p > 0)) return null;
-  const totale = p * (item.qty || 1);
+  const p = aNumero(item.price);
+  if (!(p > 0)) return null;
   const s = document.createElement('span'); s.className = 'riga-prezzo';
-  s.textContent = '€ ' + totale.toFixed(2).replace('.', ',');
+  s.textContent = euro(p * (item.qty || 1));
   return s;
 }
 
@@ -450,11 +536,24 @@ function buildRowHeader(col, i, item, apriChiudi) {
   const pb = buildPrezzoBadge(item); if (pb) inner.appendChild(pb);
   inner.appendChild(tog);
 
-  // Si apre e si chiude toccando un punto qualsiasi della riga. I campi e
-  // i pulsanti sono esclusi, altrimenti scrivere il nome di un articolo o
-  // spuntarlo aprirebbe la riga per sbaglio ogni volta.
+  // Si apre e si chiude toccando un punto qualsiasi della riga: lo spazio
+  // vuoto, la targhetta del prezzo, quella della quantità, la freccetta.
+  //
+  // NUOVO SETTEMBRE 2026: anche il NOME dell'articolo apre la tendina.
+  // Prima il campo del nome era escluso come tutti gli altri campi, ma
+  // occupa quasi tutta la larghezza della riga (.item-input ha flex:1):
+  // si mangiava quasi tutti i tocchi "sulla riga", e in pratica per
+  // aprire una riga bisognava mirare la freccetta. Sul nome però la riga
+  // si APRE soltanto, non si chiude: il campo deve restare scrivibile, e
+  // una riga che si richiude sotto le dita a metà parola sarebbe solo un
+  // fastidio. Per chiuderla ci sono la freccetta e il resto della riga.
+  //
+  // Restano fuori i comandi che hanno già un compito loro — il quadratino
+  // della spunta, il link 🔗, la miniatura della foto — che continuano a
+  // funzionare esattamente come prima.
   inner.addEventListener('click', (ev) => {
-    if (ev.target.closest('input, button, a, label, .photo-mini')) return;
+    if (ev.target.closest('button, a, label, .photo-mini')) return;
+    if (ev.target.closest('.item-input')) { apriRiga(col, i); return; }
     apriChiudi();
   });
   return inner;
@@ -595,23 +694,60 @@ window.setView = (v) => {
   if (isTab) window.showTab(state.currentTab);
 };
 
+// CORREZIONE SETTEMBRE 2026 — "＋ Aggiungi voce" che non aggiungeva niente.
+//
+// Ogni categoria tiene sempre in fondo un certo numero di righe già
+// pronte ma vuote (MIN_ROWS in config.js, oggi 15), e renderCol ne mostra
+// al massimo cinque di fila: senza quel limite ci si ritrovava davanti a
+// un muro di righe vuote. Qui però veniva aggiunta una riga vuota IN
+// FONDO A QUELLE: la numero sedici, cioè ben oltre le cinque mostrate.
+// Il risultato è che a schermo non succedeva assolutamente niente — e
+// intanto ogni tocco allungava di una riga vuota la lista salvata su
+// Firebase.
+//
+// Adesso la voce nuova è la prima riga libera SUBITO DOPO l'ultimo
+// articolo scritto — cioè esattamente dove finirebbe una riga nuova — e
+// una riga in più si aggiunge solo quando sono tutte occupate. Quella
+// riga lì è sempre disegnata, perché è la prima delle cinque vuote che
+// renderCol mostra. Da fuori si vede quello che ci si aspetta: un
+// articolo vuoto pronto da scrivere, con la sua tendina già aperta.
 window.addRow = (col) => {
-  const r = emptyRow();
+  let ultimoPieno = -1;
+  state.data[col].forEach((r, k) => { if (r.text.trim() || r.photo) ultimoPieno = k; });
+  const i = ultimoPieno + 1;
+  // La voce nuova parte sempre pulita: in quel posto poteva esserci una
+  // riga svuotata a mano, senza più nome ma con dentro ancora il prezzo
+  // o la quantità di prima, che non c'entrano niente con l'articolo che
+  // si sta per scrivere.
+  state.data[col][i] = emptyRow();
+  const r = state.data[col][i];
   r.author     = state.currentUserName;
   r.actions    = ['aggiunto da ' + state.currentUserName];
   r.lastAction = r.actions[0];
-  state.data[col].push(r);
+  // La riga nasce già aperta, come quando si comincia a scrivere in una
+  // riga qualsiasi: prezzo, quantità, foto ed elimina sono subito lì.
+  // Va segnata PRIMA di ridisegnare, così makeRow la costruisce aperta.
+  apriRiga(col, i);
   saveToFirebase();
   renderCol(col, `list-${col}`);
   updateStats();
   setTimeout(() => {
-    const inputs = document.querySelectorAll(`#list-${col} .item-input`);
-    const last   = inputs[inputs.length - 1];
-    if (last) { last.focus(); last.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    const inp = document.querySelector(`#list-${col} [data-idx="${i}"] .item-input`);
+    if (inp) { inp.focus(); inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   }, 60);
 };
 
 window.clearDone = async () => {
+  // CORREZIONE SETTEMBRE 2026: prima di tutto, c'è davvero qualcosa da
+  // togliere? Senza questo controllo "Fatti" apriva la richiesta di
+  // conferma anche con la lista tutta ancora da fare, e chi rispondeva
+  // "Sì, rimuovi" non vedeva succedere niente — con le Statistiche accese
+  // finiva pure nell'archivio una spesa vuota. Lo diciamo nello stesso
+  // modo in cui "Copia la lista per WhatsApp" dice che la lista è vuota.
+  if (!state.data.flat().some(r => r.done)) {
+    showToast('⚠️ Nessun articolo spuntato');
+    return;
+  }
   const ok = await customConfirm({
     icon: '🗑️',
     title: 'Rimuovere articoli?',

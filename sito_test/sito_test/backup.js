@@ -21,7 +21,7 @@
 import { ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { db, BACKUP_PATH } from './config.js';
 import { state, ensureRows } from './state.js';
-import { showToast } from './utils.js';
+import { showToast, aNumero, euro, euroDopo } from './utils.js';
 import { customConfirm } from './modals.js';
 import { saveToFirebase } from './sync.js';
 import { renderAll } from './list.js';
@@ -323,10 +323,10 @@ function buildAnteprimaRiga(r) {
     q.textContent = 'x' + r.qty;
     row.appendChild(q);
   }
-  const p = parseFloat(r.price);
+  const p = aNumero(r.price);
   if (p > 0) {
     const pr = document.createElement('span'); pr.className = 'bkpv-prezzo';
-    pr.textContent = '€ ' + (p * (r.qty || 1)).toFixed(2).replace('.', ',');
+    pr.textContent = euro(p * (r.qty || 1));
     row.appendChild(pr);
   }
   if (r.urgent && !r.done) {
@@ -360,7 +360,7 @@ function mostraAnteprimaBackup(backup) {
     cat.appendChild(tit);
     items.forEach(r => {
       cat.appendChild(buildAnteprimaRiga(r));
-      const p = parseFloat(r.price);
+      const p = aNumero(r.price);
       if (p > 0) totale += p * (r.qty || 1);
     });
     body.appendChild(cat);
@@ -370,7 +370,7 @@ function mostraAnteprimaBackup(backup) {
     body.innerHTML = '<div class="backup-empty">Questo backup è vuoto.</div>';
   } else if (totale > 0) {
     const tot = document.createElement('div'); tot.className = 'bkpv-totale';
-    tot.textContent = '💶 Totale stimato: ' + totale.toFixed(2).replace('.', ',') + ' €';
+    tot.textContent = '💶 Totale stimato: ' + euroDopo(totale);
     body.appendChild(tot);
   }
 

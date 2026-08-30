@@ -9,6 +9,8 @@ import { posizionaMenuPrio } from './list.js';
 // emoji nei comandi. Restano emoji, invece, i messaggi di lista vuota
 // qui sotto: quelli sono il modo di parlare dell'app, non un comando.
 import { icoHTML, pallinoHTML } from './icone.js';
+// Gli importi si scrivono come in tutto il resto dell'app (utils.js).
+import { aNumero, euro } from './utils.js';
 
 function buildUrgentiCategory(c, items, showPrices) {
   const cat   = document.createElement('div'); cat.className = 'urg-category';
@@ -28,9 +30,9 @@ function buildUrgentiCategory(c, items, showPrices) {
     if (item.qty > 1) {
       const q = document.createElement('span'); q.className = 'urg-item-qty'; q.textContent = 'x' + item.qty; row.appendChild(q);
     }
-    if (showPrices && parseFloat(item.price) > 0) {
+    if (showPrices && aNumero(item.price) > 0) {
       const p = document.createElement('span'); p.className = 'urg-item-price';
-      p.textContent = '€ ' + (parseFloat(item.price) * (item.qty || 1)).toFixed(2).replace('.', ','); row.appendChild(p);
+      p.textContent = euro(aNumero(item.price) * (item.qty || 1)); row.appendChild(p);
     }
     cat.appendChild(row);
   });

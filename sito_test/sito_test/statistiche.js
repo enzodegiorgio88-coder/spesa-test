@@ -10,7 +10,8 @@
 // cui questo file non può rompere la spesa di nessuno — al massimo può
 // mostrare un numero sbagliato.
 //
-// ARCHITETTURA: modulo foglia, importa solo config.js e state.js.
+// ARCHITETTURA: modulo foglia, importa solo config.js, state.js e
+// utils.js (a loro volta foglie).
 // Espone le funzioni su window perché i pulsanti sono onclick nell'HTML,
 // come già fanno menu.js, backup.js e share.js.
 //
@@ -23,6 +24,9 @@ import { ref, get }
 
 import { db, ARCHIVIO_PATH, LABELS, COLORS } from './config.js';
 import { state } from './state.js';
+// utils.js è a sua volta una foglia: gli importi si scrivono in un punto
+// solo per tutta l'app, riepilogo di fine mese compreso.
+import { aNumero, euro } from './utils.js';
 
 const MESI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno',
               'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
@@ -67,15 +71,17 @@ function meseSpostato(chiave, quanti) {
   return chiaveMese(d);
 }
 
-function soldi(n) {
-  return n.toFixed(2).replace('.', ',');
-}
+// CORREZIONE SETTEMBRE 2026: soldi() stava qui, e come tutte le altre
+// copie sparse per l'app non metteva il punto delle migliaia — un mese
+// da mille euro si leggeva "€ 1000,00". Ora arriva da utils.js insieme a
+// euro(), che ci mette davanti anche il simbolo.
 
 // Il prezzo è una stringa scritta a mano: "1.29", ma anche "1,29" se
-// qualcuno ha usato la virgola. parseFloat da solo su "1,29" darebbe 1.
+// qualcuno ha usato la virgola: se ne occupa aNumero() in utils.js. Qui
+// restano fuori i valori negativi, che in un riepilogo non hanno senso.
 function prezzoDi(riga) {
-  const n = parseFloat(String(riga.prezzo || '').replace(',', '.'));
-  return isFinite(n) && n > 0 ? n : 0;
+  const n = aNumero(riga.prezzo);
+  return n > 0 ? n : 0;
 }
 
 // ── I CONTI ────────────────────────────────────────
@@ -189,7 +195,7 @@ function confronto(oggi, prima) {
   riga.className = 'stat-confronto-righe';
 
   [[segno(dArt) + (dArt ? Math.abs(dArt) : ''), 'articoli', dArt],
-   [segno(dTot) + (dTot ? ' € ' + soldi(Math.abs(dTot)) : ''), 'spesa', dTot]
+   [segno(dTot) + (dTot ? ' ' + euro(Math.abs(dTot)) : ''), 'spesa', dTot]
   ].forEach(([valore, etichetta, delta]) => {
     const d = document.createElement('div');
     d.className = 'stat-delta ' + (delta > 0 ? 'su' : delta < 0 ? 'giu' : 'pari');
@@ -217,7 +223,7 @@ function numeriGrossi(articoli, totale) {
   const grossi = document.createElement('div');
   grossi.className = 'stat-grossi';
   [[articoli, articoli === 1 ? 'articolo' : 'articoli'],
-   ['€ ' + soldi(totale), 'spesi']
+   [euro(totale), 'spesi']
   ].forEach(([n, lab]) => {
     const d = document.createElement('div');
     d.className = 'stat-grosso';
@@ -271,7 +277,7 @@ function disegna() {
   corpo.appendChild(numeriGrossi(s.articoli, s.totale));
   corpo.appendChild(frase(
     `in ${s.spese} ${s.spese === 1 ? 'spesa' : 'spese'}` +
-    (s.articoli ? ` · media € ${soldi(s.totale / s.articoli)} ad articolo` : '')
+    (s.articoli ? ` · media ${euro(s.totale / s.articoli)} ad articolo` : '')
   ));
 
   // 2. Confronto col mese prima

@@ -23,7 +23,9 @@ import { ref, onValue, set }
 
 import { db, PREZZI_PATH } from './config.js';
 import { state } from './state.js';
-import { showToast } from './utils.js';
+// euro(): "€ 1.250,50" — l'unico modo di scrivere un importo in tutta
+// l'app. aNumero(): legge il prezzo salvato, che è una stringa.
+import { showToast, aNumero, euro } from './utils.js';
 
 // Quanto aspettiamo dopo l'ultimo tasto premuto prima di proporre il
 // prezzo: abbastanza da non disturbare mentre si scrive, abbastanza poco
@@ -53,11 +55,6 @@ function chiaveDa(testo) {
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, 100);                                     // chiavi cortissime, per sicurezza
-}
-
-// Prezzo come lo scriviamo noi in Italia: 5.00 → "5,00".
-function conVirgola(prezzo) {
-  return String(prezzo || '').replace('.', ',');
 }
 
 function segnalaErroreUnaVolta(e) {
@@ -93,8 +90,8 @@ const timerScrittura = {};
 
 export function ricordaPrezzo(nome, prezzo, autore) {
   const chiave = chiaveDa(nome);
-  const valore = parseFloat(prezzo);
-  if (!chiave || !isFinite(valore) || valore <= 0) return;
+  const valore = aNumero(prezzo);
+  if (!chiave || !(valore > 0)) return;
 
   agganciaSeServe();
   const prezzoTesto = valore.toFixed(2);
@@ -192,7 +189,7 @@ function mostraTessera({ nome, prezzo, autore, marchio, onAggiungi, onAnnulla })
   testo.className = 'prezzo-testo';
   const b1 = document.createElement('b'); b1.textContent = nome.toUpperCase();
   const b2 = document.createElement('b'); b2.textContent = (autore || 'qualcuno').toUpperCase();
-  const b3 = document.createElement('b'); b3.textContent = '€ ' + conVirgola(prezzo);
+  const b3 = document.createElement('b'); b3.textContent = euro(prezzo);
   testo.append(
     document.createTextNode('🏷️ '), b1,
     document.createTextNode(' — l\'ultima volta l\'ha messa '), b2,
@@ -243,7 +240,7 @@ function valuta(col, i, onAggiungi, tentativo) {
   if (!riga) return;
 
   // Freno 1: se il prezzo c'è già, non c'è niente da suggerire.
-  if (riga.price && parseFloat(riga.price) > 0) return;
+  if (aNumero(riga.price) > 0) return;
 
   const chiave = chiaveDa(riga.text);
   if (!chiave) return;
