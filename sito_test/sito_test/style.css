@@ -47,7 +47,7 @@ body { font-family: -apple-system,'Segoe UI',sans-serif; background: var(--bg); 
 .login-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: var(--text); }
 .login-card > p { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
 .btn-google { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 14px; background: white; font-family: inherit; font-weight: 800; font-size: 15px; cursor: pointer; color: var(--text); transition: all 0.2s; margin-bottom: 16px; }
-.btn-google:active { background: #f5f5f5; }
+/* .btn-google:active è stato tolto: il grigino del "premuto" ora lo fa da solo il brightness() della sezione "COME RISPONDONO I PULSANTI" in fondo al foglio, uguale a tutti gli altri pulsanti. */
 .btn-google img { width: 22px; height: 22px; }
 .login-note { font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 16px; }
 .login-form { display: none; margin-top: 24px; }
@@ -233,7 +233,7 @@ body.copy-modal-open { overflow:hidden; }
 .confirm-body p { font-size:14px; color:var(--text); line-height:1.6; text-align:center; margin-bottom:22px; }
 .confirm-actions { display:flex; gap:10px; }
 .confirm-actions button { flex:1; padding:13px; border:none; border-radius:12px; font-family:inherit; font-weight:800; font-size:14px; cursor:pointer; transition:transform 0.15s; }
-.confirm-actions button:active { transform:scale(0.96); }
+/* Lo scale(0.96) del premuto è stato tolto: lo dà ora la regola comune in fondo al foglio (sezione "COME RISPONDONO I PULSANTI", gruppo "I LARGHI"), insieme allo scurirsi che qui mancava. */
 .btn-confirm-annulla { background:var(--text); color:white; }
 .btn-confirm-ok { color:white; }
 .btn-confirm-ok.rosso  { background:linear-gradient(135deg,var(--casa),#d63031); box-shadow:0 4px 14px rgba(255,107,107,0.4); }
@@ -468,13 +468,13 @@ body.menu-open { overflow:hidden; }
    main.js). Se anche così fosse lungo non va a capo: puntini. */
 .user-name { flex:1; min-width:0; font-size:16px; font-weight:900; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .btn-logout { display:block; margin:14px 0 0 auto; background:var(--bg); border:2px solid rgba(0,0,0,0.07); border-radius:10px; color:var(--text); font-family:inherit; font-size:13px; font-weight:800; padding:9px 18px; cursor:pointer; }
-.btn-logout:active { background:#e9edf2; }
+/* Anche il grigino di "Esci" premuto è stato tolto da qui: sta sul fondo chiaro come tutti gli altri, quindi se lo fa da solo il brightness() in fondo al foglio. Il ☰ qui sopra invece resta scritto a mano, perché sta sull'intestazione scura ed è un caso a parte (spiegato là in fondo). */
 
 /* ── NUOVO SETTEMBRE 2026: voci del menu e schermata Statistiche ────
    La schermata sta a z-index più alto del menu perché ci si apre sopra:
    chiudendola con la ✕ si ritrova il menu dietro, ancora aperto. */
 .menu-voce { width:100%; display:flex; align-items:center; gap:13px; background:white; border:none; border-radius:16px; padding:16px 15px; margin-bottom:12px; font-family:inherit; text-align:left; cursor:pointer; box-shadow:0 3px 14px rgba(0,0,0,0.07); }
-.menu-voce:active { transform:scale(0.98); }
+/* Lo scale(0.98) del premuto è stato tolto: lo dà ora la regola comune in fondo al foglio (sezione "COME RISPONDONO I PULSANTI", gruppo "I LARGHI"). */
 .menu-voce-icona { font-size:26px; flex-shrink:0; }
 .menu-voce-testo { flex:1; font-size:16px; font-weight:900; color:var(--text); line-height:1.3; }
 .menu-voce-testo span { display:block; font-size:12.5px; font-weight:600; color:var(--muted); margin-top:3px; }
@@ -734,3 +734,181 @@ body.coach-on #coachFumetto { display:block; animation:coachEntra 0.5s cubic-bez
 .menu-voce-icona.tinta-verde   { color:#00a383; background:#e3f7f2; }
 .menu-voce-icona.tinta-viola   { color:#6c5ce7; background:#eeebfd; }
 .menu-voce-icona.tinta-arancio { color:#dd8a0c; background:#fdf1dd; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   NUOVO SETTEMBRE 2026 — COME RISPONDONO I PULSANTI
+   ═══════════════════════════════════════════════════════════════════
+   Quest'app è fatta quasi solo di pulsanti, ma premerne uno non si
+   vedeva. Il motivo sta nella PRIMISSIMA riga di questo foglio:
+   "-webkit-tap-highlight-color: transparent" spegne il velo grigio che
+   il telefono mette da solo sotto il dito. Toglierlo era giusto — era
+   un rettangolo grigio sopra le nostre pastiglie tonde — solo che al
+   suo posto non era stato messo niente. Su 42 cose da premere ne
+   rispondevano CINQUE (Google, ☰, Esci, le voci del menu e i due
+   pulsanti del popup di conferma). Chi tocca "Elimina" e non vede
+   muoversi niente pensa di aver sbagliato mira, e tocca una seconda
+   volta: su un pulsante che cancella è il peggior punto dell'app dove
+   far dubitare qualcuno.
+
+   La risposta NON è un'animazione diversa per ogni pulsante: con
+   cinquanta pulsanti diventa un circo, e soprattutto diventa roba da
+   tenere allineata a mano per sempre. È UNA regola sola, agganciata a
+   "button": sotto il dito il pulsante si stringe e si scurisce, al
+   rilascio torna su. Ogni pulsante che aggiungeremo da domani ce
+   l'avrà già, senza scrivere una riga.
+   (Funziona perché in quest'app TUTTO ciò che si preme è un <button>
+   vero — la spunta, il −x1+, la freccetta, i pallini di priorità.
+   L'unica eccezione è il link 🔗, che è una <a>: infatti sta scritto
+   accanto in ogni regola.)
+
+   Le tre scelte dietro ai numeri, per quando andranno ritoccati:
+
+   1. LA DURATA — 0.08s a scendere, 0.2s a risalire. Deve sembrare che
+      si muova il pulsante, non che parta un filmato: oltre il decimo di
+      secondo la pressione arriva in ritardo, e un pulsante che risponde
+      in ritardo fa sembrare lenta tutta l'app. Il ritorno è più lento
+      dell'andata perché è così che si muovono le cose vere.
+   2. QUANTO SI STRINGE — non uguale per tutti. Un pulsante largo quanto
+      lo schermo che rimpicciolisce del 5% sembra di gomma; un tondino
+      da 22px che rimpicciolisce del 2% non si vede proprio. Più il
+      pulsante è piccolo, più deve stringersi: 0.975 per i larghi, 0.95
+      per le pastiglie, 0.86 per i tondini.
+   3. IL COLORE — filter:brightness() invece di scrivere a mano il
+      colore "premuto" di ognuno. Funziona sul bianco, sul rosso e anche
+      sulle sfumature (Copia verde WhatsApp, Backup viola, Statistiche)
+      senza dover ricopiare la sfumatura da nessuna parte. È lo stesso
+      ragionamento delle icone con "currentColor": il colore non si
+      ripete, si eredita.
+
+   SUL TELEFONO: lo stato :active durante il tocco lo danno da soli sia
+   Android sia gli iPhone recenti, proprio perché qui sono <button>
+   veri. Se su un iPhone non si vedesse, il rimedio è UNA riga in
+   main.js: document.addEventListener('touchstart',()=>{},{passive:true}).
+   Non è stata messa subito perché ha un effetto collaterale fastidioso:
+   se inizi a scorrere la lista col dito appoggiato su un pulsante,
+   quel pulsante lampeggia come se l'avessi premuto. Prima si prova
+   senza. */
+
+/* ── LA MOLLA ──────────────────────────────────────
+   Le due regole che fanno tutto il lavoro. Da qui in giù ci sono solo
+   eccezioni, e ognuna dice perché è un'eccezione. */
+button, .link-btn {
+  transition: transform 0.2s cubic-bezier(0.22,0.9,0.3,1),
+              background-color 0.18s ease, border-color 0.18s ease,
+              color 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease,
+              opacity 0.18s ease;
+  /* DA SAPERE: questa regola è agganciata a "button", cioè al NOME del
+     tag, che in CSS conta meno di una classe. Quindi i pochi pulsanti che
+     hanno già un "transition" scritto sulla loro classe (.tab, .chk,
+     .btn-view, .btn-google, .priority-btn: tutti con "transition: all")
+     si tengono il loro e questa riga la ignorano. Va benissimo così: il
+     loro "all" comprende già transform e filter, quindi si stringono e si
+     scuriscono uguale — solo con i loro tempi. La pressione secca invece
+     ce l'hanno tutti, perché ":active" qui sotto conta di più di una
+     classe semplice e vince anche su quelli.
+     Se un giorno serve che TUTTI seguano questi tempi, la strada non è
+     mettere !important: è togliere il "transition: all" da quelle cinque
+     classi, che è roba avanzata di quando furono scritte. */
+}
+button:active, .link-btn:active {
+  transform: scale(0.95);
+  filter: brightness(0.93);
+  transition-duration: 0.08s;   /* la pressione è secca, il ritorno no */
+}
+
+/* ── I LARGHI: appena appena ────────────────────────
+   Pulsanti larghi quanto lo schermo o quanto il popup. Su una
+   superficie grande il movimento si vede lo stesso anche se è minimo,
+   e col 5% sembrerebbero di gomma. */
+.btn-google:active, .btn-submit:active, .btn-back:active, .add-btn:active,
+.btn-novita-ok:active, .blocco-ok:active, .btn-backup-file:active,
+.btn-ripristina-preview:active, .menu-voce:active,
+.confirm-actions button:active, .copy-actions button:active,
+.prezzo-azioni button:active,
+#privacyNotice button:active, #connError button:active {
+  transform: scale(0.975);
+}
+
+/* ── I TONDINI: forte ───────────────────────────────
+   Il − e il +, le ✕ dei popup, le frecce delle Statistiche, la
+   freccetta che apre la riga, il ☰, la spunta. Sono da 22-36px: sopra
+   lo 0.9 il movimento non si legge. Il link 🔗 sta qui perché è grande
+   uguale. */
+.qty-btn:active, .btn-close-urg:active, .btn-close-menu:active,
+.btn-close-backup:active, .stat-freccia:active, .riga-toggle:active,
+.btn-menu:active, .chk:active, .link-btn:active {
+  transform: scale(0.86);
+}
+
+/* Il − e il + non hanno fondo (stanno dentro la pastiglia grigia del
+   −x1+), quindi scurirli non si vedrebbe: sotto il dito compare il
+   loro tondino. È anche l'unico modo per capire QUALE dei due hai
+   preso, che su due pulsanti da 22px attaccati non è poco. */
+.qty-btn:active { background: rgba(0,0,0,0.09); }
+
+/* ── QUELLI SUL FONDO SCURO: si schiariscono ────────
+   ☰, le ✕ dei popup e la tendina Urgenti/Importanti sono bianco
+   trasparente sopra un'intestazione scura. Scurirli è il verso
+   sbagliato: sparirebbero nel fondo invece di accendersi. Qui il
+   "premuto" è più bianco, non più nero. */
+.btn-menu:active, .btn-close-urg:active, .btn-close-menu:active,
+.btn-close-backup:active, .urg-filtro:active {
+  background: rgba(255,255,255,0.34);
+  filter: none;
+}
+
+/* ── LA LINGUETTA: non si stringe, si abbassa ───────
+   Casa / Persona / Alimentari sono incollate al bordo alto del
+   pannello: se rimpicciolissero si staccherebbero dal foglio bianco e
+   si vedrebbe la fessura. Abbassarsi di 2px invece è esattamente il
+   gesto giusto — la linguetta viene spinta dentro il pannello. */
+.tab:active { transform: translateY(2px); }
+
+/* ── LE VOCI DEL MENU PRIORITÀ: solo il fondo ───────
+   Sono righe larghe quanto il menu, con già il loro :hover grigio.
+   Rimpicciolirle farebbe ballare il testo delle didascalie. */
+.prio-option:active {
+  transform: none;
+  filter: none;
+  background: #e7ecf2;
+}
+
+/* ── CHI NON VUOLE ANIMAZIONI ───────────────────────
+   Stesso rispetto già dato al logo del login e alla manina del coach:
+   se nelle impostazioni del telefono le animazioni sono ridotte, il
+   movimento sparisce. Il colore che si scurisce RESTA: quello non è
+   un'animazione, è la risposta "ti ho sentito", e toglierla
+   rimetterebbe questi pulsanti muti come prima. */
+@media (prefers-reduced-motion: reduce) {
+  button:active, .link-btn:active, .tab:active { transform: none; }
+}
+
+/* ── "ELIMINA" SOTTO IL MOUSE (SOLO COMPUTER) ───────
+   Da fermo il cestino è una pastiglia rosa chiara: giusto così, è un
+   pulsante che cancella e non deve gridare da lontano. Ma quando il
+   mouse ci arriva sopra si riempie di rosso, e cestino e scritta
+   diventano bianchi: prima di cliccare hai visto in faccia cos'è.
+
+   L'icona NON è scritta qui: le icone sono disegnate con
+   "stroke: currentColor", quindi seguono da sole il color:#fff del
+   pulsante che le contiene (vedi la regola .ico più su). Una riga in
+   meno da ricordare il giorno che il cestino cambia disegno.
+
+   Il rosso pieno #e05252 non è un colore nuovo: è ESATTAMENTE quello
+   che la scritta "Elimina" ha già da spenta. Cambia solo di posto —
+   era il testo, diventa il fondo.
+
+   IL PERCHÉ DEL @media: (hover:hover) and (pointer:fine) vuol dire
+   "solo dove c'è un mouse vero". Senza, sul telefono il tocco lascia
+   il pulsante rosso ACCESO anche dopo aver alzato il dito, finché non
+   tocchi da un'altra parte: un cestino che resta acceso da solo in
+   mezzo alla lista sembra un guasto dell'app. Lì la risposta al tocco
+   la dà già la molla qui sopra. */
+@media (hover: hover) and (pointer: fine) {
+  .del-btn:hover {
+    background: #e05252;
+    border-color: #e05252;
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(224,82,82,0.38);
+  }
+}
