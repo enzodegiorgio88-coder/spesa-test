@@ -942,9 +942,20 @@ button:active, .link-btn:active {
 }
 /* Quanto e' grande l'icona nella schermata del telefono. Se sul tuo
    telefono la cucitura "salta", e' QUESTO il numero da ritoccare. */
-/* Quanto e' grande la piastrella crema. Se sul tuo telefono la cucitura
-   con la schermata d'avvio "salta" di misura, e' QUESTO il numero. */
-.avvio-logo { width: min(38vw, 190px); height: auto; display: block; }
+/* Quanto e' grande la piastrella crema: MISURATA sulla registrazione
+   dello schermo, 720 px su 1080 = 66,7% della larghezza. Il tetto in
+   pixel non serve al telefono (dove 66,7vw sta sempre sotto i 310 px):
+   serve solo a non far diventare l'icona enorme se apri il sito dal
+   computer per provarlo.
+   Il translateY corregge un disallineamento reale: la pagina comincia
+   SOTTO la barra di stato, quindi il suo centro sta piu' in basso di
+   quello dello schermo — misurati 38 px su questo telefono. Di quanto
+   alzare lo calcola lo script in <head>; se non gira, resta zero e
+   l'icona e' centrata sulla pagina, che e' comunque accettabile. */
+.avvio-logo {
+  width: min(66.7vw, 340px); height: auto; display: block;
+  transform: translateY(calc(-1 * var(--avvio-alza, 0px)));
+}
 @keyframes avvioVia { to { opacity: 0; visibility: hidden; } }
 
 /* Le figure partono tutte rosse come nell'icona sulla home */

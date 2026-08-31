@@ -47,6 +47,19 @@
   // finché Firebase verifica l'accesso mostriamo direttamente l'app in
   // caricamento (vedi regole html.auth-pending in style.css e main.js).
   try { if (localStorage.getItem('wasLoggedIn')) document.documentElement.classList.add('auth-pending'); } catch (e) {}
+
+  // NUOVO SETTEMBRE 2026: allinea l'introduzione (#avvio) alla schermata
+  // che disegna il telefono. Android centra la sua icona sullo SCHERMO
+  // intero; la nostra pagina invece comincia SOTTO la barra di stato,
+  // quindi il suo centro cade piu' in basso — misurati 38 pixel su un
+  // telefono da 1080x2372. Qui calcoliamo di quanto e lo passiamo al CSS.
+  // Deve stare inline e QUI, prima che la pagina si disegni: fatto dopo,
+  // si vedrebbe l'icona saltare. Se fallisce non succede niente: il CSS
+  // parte da zero e l'icona resta centrata sulla pagina.
+  try {
+    var alza = (window.screen.height - window.innerHeight) / 2;
+    if (alza > 0 && alza < 80) document.documentElement.style.setProperty('--avvio-alza', alza + 'px');
+  } catch (e) {}
 </script>
 </head>
 <body>
@@ -104,19 +117,24 @@
        figure fantasma. Un taglio netto fra due disegni simili si nota
        molto meno di una dissolvenza fra due disegni disallineati. -->
   <svg class="avvio-logo" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-    <!-- La piastrella crema: è il quadrato dell'icona sulla home.
-         Angoli QUADRI e non arrotondati, perché quadri sono anche quelli
-         di icon-512.png (verificato: il pixel d'angolo è crema pieno).
-         Ad arrotondarla ci pensa il telefono per conto suo quando la
-         mette sulla home. Il crema è #F8F4E6, lo stesso identico del
-         cesto in ricca-sfondo-scuro.svg: è il colore letto dal file. -->
-    <rect class="av-piastrella" width="1024" height="1024" fill="#F8F4E6"/>
+    <!-- La piastrella crema. TUTTI i numeri di questo blocco sono MISURATI
+         su una registrazione dello schermo del telefono (fotogrammi
+         estratti e letti pixel per pixel), non stimati a occhio:
+           piastrella  720 px su 1080  = 66,7% della larghezza schermo
+           raggio      153 px su 720   = 21,3% della piastrella
+                                       → 0,213 x 1024 = 218 in queste coordinate
+           cesto       349 px su 720   = 48,5% della piastrella
+         Gli angoli sono arrotondati perché Android RITAGLIA l'icona con
+         la sua maschera: il file PNG ha gli angoli quadri, ma sullo
+         schermo non si vedono mai così. -->
+    <rect class="av-piastrella" width="1024" height="1024" rx="218" fill="#F8F4E6"/>
     <!-- Porta il disegno del logo (che ha un suo sistema di coordinate)
-         dentro il quadrato, centrato. Lo 0.917 non e' scelto a occhio:
-         nel PNG vero il disegno rosso e' largo il 68,8% della piastrella,
-         e questo numero fa venire larga uguale anche questa. Se ritocchi
-         la misura dell'icona, ricalcola: scala = 0,688 x 1024 / 768. -->
-    <g transform="translate(42.5 32.4) scale(0.917)">
+         dentro il quadrato, centrato e alla misura giusta. Lo 0.6466 esce
+         dalla misura qui sopra: il disegno occupa 768 unità di queste
+         1024, cioè il 75%, e va portato al 48,5% → 0,485 / 0,75 = 0,6466.
+         Se cambi la misura della piastrella non toccare nulla qui: sono
+         proporzioni, si adeguano da sole. -->
+    <g transform="translate(180.9 173.8) scale(0.6466)">
       <g transform="translate(0 -22)">
         <!-- LA FAMIGLIA. Partono ROSSE tutte e due come nell'icona della
              home; i colori delle categorie arrivano con l'animazione.
