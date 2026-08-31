@@ -919,7 +919,9 @@ button:active, .link-btn:active {
    ha bisogno di JavaScript nemmeno per togliersi di mezzo.
 
    LA SEQUENZA, in un secondo e mezzo:
-     0,00-0,15  fermo sul fotogramma della schermata del telefono
+     0,00-0,15  fermo sul fotogramma della schermata del telefono,
+                contenitore grigio di Android compreso
+     0,30-0,60  il contenitore grigio si dissolve
      0,15-0,62  le due figure prendono i colori di Casa e Persona
      0,32-0,72  arriva la terza figura, quella di Alimentari
      0,40-1,02  la frutta cade nel cesto, una dopo l'altra
@@ -929,6 +931,26 @@ button:active, .link-btn:active {
    Per rallentare o accelerare tutto, i numeri da toccare sono questi. */
 
 #avvio {
+  /* ── LE TRE MISURE DA RITOCCARE ──────────────────────────────
+     Rifanno il contenitore grigio che Android disegna intorno
+     all'icona nella SUA schermata di avvio. Android non le dice a
+     nessuno: sono state stimate su uno screenshot del telefono, non
+     lette da qualche parte. Se al lancio vedi il grigio "saltare" di
+     misura o di tinta, e' uno di questi tre numeri.
+       --cornice-lato    quanto e' grande il quadrato grigio
+       --cornice-raggio  quanto sono stondati gli angoli
+       --cornice-grigio  che grigio e'
+     La piastrella crema dentro resta al 56,5% del contenitore: e' la
+     proporzione misurata, e cambiando --cornice-lato si adegua da sola. */
+  --cornice-lato: min(67vw, 300px);
+  --cornice-raggio: 24%;
+  --cornice-grigio: #A0A09E;
+  /* Lo STESSO grigio con l'alpha a zero. Serve per farlo svanire: se si
+     animasse verso "transparent", il browser interpola verso il NERO
+     trasparente e a meta' strada si vede un alone scuro. Cambiando il
+     grigio qui sopra, cambia anche queste sei cifre. */
+  --cornice-grigio-via: #A0A09E00;
+
   position: fixed; inset: 0; z-index: 1000000;
   /* ESATTAMENTE il grigio di "background_color" nel manifest: e' questo
      che rende invisibile la cucitura con la schermata del telefono. Se
@@ -942,7 +964,21 @@ button:active, .link-btn:active {
 }
 /* Quanto e' grande l'icona nella schermata del telefono. Se sul tuo
    telefono la cucitura "salta", e' QUESTO il numero da ritoccare. */
-.avvio-logo { width: min(38vw, 190px); height: auto; display: block; }
+/* Il contenitore grigio di Android, rifatto. Sparisce presto: il tempo
+   di non far vedere il salto, poi lascia il campo al cesto che si
+   colora. Si dissolve solo il SUO sfondo, non l'elemento intero,
+   altrimenti si porterebbe via anche l'icona che ci sta dentro. */
+.avvio-cornice {
+  width: var(--cornice-lato); aspect-ratio: 1;
+  background: var(--cornice-grigio);
+  border-radius: var(--cornice-raggio);
+  display: grid; place-items: center;
+  animation: avvioCorniceVia 0.3s 0.3s ease-out forwards;
+}
+@keyframes avvioCorniceVia { to { background-color: var(--cornice-grigio-via); } }
+
+/* La piastrella crema dentro il contenitore: proporzione misurata */
+.avvio-logo { width: 56.5%; height: auto; display: block; }
 @keyframes avvioVia { to { opacity: 0; visibility: hidden; } }
 
 /* Le figure partono tutte rosse come nell'icona sulla home */

@@ -80,6 +80,17 @@
      "salta" su quello della schermata di login.
      ═══════════════════════════════════════════════════════════════ -->
 <div id="avvio" aria-hidden="true">
+ <!-- IL CONTENITORE GRIGIO ARROTONDATO. Non e' un vezzo nostro: e'
+      Android che, nella sua schermata di avvio, non mostra l'icona
+      nuda — la appoggia dentro un quadrato grigio con gli angoli
+      stondati, e la rimpicciolisce per farcela stare. Se qui partissimo
+      con la sola piastrella crema, nell'istante del passaggio si
+      vedrebbe il grigio sparire di colpo. Quindi lo rifacciamo, e lo
+      dissolviamo noi un attimo dopo, quando il cesto prende vita.
+      Le misure stanno tutte in style.css, in cima al blocco: sono
+      stimate su uno screenshot, non lette da Android (che non le
+      espone), quindi su un telefono diverso possono ballare un po'. -->
+ <div class="avvio-cornice">
   <!-- PERCHE' NON SOVRAPPONIAMO QUI icon-512.png VERO: si era provato,
        dissolvendolo dentro questo disegno. Non funziona, perche' i due
        NON sono la stessa illustrazione — il PNG ha due figure e un cesto
@@ -140,6 +151,7 @@
       </g>
     </g>
   </svg>
+ </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════
