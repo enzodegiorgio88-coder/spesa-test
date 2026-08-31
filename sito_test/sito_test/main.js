@@ -119,6 +119,15 @@ if (IS_TEST) {
   document.title = '🧪 TEST — ' + document.title;
 }
 
+// NUOVO SETTEMBRE 2026: il riquadro di avvio ("il cesto prende vita",
+// vedi #avvio in index.html) si spegne DA SOLO in CSS, a un secondo e
+// mezzo. Qui lo togliamo proprio dalla pagina, un attimo dopo, perché
+// un elemento grande quanto lo schermo — anche se invisibile e senza
+// pointer-events — non ha motivo di restare lì per tutto il tempo in
+// cui la lista è aperta. Se questa riga non partisse non cambierebbe
+// niente per chi usa l'app: l'animazione si è già tolta di mezzo.
+setTimeout(() => document.getElementById('avvio')?.remove(), 1800);
+
 // ── NUOVO SETTEMBRE 2026: accensione delle Statistiche ──
 // Righe identiche al sito ufficiale, di proposito: quello che si prova
 // qui deve essere esattamente quello che succederà là. La differenza la

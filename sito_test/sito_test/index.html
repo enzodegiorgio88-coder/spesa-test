@@ -50,6 +50,98 @@
 </script>
 </head>
 <body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     NUOVO SETTEMBRE 2026 — L'AVVIO: IL CESTO CHE PRENDE VITA
+
+     Quando apri l'app dall'icona sulla home, il TELEFONO disegna per un
+     secondo una schermata sua: grigio #2d3436 (la riga "background_color"
+     del manifest) con icon-512.png in mezzo. Quella schermata non si può
+     animare: quando la vedi, questa pagina non esiste ancora.
+
+     Il trucco è tutto qui: questo riquadro copre lo schermo e comincia
+     ESATTAMENTE com'era finita quella del telefono — stesso grigio,
+     stessa piastrella crema, stesso cesto rosso, stesse due figure. La
+     cucitura non si vede, e quello che parte dopo sembra la schermata
+     del telefono che prende vita: le due figure prendono i colori delle
+     categorie, arriva la terza, cade la frutta nel cesto e spunta la
+     verdura. In un secondo e mezzo l'icona piatta è diventata il logo
+     ricco, che è poi lo stesso disegno di ricca-sfondo-scuro.svg che
+     trovi subito sotto, sulla schermata di login.
+
+     Il movimento è tutto in CSS (cerca "IL CESTO CHE PRENDE VITA" in
+     style.css). Nessun JavaScript è necessario per vederlo né per
+     toglierlo di mezzo: main.js si limita a buttare via il riquadro
+     quando ha finito, per non lasciare roba inutile nella pagina.
+
+     LA GEOMETRIA del cesto, delle figure, della frutta e della verdura è
+     copiata UNA A UNA da ricca-sfondo-scuro.svg: se ritocchi il logo là,
+     ritoccalo anche qui, altrimenti alla fine dell'animazione il disegno
+     "salta" su quello della schermata di login.
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="avvio" aria-hidden="true">
+  <!-- PERCHE' NON SOVRAPPONIAMO QUI icon-512.png VERO: si era provato,
+       dissolvendolo dentro questo disegno. Non funziona, perche' i due
+       NON sono la stessa illustrazione — il PNG ha due figure e un cesto
+       piu' stretto (misurato: il rosso e' 352x350, quadrato), il logo
+       ricco ne ha tre piu' la verdura ed e' 768x706, cioe' piu' largo
+       che alto. Sovrapposti si sdoppiavano: doppia linea sul cesto,
+       figure fantasma. Un taglio netto fra due disegni simili si nota
+       molto meno di una dissolvenza fra due disegni disallineati. -->
+  <svg class="avvio-logo" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <!-- La piastrella crema: è il quadrato dell'icona sulla home.
+         Angoli QUADRI e non arrotondati, perché quadri sono anche quelli
+         di icon-512.png (verificato: il pixel d'angolo è crema pieno).
+         Ad arrotondarla ci pensa il telefono per conto suo quando la
+         mette sulla home. Il crema è #F8F4E6, lo stesso identico del
+         cesto in ricca-sfondo-scuro.svg: è il colore letto dal file. -->
+    <rect class="av-piastrella" width="1024" height="1024" fill="#F8F4E6"/>
+    <!-- Porta il disegno del logo (che ha un suo sistema di coordinate)
+         dentro il quadrato, centrato. Lo 0.917 non e' scelto a occhio:
+         nel PNG vero il disegno rosso e' largo il 68,8% della piastrella,
+         e questo numero fa venire larga uguale anche questa. Se ritocchi
+         la misura dell'icona, ricalcola: scala = 0,688 x 1024 / 768. -->
+    <g transform="translate(42.5 32.4) scale(0.917)">
+      <g transform="translate(0 -22)">
+        <!-- LA FAMIGLIA. Partono ROSSE tutte e due come nell'icona della
+             home; i colori delle categorie arrivano con l'animazione.
+             La terza figura all'inizio non c'è: entra dopo. -->
+        <g class="av-figure">
+          <g class="av-fig1"><circle cx="380" cy="244" r="52"/><path d="M294 610 V400 a86 86 0 0 1 172 0 V610 Z"/></g>
+          <g class="av-fig2"><circle cx="560" cy="286" r="48"/><path d="M480 610 V430 a80 80 0 0 1 160 0 V610 Z"/></g>
+          <g class="av-fig3"><circle cx="730" cy="348" r="38"/><path d="M668 610 V470 a62 62 0 0 1 124 0 V610 Z"/></g>
+        </g>
+
+        <!-- VERDURA: cresce dal basso, come se spuntasse dal cesto -->
+        <g class="av-verdura" fill="#5FBB6E">
+          <ellipse cx="196" cy="522" rx="29" ry="74" transform="rotate(-26 196 522)"/>
+          <ellipse cx="238" cy="498" rx="30" ry="92"/>
+          <ellipse cx="286" cy="522" rx="29" ry="74" transform="rotate(26 286 522)"/>
+        </g>
+
+        <!-- FRUTTA: cade dall'alto dentro al cesto, una dopo l'altra.
+             Disegnata PRIMA del cesto, così ci finisce dentro. -->
+        <g class="av-frutta">
+          <circle class="av-f1" cx="348" cy="726" r="64" fill="#FFA45B"/>
+          <circle class="av-f2" cx="512" cy="750" r="58" fill="#FFD166"/>
+          <circle class="av-f3" cx="668" cy="726" r="56" fill="#F0806C"/>
+        </g>
+
+        <!-- IL CESTO: rosso, come nell'icona sulla home. Resta fermo:
+             è l'unica cosa che non cambia mai, ed è quella che tiene
+             insieme la cucitura con la schermata del telefono. -->
+        <g class="av-cesto" fill="none" stroke="#E8574F" stroke-width="44" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M168 614 L296 838 Q310 876 348 876 L676 876 Q714 876 728 838 L856 614"/>
+          <path d="M345 632 L400 824"/>
+          <path d="M512 632 L512 824"/>
+          <path d="M679 632 L624 824"/>
+          <path d="M150 600 L874 600"/>
+        </g>
+      </g>
+    </g>
+  </svg>
+</div>
+
 <!-- ═══════════════════════════════════════════════════════════════
      NUOVO SETTEMBRE 2026 — IL FOGLIO DELLE ICONE
      Qui stanno i disegni veri delle icone, UNA VOLTA SOLA. I pulsanti

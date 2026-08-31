@@ -912,3 +912,88 @@ button:active, .link-btn:active {
     box-shadow: 0 3px 12px rgba(224,82,82,0.38);
   }
 }
+
+/* ══ NUOVO SETTEMBRE 2026: IL CESTO CHE PRENDE VITA ═══════════════
+   Il movimento del riquadro di avvio (vedi il commento lungo su #avvio
+   in index.html). Tutto in CSS: parte da solo, finisce da solo, e non
+   ha bisogno di JavaScript nemmeno per togliersi di mezzo.
+
+   LA SEQUENZA, in un secondo e mezzo:
+     0,00-0,15  fermo sul fotogramma della schermata del telefono
+     0,15-0,62  le due figure prendono i colori di Casa e Persona
+     0,32-0,72  arriva la terza figura, quella di Alimentari
+     0,40-1,02  la frutta cade nel cesto, una dopo l'altra
+     0,62-1,05  spunta la verdura
+     0,98-1,30  la piastrella si dissolve e il cesto passa al crema
+     1,25-1,60  il riquadro sfuma e sotto c'e' l'app
+   Per rallentare o accelerare tutto, i numeri da toccare sono questi. */
+
+#avvio {
+  position: fixed; inset: 0; z-index: 1000000;
+  /* ESATTAMENTE il grigio di "background_color" nel manifest: e' questo
+     che rende invisibile la cucitura con la schermata del telefono. Se
+     cambi il manifest, cambia anche qui. */
+  background: #2d3436;
+  display: flex; align-items: center; justify-content: center;
+  /* Decorativo: non deve mai poter bloccare un tocco, nemmeno se
+     qualcosa andasse storto e restasse appeso. */
+  pointer-events: none;
+  animation: avvioVia 0.35s 1.25s ease-out forwards;
+}
+/* Quanto e' grande l'icona nella schermata del telefono. Se sul tuo
+   telefono la cucitura "salta", e' QUESTO il numero da ritoccare. */
+.avvio-logo { width: min(38vw, 190px); height: auto; display: block; }
+@keyframes avvioVia { to { opacity: 0; visibility: hidden; } }
+
+/* Le figure partono tutte rosse come nell'icona sulla home */
+.av-figure g { fill: #E8574F; }
+/* La terza non e' mai stata rossa: non esiste nell'icona, entra dopo.
+   Due classi per battere in specificita' la riga qui sopra. */
+.av-figure .av-fig3 { fill: #45B7D1; opacity: 0; }
+
+.av-fig1 { animation: avvioCasa    0.37s 0.15s ease-out forwards; }
+.av-fig2 { animation: avvioPersona 0.37s 0.25s ease-out forwards; }
+.av-fig3 { animation: avvioEntra   0.40s 0.32s cubic-bezier(.34,1.4,.64,1) forwards; }
+@keyframes avvioCasa    { to { fill: #FF6B6B; } }
+@keyframes avvioPersona { to { fill: #4ECDC4; } }
+@keyframes avvioEntra   { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+
+/* transform-box: fill-box fa girare e scalare ogni pezzo attorno a SE'
+   STESSO invece che attorno all'angolo del disegno intero. */
+.av-frutta circle { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.av-f1 { animation: avvioCade 0.42s 0.40s cubic-bezier(.5,0,.9,.55) forwards; }
+.av-f2 { animation: avvioCade 0.42s 0.50s cubic-bezier(.5,0,.9,.55) forwards; }
+.av-f3 { animation: avvioCade 0.42s 0.60s cubic-bezier(.5,0,.9,.55) forwards; }
+@keyframes avvioCade {
+  from { opacity: 0; transform: translateY(-150px) scale(0.6); }
+  60%  { opacity: 1; }
+  to   { opacity: 1; transform: none; }
+}
+
+/* La verdura cresce dal basso: origine in fondo, non al centro */
+.av-verdura {
+  opacity: 0; transform-box: fill-box; transform-origin: 50% 100%;
+  animation: avvioSpunta 0.43s 0.62s cubic-bezier(.34,1.4,.64,1) forwards;
+}
+@keyframes avvioSpunta { from { opacity: 0; transform: scaleY(0); } to { opacity: 1; transform: none; } }
+
+/* IL PASSAGGIO DI CONSEGNE. Senza questo il riquadro finirebbe sul cesto
+   ROSSO dentro la piastrella crema, e un istante dopo comparirebbe la
+   schermata di login col suo logo, che invece e' il cesto CREMA su fondo
+   scuro: due disegni diversi in dissolvenza, e si vede. Qui la
+   piastrella si toglie di mezzo e il cesto passa al crema, cosi' l'ultimo
+   fotogramma e' ESATTAMENTE ricca-sfondo-scuro.svg, cioe' identico al
+   logo che c'e' sotto. L'icona della home, in un secondo e mezzo, e'
+   diventata il logo dell'app.
+   Se preferisci l'anteprima com'era (piastrella crema fino in fondo),
+   togli queste due righe: il resto continua a funzionare uguale. */
+.av-piastrella { animation: avvioPiastrellaVia 0.22s 0.98s ease-out forwards; }
+.av-cesto      { animation: avvioCestoCrema    0.28s 1.02s ease-out forwards; }
+@keyframes avvioPiastrellaVia { to { opacity: 0; } }
+@keyframes avvioCestoCrema    { to { stroke: #F8F4E6; } }
+
+/* Chi ha chiesto meno animazioni nelle impostazioni del telefono non si
+   vede nessuna introduzione: l'app si apre e basta. */
+@media (prefers-reduced-motion: reduce) {
+  #avvio { display: none; }
+}
