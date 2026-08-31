@@ -80,17 +80,21 @@
      "salta" su quello della schermata di login.
      ═══════════════════════════════════════════════════════════════ -->
 <div id="avvio" aria-hidden="true">
- <!-- IL CONTENITORE GRIGIO ARROTONDATO. Non e' un vezzo nostro: e'
-      Android che, nella sua schermata di avvio, non mostra l'icona
-      nuda — la appoggia dentro un quadrato grigio con gli angoli
-      stondati, e la rimpicciolisce per farcela stare. Se qui partissimo
-      con la sola piastrella crema, nell'istante del passaggio si
-      vedrebbe il grigio sparire di colpo. Quindi lo rifacciamo, e lo
-      dissolviamo noi un attimo dopo, quando il cesto prende vita.
-      Le misure stanno tutte in style.css, in cima al blocco: sono
-      stimate su uno screenshot, non lette da Android (che non le
-      espone), quindi su un telefono diverso possono ballare un po'. -->
- <div class="avvio-cornice">
+  <!-- PERCHE' NON RIFACCIAMO IL CONTENITORE GRIGIO ARROTONDATO che
+       Android mette intorno all'icona nella SUA schermata di avvio.
+       Si era provato, ed e' peggio. Quel grigio non lo decidiamo noi:
+       lo disegna Android, e la sua misura, la sua tinta e il raggio dei
+       suoi angoli non sono scritti da nessuna parte — cambiano da
+       telefono a telefono e da versione a versione. Rifatto a occhio
+       veniva quasi giusto, e "quasi" e' il caso peggiore: si vedevano
+       DUE grigi appena sfalsati, che si notano molto piu' di nessun
+       grigio. Meglio ripartire dalla sola piastrella crema.
+       (Nota: compare perche' il telefono sta trattando l'icona come
+       vecchio stile. Misurate: icon-512.png e icon-maskable-512.png
+       hanno tutte e due il crema fino ai bordi, quindi sono fatte
+       giuste — se il telefono le usasse, il grigio non ci sarebbe.
+       Provare a togliere e rimettere l'icona sulla home.) -->
+
   <!-- PERCHE' NON SOVRAPPONIAMO QUI icon-512.png VERO: si era provato,
        dissolvendolo dentro questo disegno. Non funziona, perche' i due
        NON sono la stessa illustrazione — il PNG ha due figure e un cesto
@@ -151,7 +155,6 @@
       </g>
     </g>
   </svg>
- </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════
