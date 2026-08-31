@@ -48,17 +48,25 @@
   // caricamento (vedi regole html.auth-pending in style.css e main.js).
   try { if (localStorage.getItem('wasLoggedIn')) document.documentElement.classList.add('auth-pending'); } catch (e) {}
 
-  // NUOVO SETTEMBRE 2026: allinea l'introduzione (#avvio) alla schermata
-  // che disegna il telefono. Android centra la sua icona sullo SCHERMO
-  // intero; la nostra pagina invece comincia SOTTO la barra di stato,
-  // quindi il suo centro cade piu' in basso — misurati 38 pixel su un
-  // telefono da 1080x2372. Qui calcoliamo di quanto e lo passiamo al CSS.
-  // Deve stare inline e QUI, prima che la pagina si disegni: fatto dopo,
-  // si vedrebbe l'icona saltare. Se fallisce non succede niente: il CSS
-  // parte da zero e l'icona resta centrata sulla pagina.
+  // NUOVO SETTEMBRE 2026: INCHIODA l'icona dell'introduzione (#avvio).
+  //
+  // Il problema, visto su una registrazione dello schermo: nel primo
+  // secondo dopo il lancio lo spazio utile della pagina CAMBIA piu'
+  // volte, mentre Android sistema la barra di stato e quella dei
+  // gesti in basso. Un'icona centrata in quello spazio lo segue, e si
+  // vede strisciare verso l'alto a scatti (misurati: centro a 1164,
+  // poi 1140). Non e' un'animazione nostra: e' il pavimento che si
+  // muove sotto i piedi.
+  //
+  // Qui misuriamo l'altezza della pagina UNA VOLTA SOLA, adesso, e da
+  // quel momento l'icona sta a una distanza fissa dal bordo alto: se
+  // dopo lo spazio si restringe, lei non si sposta piu'.
+  // Deve restare inline e QUI, prima che la pagina si disegni.
+  // Se fallisce, il CSS ripiega su "meta' pagina" e si torna al
+  // comportamento di prima: mai una pagina rotta.
   try {
-    var alza = (window.screen.height - window.innerHeight) / 2;
-    if (alza > 0 && alza < 80) document.documentElement.style.setProperty('--avvio-alza', alza + 'px');
+    document.documentElement.style.setProperty(
+      '--avvio-centro', Math.round(window.innerHeight / 2) + 'px');
   } catch (e) {}
 </script>
 </head>

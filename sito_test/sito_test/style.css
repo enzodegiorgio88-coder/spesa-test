@@ -947,14 +947,24 @@ button:active, .link-btn:active {
    pixel non serve al telefono (dove 66,7vw sta sempre sotto i 310 px):
    serve solo a non far diventare l'icona enorme se apri il sito dal
    computer per provarlo.
-   Il translateY corregge un disallineamento reale: la pagina comincia
-   SOTTO la barra di stato, quindi il suo centro sta piu' in basso di
-   quello dello schermo — misurati 38 px su questo telefono. Di quanto
-   alzare lo calcola lo script in <head>; se non gira, resta zero e
-   l'icona e' centrata sulla pagina, che e' comunque accettabile. */
+
+   DOVE STA IN ALTEZZA. Non e' centrata con "align-items", apposta: e'
+   appesa a una distanza FISSA dal bordo alto, calcolata una volta sola
+   dallo script in <head>. Cosi' quando lo spazio della pagina cambia
+   nel primo secondo del lancio (barre di sistema che si assestano),
+   l'icona NON lo segue e resta ferma. Senza JavaScript ripiega su
+   "meta' pagina", cioe' il comportamento di prima.
+
+   --avvio-scarto e' l'UNICO numero da ritoccare per allinearla alla
+   schermata di Android: misurato sulla registrazione, la sua icona sta
+   86 pixel schermo piu' in basso della nostra, che a questa densita'
+   fanno circa 33 px. Piu' grande = piu' in basso. */
+#avvio { --avvio-scarto: 33px; }
 .avvio-logo {
+  position: absolute; left: 50%;
+  top: calc(var(--avvio-centro, 50%) + var(--avvio-scarto));
+  transform: translate(-50%, -50%);
   width: min(66.7vw, 340px); height: auto; display: block;
-  transform: translateY(calc(-1 * var(--avvio-alza, 0px)));
 }
 @keyframes avvioVia { to { opacity: 0; visibility: hidden; } }
 
