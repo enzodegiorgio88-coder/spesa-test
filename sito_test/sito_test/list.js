@@ -112,7 +112,10 @@ function onCheckToggle(col, i) {
   state.data[col][i].done = !state.data[col][i].done;
   pushAction(col, i, (state.data[col][i].done ? 'spuntato' : 'despuntato') + ' da ' + state.currentUserName);
   saveToFirebase();
-  renderRow(col, i);
+  // NUOVO OTTOBRE 2026: spuntando (o togliendo la spunta) la riga cambia
+  // posto, perché i fatti vanno in fondo: si ridisegna tutta la colonna
+  // invece della sola riga.
+  rinfrescaColonna(col);
   updateStats();
 }
 
@@ -266,8 +269,13 @@ function buildTextInput(col, i, item, onTextChange) {
   inp.onkeydown = (ev) => {
     if (ev.key !== 'Enter') return;
     ev.preventDefault();
-    const rows = [...document.querySelectorAll(`#list-${col} .item-input`)];
-    const idx  = rows.indexOf(inp);
+    // NUOVO OTTOBRE 2026: i fatti stanno in fondo. Per decidere se andare alla
+    // riga dopo o crearne una nuova si guardano solo i campi NON spuntati,
+    // altrimenti l'Invio sull'ultima riga porterebbe sui fatti. Se il campo
+    // in cui si scrive è già spuntato si ragiona come prima, su tutta la lista.
+    const tutte = [...document.querySelectorAll(`#list-${col} .item-input`)];
+    const rows  = inp.classList.contains('done') ? tutte : tutte.filter(x => !x.classList.contains('done'));
+    const idx   = rows.indexOf(inp);
     if (idx < rows.length - 1) rows[idx + 1].focus(); else window.addRow(col);
   };
   // Come per il prezzo: mentre si scrive il nome dell'articolo la barra
@@ -412,8 +420,10 @@ function buildPriorityMenu(col, i, item) {
       const label = s.val === 'urgente' ? 'urgente' : s.val === 'importante' ? 'importante' : 'tornato normale';
       pushAction(col, i, label + ' da ' + state.currentUserName);
       if (s.val === 'urgente' && state.data[col][i].text.trim())
-        inviaNotificaUrgente(state.data[col][i].text, state.currentUserName);
-      saveToFirebase(); renderRow(col, i); updateStats();
+                inviaNotificaUrgente(state.data[col][i].text, state.currentUserName);
+      // NUOVO OTTOBRE 2026: cambiando priorità la riga può cambiare posto
+      // (urgenti in cima): si ridisegna tutta la colonna, non solo la riga.
+      saveToFirebase(); rinfrescaColonna(col); updateStats();
     };
     menu.appendChild(opt);
   });
@@ -590,7 +600,33 @@ function makeRow(col, i, item) {
   }
   return li;
 }
+// NUOVO OTTOBRE 2026: ordine con cui le righe compaiono a schermo.
+// Urgenti non fatti in cima, poi gli importanti non fatti, poi tutto il
+// resto (righe normali e righe vuote) e in fondo i fatti.
+// È SOLO un ordine di visualizzazione: state.data non viene toccato, quindi
+// nessuna scrittura in più su Firebase e l'indice "i" di ogni riga (data-idx,
+// renderRow, pulsanti, ecc.) resta quello di sempre. Le righe vuote contano
+// come normali, così le righe dove si scrive restano sopra i fatti.
+function rangoRiga(r) {
+  if (!r.text.trim() && !r.photo) return 2;
+  if (r.done)      return 3;
+  if (r.urgent)    return 0;
+  if (r.important) return 1;
+  return 2;
+}
 
+function ordineVisivo(col) {
+  const righe = state.data[col];
+  return righe.map((r, i) => i)
+              .sort((a, b) => rangoRiga(righe[a]) - rangoRiga(righe[b]) || a - b);
+}
+
+// Ridisegna una colonna intera (vista "Per categoria" e vista "Tutto"):
+// serve quando una modifica può cambiare l'ordine delle righe.
+function rinfrescaColonna(col) {
+  renderCol(col, `list-${col}`);
+  renderCol(col, `all-${col}`);
+}
 // ── RENDERING ──────────────────────────────────────
 
 function renderCol(col, listId) {
@@ -600,7 +636,10 @@ function renderCol(col, listId) {
   const isAllView  = listId.startsWith('all-');
   let emptyCount   = 0;
 
-  state.data[col].forEach((item, i) => {
+  // NUOVO OTTOBRE 2026: si scorre l'ordine visivo (urgenti in cima, fatti in
+  // fondo) invece dell'ordine dei dati. "i" resta l'indice vero in state.data.
+  ordineVisivo(col).forEach((i) => {
+    const item = state.data[col][i];
     if (isAllView && !item.text.trim() && !item.photo) return;
     if (!isAllView) {
       emptyCount = (item.text || item.photo) ? 0 : emptyCount + 1;
@@ -698,7 +737,7 @@ window.setView = (v) => {
 //
 // Ogni categoria tiene sempre in fondo un certo numero di righe già
 // pronte ma vuote (MIN_ROWS in config.js, oggi 15), e renderCol ne mostra
-// al massimo cinque di fila: senza quel limite ci si ritrovava davanti a
+// al massimo cinque di fila: senza quel limite ci si ritrovava davanti aut
 // un muro di righe vuote. Qui però veniva aggiunta una riga vuota IN
 // FONDO A QUELLE: la numero sedici, cioè ben oltre le cinque mostrate.
 // Il risultato è che a schermo non succedeva assolutamente niente — e

@@ -5,6 +5,31 @@
 import { COLORS, NOVITA_RELEASE } from './config.js';
 import { state } from './state.js';
 import { posizionaMenuPrio } from './list.js';
+// NUOVO OTTOBRE 2026: toccando un articolo nel popup si va alla sua riga.
+// Il popup si chiude, si apre la categoria giusta ("Per categoria"; se si è
+// in "Tutto" si resta in "Tutto"), la lista scorre fino alla riga e questa
+// si illumina per un attimo (vedi .evidenzia in style.css).
+// Il popup conosce l'oggetto riga ma non la sua posizione: l'indice si
+// ricava qui, al momento del tocco. Se nel frattempo un aggiornamento di un
+// altro telefono ha sostituito i dati, la riga si cerca per testo.
+function vaiAllArticolo(col, item) {
+  let idx = state.data[col].indexOf(item);
+  if (idx < 0) idx = state.data[col].findIndex(r => !r.done && r.text === item.text);
+  if (idx < 0) return;
+
+  window.closeUrgentiModal();
+  const inTutto = state.currentView === 'all';
+  if (!inTutto) window.showTab(col);
+
+  const riga = document.querySelector(`${inTutto ? '#all-' : '#list-'}${col} [data-idx="${idx}"]`);
+  if (!riga) return;
+  riga.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  riga.classList.remove('evidenzia');
+  void riga.offsetWidth;                       // forza il browser a ricominciare l'animazione
+  riga.classList.add('evidenzia');
+  setTimeout(() => riga.classList.remove('evidenzia'), 1900);
+}
+
 // NUOVO SETTEMBRE 2026: icone disegnate e pallini CSS al posto delle
 // emoji nei comandi. Restano emoji, invece, i messaggi di lista vuota
 // qui sotto: quelli sono il modo di parlare dell'app, non un comando.
@@ -24,7 +49,9 @@ function buildUrgentiCategory(c, items, showPrices) {
   cat.appendChild(title);
 
   items.forEach(item => {
-    const row = document.createElement('div'); row.className = 'urg-item';
+        const row = document.createElement('div'); row.className = 'urg-item';
+    // NUOVO OTTOBRE 2026: toccando l'articolo si va alla sua riga nella lista.
+    row.onclick = () => vaiAllArticolo(c, item);
     const txt = document.createElement('span'); txt.className = 'urg-item-text'; txt.textContent = item.text;
     row.appendChild(txt);
     if (item.qty > 1) {

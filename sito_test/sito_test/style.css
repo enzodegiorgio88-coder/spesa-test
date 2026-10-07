@@ -1020,3 +1020,14 @@ button:active, .link-btn:active {
 @media (prefers-reduced-motion: reduce) {
   #avvio { display: none; }
 }
+/* NUOVO OTTOBRE 2026: dal popup degli urgenti alla riga giusta (urgent.js).
+   Toccando un articolo nel popup la lista scorre fino alla sua riga e la
+   illumina per un attimo, così la si ritrova subito. Si anima solo il colore
+   di fondo e non lo sfondo a sfumatura delle righe urgenti/importanti: a
+   fine animazione la riga torna esattamente com'era. */
+.urg-item { cursor:pointer; }
+.item-row.evidenzia { animation:evidenziaRiga 1.8s ease-out; }
+@keyframes evidenziaRiga { 0%,45% { background-color:#ffeaa7; } 100% { background-color:rgba(255,234,167,0); } }
+@media (prefers-reduced-motion: reduce) {
+  .item-row.evidenzia { animation:none; background-color:#ffeaa7; }
+}
